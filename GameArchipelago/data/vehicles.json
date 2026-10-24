@@ -1,0 +1,275 @@
+[
+  {
+    "Name": "Imponte Deluxo",
+    "Model": "deluxo",
+    "Weight": 3,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Pegassi Oppressor Mk II",
+    "Model": "oppressor2",
+    "Weight": 3,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Pegassi Oppressor",
+    "Model": "oppressor",
+    "Weight": 2,
+    "Water": false,
+    "Category": "Motorcycle"
+  },
+  {
+    "Name": "Grotti Z-Type",
+    "Model": "ztype",
+    "Weight": 2,
+    "Water": false,
+    "Category": "Sports Car"
+  },
+  {
+    "Name": "Dewbauchee JB 700",
+    "Model": "jb700",
+    "Weight": 2,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Ocelot Stromberg",
+    "Model": "stromberg",
+    "Weight": 3,
+    "Water": false,
+    "Category": "Underwater Vehicle"
+  },
+  {
+    "Name": "Pegassi Toreador",
+    "Model": "toreador",
+    "Weight": 2,
+    "Water": false,
+    "Category": "Underwater Vehicle"
+  },
+  {
+    "Name": "Nagasaki Shotaro",
+    "Model": "shotaro",
+    "Weight": 3,
+    "Water": false,
+    "Category": "Motorcycle"
+  },
+  {
+    "Name": "Grotti Vigilante",
+    "Model": "vigilante",
+    "Weight": 2,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Declasse Scramjet",
+    "Model": "scramjet",
+    "Weight": 2,
+    "Water": false,
+    "Category": "Scramjet"
+  },
+  {
+    "Name": "Imponte Ruiner 2000",
+    "Model": "ruiner2",
+    "Weight": 2,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Coil Rocket Voltic",
+    "Model": "voltic2",
+    "Weight": 2,
+    "Water": false,
+    "Category": "Sports Car"
+  },
+  {
+    "Name": "BF Ramp Buggy",
+    "Model": "dune4",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Nagasaki Blazer Aqua",
+    "Model": "blazer5",
+    "Weight": 2,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "HVY APC",
+    "Model": "apc",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Khanjali",
+    "Model": "khanjali",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Rhino Tank",
+    "Model": "rhino",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Mammoth Thruster",
+    "Model": "thruster",
+    "Weight": 2,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Pegassi Zentorno",
+    "Model": "zentorno",
+    "Weight": 2,
+    "Water": false,
+    "Category": "Sports Car"
+  },
+  {
+    "Name": "Truffade Adder",
+    "Model": "adder",
+    "Weight": 1,
+    "Water": false,
+    "Category": "Sports Car"
+  },
+  {
+    "Name": "Progen T20",
+    "Model": "t20",
+    "Weight": 1,
+    "Water": false,
+    "Category": "Sports Car"
+  },
+  {
+    "Name": "Ocelot Pariah",
+    "Model": "pariah",
+    "Weight": 1,
+    "Water": false,
+    "Category": "Sports Car"
+  },
+  {
+    "Name": "Pegassi Bati 801",
+    "Model": "bati",
+    "Weight": 1,
+    "Water": false,
+    "Category": "Motorcycle"
+  },
+  {
+    "Name": "Shitzu Hakuchou Drag",
+    "Model": "hakuchou2",
+    "Weight": 1,
+    "Water": false,
+    "Category": "Motorcycle"
+  },
+  {
+    "Name": "Western Faggio",
+    "Model": "faggio2",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Monster Truck",
+    "Model": "monster",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "HVY Insurgent",
+    "Model": "insurgent2",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Sea Sparrow",
+    "Model": "seasparrow",
+    "Weight": 2,
+    "Water": false,
+    "Category": "Helicopter"
+  },
+  {
+    "Name": "Buckingham Akula",
+    "Model": "akula",
+    "Weight": 1,
+    "Water": false,
+    "Category": "Helicopter"
+  },
+  {
+    "Name": "Buzzard Attack Chopper",
+    "Model": "buzzard",
+    "Weight": 2,
+    "Water": false,
+    "Category": "Helicopter"
+  },
+  {
+    "Name": "Buckingham Maverick",
+    "Model": "maverick",
+    "Weight": 1,
+    "Water": false,
+    "Category": "Helicopter"
+  },
+  {
+    "Name": "Mammoth Hydra",
+    "Model": "hydra",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Mammoth Dodo",
+    "Model": "dodo",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Kraken Submarine",
+    "Model": "submersible2",
+    "Weight": 2,
+    "Water": true,
+    "Category": "Underwater Vehicle"
+  },
+  {
+    "Name": "Submersible",
+    "Model": "submersible",
+    "Weight": 1,
+    "Water": true,
+    "Category": "Underwater Vehicle"
+  },
+  {
+    "Name": "Speedophile Seashark",
+    "Model": "seashark",
+    "Weight": 1,
+    "Water": true,
+    "Category": "Boat"
+  },
+  {
+    "Name": "Pegassi Speeder",
+    "Model": "speeder",
+    "Weight": 1,
+    "Water": true,
+    "Category": "Boat"
+  },
+  {
+    "Name": "Shitzu Longfin",
+    "Model": "longfin",
+    "Weight": 1,
+    "Water": true,
+    "Category": "Boat"
+  },
+  {
+    "Name": "Lampadati Toro",
+    "Model": "toro",
+    "Weight": 1,
+    "Water": true,
+    "Category": "Boat"
+  }
+]

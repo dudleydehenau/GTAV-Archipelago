@@ -1,0 +1,8 @@
+bin/
+obj/
+.vs/
+*.user
+lib/*.dll
+__pycache__/
+*.apworld
+releases/

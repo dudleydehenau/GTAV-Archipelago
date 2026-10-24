@@ -1,0 +1,434 @@
+[
+  {
+    "Name": "Pistol",
+    "Weapon": "WEAPON_PISTOL",
+    "Ammo": 120,
+    "Weight": 1
+  },
+  {
+    "Name": "Pistol Mk II",
+    "Weapon": "WEAPON_PISTOL_MK2",
+    "Ammo": 120,
+    "Weight": 1
+  },
+  {
+    "Name": "Combat Pistol",
+    "Weapon": "WEAPON_COMBATPISTOL",
+    "Ammo": 120,
+    "Weight": 1
+  },
+  {
+    "Name": "AP Pistol",
+    "Weapon": "WEAPON_APPISTOL",
+    "Ammo": 150,
+    "Weight": 1
+  },
+  {
+    "Name": "Pistol .50",
+    "Weapon": "WEAPON_PISTOL50",
+    "Ammo": 90,
+    "Weight": 1
+  },
+  {
+    "Name": "Heavy Revolver",
+    "Weapon": "WEAPON_REVOLVER",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Heavy Revolver Mk II",
+    "Weapon": "WEAPON_REVOLVER_MK2",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Navy Revolver",
+    "Weapon": "WEAPON_NAVYREVOLVER",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Double-Action Revolver",
+    "Weapon": "WEAPON_DOUBLEACTION",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Up-n-Atomizer",
+    "Weapon": "WEAPON_RAYPISTOL",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Ceramic Pistol",
+    "Weapon": "WEAPON_CERAMICPISTOL",
+    "Ammo": 100,
+    "Weight": 1
+  },
+  {
+    "Name": "Stun Gun",
+    "Weapon": "WEAPON_STUNGUN",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Flare Gun",
+    "Weapon": "WEAPON_FLAREGUN",
+    "Ammo": 20,
+    "Weight": 1
+  },
+  {
+    "Name": "Micro SMG",
+    "Weapon": "WEAPON_MICROSMG",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "SMG",
+    "Weapon": "WEAPON_SMG",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "SMG Mk II",
+    "Weapon": "WEAPON_SMG_MK2",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Assault SMG",
+    "Weapon": "WEAPON_ASSAULTSMG",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Combat PDW",
+    "Weapon": "WEAPON_COMBATPDW",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Machine Pistol",
+    "Weapon": "WEAPON_MACHINEPISTOL",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Mini SMG",
+    "Weapon": "WEAPON_MINISMG",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Gusenberg Sweeper",
+    "Weapon": "WEAPON_GUSENBERG",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Assault Rifle",
+    "Weapon": "WEAPON_ASSAULTRIFLE",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Assault Rifle Mk II",
+    "Weapon": "WEAPON_ASSAULTRIFLE_MK2",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Carbine Rifle",
+    "Weapon": "WEAPON_CARBINERIFLE",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Carbine Rifle Mk II",
+    "Weapon": "WEAPON_CARBINERIFLE_MK2",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Advanced Rifle",
+    "Weapon": "WEAPON_ADVANCEDRIFLE",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Special Carbine",
+    "Weapon": "WEAPON_SPECIALCARBINE",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Special Carbine Mk II",
+    "Weapon": "WEAPON_SPECIALCARBINE_MK2",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Bullpup Rifle",
+    "Weapon": "WEAPON_BULLPUPRIFLE",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Compact Rifle",
+    "Weapon": "WEAPON_COMPACTRIFLE",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Military Rifle",
+    "Weapon": "WEAPON_MILITARYRIFLE",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Heavy Rifle",
+    "Weapon": "WEAPON_HEAVYRIFLE",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Service Carbine",
+    "Weapon": "WEAPON_TACTICALRIFLE",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "MG",
+    "Weapon": "WEAPON_MG",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Combat MG",
+    "Weapon": "WEAPON_COMBATMG",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Combat MG Mk II",
+    "Weapon": "WEAPON_COMBATMG_MK2",
+    "Ammo": 300,
+    "Weight": 1
+  },
+  {
+    "Name": "Pump Shotgun",
+    "Weapon": "WEAPON_PUMPSHOTGUN",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Sawed-Off Shotgun",
+    "Weapon": "WEAPON_SAWNOFFSHOTGUN",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Assault Shotgun",
+    "Weapon": "WEAPON_ASSAULTSHOTGUN",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Bullpup Shotgun",
+    "Weapon": "WEAPON_BULLPUPSHOTGUN",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Heavy Shotgun",
+    "Weapon": "WEAPON_HEAVYSHOTGUN",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Double Barrel Shotgun",
+    "Weapon": "WEAPON_DBSHOTGUN",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Sweeper Shotgun",
+    "Weapon": "WEAPON_AUTOSHOTGUN",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Combat Shotgun",
+    "Weapon": "WEAPON_COMBATSHOTGUN",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Sniper Rifle",
+    "Weapon": "WEAPON_SNIPERRIFLE",
+    "Ammo": 40,
+    "Weight": 1
+  },
+  {
+    "Name": "Heavy Sniper",
+    "Weapon": "WEAPON_HEAVYSNIPER",
+    "Ammo": 40,
+    "Weight": 1
+  },
+  {
+    "Name": "Heavy Sniper Mk II",
+    "Weapon": "WEAPON_HEAVYSNIPER_MK2",
+    "Ammo": 40,
+    "Weight": 1
+  },
+  {
+    "Name": "Marksman Rifle",
+    "Weapon": "WEAPON_MARKSMANRIFLE",
+    "Ammo": 60,
+    "Weight": 1
+  },
+  {
+    "Name": "Precision Rifle",
+    "Weapon": "WEAPON_PRECISIONRIFLE",
+    "Ammo": 40,
+    "Weight": 1
+  },
+  {
+    "Name": "RPG",
+    "Weapon": "WEAPON_RPG",
+    "Ammo": 10,
+    "Weight": 1
+  },
+  {
+    "Name": "Grenade Launcher",
+    "Weapon": "WEAPON_GRENADELAUNCHER",
+    "Ammo": 20,
+    "Weight": 1
+  },
+  {
+    "Name": "Compact Grenade Launcher",
+    "Weapon": "WEAPON_COMPACTLAUNCHER",
+    "Ammo": 20,
+    "Weight": 1
+  },
+  {
+    "Name": "Homing Launcher",
+    "Weapon": "WEAPON_HOMINGLAUNCHER",
+    "Ammo": 10,
+    "Weight": 1
+  },
+  {
+    "Name": "Firework Launcher",
+    "Weapon": "WEAPON_FIREWORK",
+    "Ammo": 20,
+    "Weight": 1
+  },
+  {
+    "Name": "Railgun",
+    "Weapon": "WEAPON_RAILGUN",
+    "Ammo": 20,
+    "Weight": 1
+  },
+  {
+    "Name": "Minigun",
+    "Weapon": "WEAPON_MINIGUN",
+    "Ammo": 1000,
+    "Weight": 1
+  },
+  {
+    "Name": "Widowmaker",
+    "Weapon": "WEAPON_RAYMINIGUN",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Unholy Hellbringer",
+    "Weapon": "WEAPON_RAYCARBINE",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Compact EMP Launcher",
+    "Weapon": "WEAPON_EMPLAUNCHER",
+    "Ammo": 10,
+    "Weight": 1
+  },
+  {
+    "Name": "Grenades",
+    "Weapon": "WEAPON_GRENADE",
+    "Ammo": 10,
+    "Weight": 1
+  },
+  {
+    "Name": "Sticky Bombs",
+    "Weapon": "WEAPON_STICKYBOMB",
+    "Ammo": 10,
+    "Weight": 1
+  },
+  {
+    "Name": "Proximity Mines",
+    "Weapon": "WEAPON_PROXMINE",
+    "Ammo": 10,
+    "Weight": 1
+  },
+  {
+    "Name": "Pipe Bombs",
+    "Weapon": "WEAPON_PIPEBOMB",
+    "Ammo": 10,
+    "Weight": 1
+  },
+  {
+    "Name": "Molotovs",
+    "Weapon": "WEAPON_MOLOTOV",
+    "Ammo": 10,
+    "Weight": 1
+  },
+  {
+    "Name": "Snowballs",
+    "Weapon": "WEAPON_SNOWBALL",
+    "Ammo": 20,
+    "Weight": 1
+  },
+  {
+    "Name": "Knife",
+    "Weapon": "WEAPON_KNIFE",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Machete",
+    "Weapon": "WEAPON_MACHETE",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Baseball Bat",
+    "Weapon": "WEAPON_BAT",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Battle Axe",
+    "Weapon": "WEAPON_BATTLEAXE",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Stone Hatchet",
+    "Weapon": "WEAPON_STONE_HATCHET",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Parachute",
+    "Weapon": "GADGET_PARACHUTE",
+    "Ammo": 1,
+    "Weight": 1
+  },
+  {
+    "Name": "Body Armor",
+    "Weapon": "ARMOR",
+    "Ammo": 0,
+    "Weight": 1
+  }
+]

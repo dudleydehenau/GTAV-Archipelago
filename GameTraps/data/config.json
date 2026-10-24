@@ -1,0 +1,937 @@
+{
+  "EnableMenu": false,
+  "MenuKey": "F9",
+  "VerboseLog": false,
+  "Announce": true,
+  "RevealNames": true,
+  "GapBetweenTraps": 1500,
+  "StackTraps": true,
+  "MaxActive": 2,
+  "AllowInMissions": false,
+  "MissionTraps": [
+    "FallingPlanes",
+    "Matrix",
+    "Terminator",
+    "WalkingDead",
+    "PhantomCar",
+    "Jaws",
+    "ObjectRain",
+    "Clowns",
+    "MacheteGranny",
+    "FailedHeroes",
+    "Drunk",
+    "MoonGravity",
+    "Blizzard",
+    "Nightfall",
+    "TurboTraffic",
+    "Ragdoll",
+    "FlatTires",
+    "Ramp",
+    "LiftOff",
+    "FloatingCars",
+    "Kamikaze",
+    "GiantBalls",
+    "Mariachi",
+    "Paparazzi",
+    "UpsideDown",
+    "LesterTax",
+    "AnimalHunt"
+  ],
+  "AnnounceQueue": true,
+  "StreamSafe": false,
+  "MaxWait": 180000,
+  "ScooterBrother": {
+    "Enabled": true,
+    "Radius": 100,
+    "MaxVehicles": 40,
+    "Models": [
+      "faggio2",
+      "faggio",
+      "faggio3"
+    ],
+    "Line": {
+      "Enabled": true,
+      "Block": "PRSAUD",
+      "Slot": 14,
+      "Root": "PST_CHSCRd",
+      "Voice": "TREVOR",
+      "Speaker": 2
+    }
+  },
+  "Ramp": {
+    "Enabled": true,
+    "Models": [
+      "prop_mp_ramp_03"
+    ],
+    "HeadingOffset": 0,
+    "MinDistance": 6,
+    "MaxDistance": 20,
+    "SecondsAhead": 0.45,
+    "Lifetime": 20000,
+    "MinSpeed": 8
+  },
+  "AnimalHunt": {
+    "Enabled": true,
+    "Count": 4,
+    "SpawnDistance": 35,
+    "Duration": 60000,
+    "Models": [
+      "a_c_mtlion",
+      "a_c_coyote",
+      "a_c_rottweiler",
+      "a_c_shepherd",
+      "a_c_husky"
+    ]
+  },
+  "AnimalTransform": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Models": [
+      "a_c_cat_01",
+      "a_c_hen",
+      "a_c_pig",
+      "a_c_cow",
+      "a_c_deer",
+      "a_c_boar",
+      "a_c_coyote",
+      "a_c_rabbit_01",
+      "a_c_chimp",
+      "a_c_westy",
+      "a_c_pug",
+      "a_c_poodle",
+      "a_c_retriever",
+      "a_c_husky",
+      "a_c_mtlion",
+      "a_c_rat"
+    ]
+  },
+  "FallingPlanes": {
+    "Enabled": true,
+    "Count": 5,
+    "Height": 160,
+    "SpawnRadius": 120,
+    "TargetRadius": 25,
+    "Speed": 55,
+    "Interval": 1500,
+    "Models": [
+      "jet",
+      "cuban800",
+      "duster",
+      "mammatus",
+      "titan",
+      "luxor",
+      "shamal"
+    ]
+  },
+  "TurboTraffic": {
+    "Enabled": true,
+    "Duration": 30000,
+    "Radius": 300,
+    "Speed": 60,
+    "Boost": 8
+  },
+  "AlienAbduction": {
+    "Enabled": true,
+    "UfoModel": "p_spinning_anus_s",
+    "AlienModel": "s_m_m_movalien_01",
+    "AlienWeapons": [
+      "WEAPON_RAYPISTOL"
+    ],
+    "AlienAccuracy": 25,
+    "PlayerWeapons": [
+      "WEAPON_RAILGUN",
+      "WEAPON_RAYPISTOL",
+      "WEAPON_RAYMINIGUN"
+    ],
+    "RemoveWeaponsAfter": true,
+    "InvinciblePlayer": false,
+    "CannotDie": true,
+    "FightHealth": 1000,
+    "KnockbackForce": 9,
+    "AlienOutfit": [],
+    "SpawnProtection": 5000,
+    "PlayerAmmo": 9999,
+    "Aliens": 5,
+    "MinDistance": 12,
+    "MaxDistance": 40,
+    "UfoHeight": 35,
+    "BeamDuration": 5000,
+    "FightDuration": 60000,
+    "Destinations": [
+      {
+        "Name": "Mount Chiliad",
+        "X": 501.8,
+        "Y": 5604.0,
+        "Z": 797.9,
+        "Heading": 175
+      }
+    ]
+  },
+  "Irresistible": {
+    "Enabled": true,
+    "Radius": 80,
+    "MaxPeds": 10,
+    "Duration": 45000,
+    "EmoteChange": 9000,
+    "TipPerDancer": 10,
+    "TipInterval": 5000,
+    "TipDistance": 3,
+    "TipEmote": {
+      "Dict": "anim@mp_player_intcelebrationmale@raining_cash",
+      "Name": "raining_cash"
+    },
+    "TipEffectAsset": "scr_xs_celebration",
+    "TipEffect": "scr_xs_money_rain",
+    "DancerModels": [
+      "s_f_y_stripper_01",
+      "s_f_y_stripper_02",
+      "s_f_y_stripperlite",
+      "mp_f_stripperlite"
+    ],
+    "SafeDancerModels": [
+      "a_f_y_clubcust_01",
+      "a_f_y_clubcust_02",
+      "a_f_y_clubcust_03",
+      "a_f_y_clubcust_04",
+      "a_f_y_bevhills_01"
+    ],
+    "Emotes": [
+      {
+        "Dict": "mini@strip_club@private_dance@part1",
+        "Name": "priv_dance_p1"
+      },
+      {
+        "Dict": "mini@strip_club@private_dance@part2",
+        "Name": "priv_dance_p2"
+      },
+      {
+        "Dict": "mini@strip_club@private_dance@part3",
+        "Name": "priv_dance_p3"
+      },
+      {
+        "Dict": "mini@strip_club@lap_dance@ld_girl_a_song_a_p1",
+        "Name": "ld_girl_a_song_a_p1_f"
+      },
+      {
+        "Dict": "mini@strip_club@lap_dance@ld_girl_a_song_a_p2",
+        "Name": "ld_girl_a_song_a_p2_f"
+      },
+      {
+        "Dict": "mini@strip_club@pole_dance@pole_dance1",
+        "Name": "pd_dance_01"
+      },
+      {
+        "Dict": "mini@strip_club@pole_dance@pole_dance2",
+        "Name": "pd_dance_02"
+      },
+      {
+        "Dict": "mini@strip_club@pole_dance@pole_dance3",
+        "Name": "pd_dance_03"
+      },
+      {
+        "Dict": "anim@mp_player_intcelebrationfemale@blow_kiss",
+        "Name": "blow_kiss"
+      }
+    ]
+  },
+  "SecondComing": {
+    "Enabled": true,
+    "Model": "u_m_m_jesus_01",
+    "Radius": 60,
+    "MaxPeds": 20,
+    "AscendDuration": 10000,
+    "AscendSpeed": 1.2,
+    "VisionDuration": 45000,
+    "Emotes": [
+      {
+        "Dict": "amb@medic@standing@kneel@idle_a",
+        "Name": "idle_a"
+      },
+      {
+        "Dict": "rcmepsilonism8",
+        "Name": "worship_base"
+      },
+      {
+        "Scenario": "WORLD_HUMAN_YOGA"
+      }
+    ],
+    "Destinations": [
+      {
+        "Name": "Hill Valley Church (Pacific Bluffs)",
+        "X": -1704.29,
+        "Y": -297.78,
+        "Z": 50.89,
+        "Heading": 317,
+        "Clearance": 0
+      }
+    ],
+    "AnchorModel": "prop_golf_ball",
+    "MessiahEmote": {
+      "Dict": "amb@world_human_yoga@male@base",
+      "Name": "base_a"
+    },
+    "AscensionBlur": 0.6,
+    "Worshippers": 8,
+    "ResurrectDelay": 5000,
+    "ResurrectEmotes": [
+      {
+        "Scenario": "WORLD_HUMAN_CHEERING"
+      },
+      {
+        "Scenario": "WORLD_HUMAN_PARTYING"
+      },
+      {
+        "Dict": "special_ped@mountain_dancer@monologue_3@monologue_3a",
+        "Name": "mnt_dnc_buttwag"
+      },
+      {
+        "Dict": "missfbi3_sniping",
+        "Name": "dance_m_default"
+      }
+    ],
+    "FishModels": [
+      "a_c_fish",
+      "a_c_fish",
+      "a_c_fish",
+      "a_c_sharktiger",
+      "a_c_dolphin"
+    ],
+    "FishCount": 40,
+    "FishInterval": 350,
+    "WorshipperModels": [
+      "u_m_m_jesus_01",
+      "a_m_y_hippy_01",
+      "a_f_y_hippie_01",
+      "a_m_m_salton_01",
+      "a_f_m_salton_01"
+    ],
+    "ChurchEffects": [
+      "DrugsTrevorClownsFight",
+      "DMT_flight"
+    ]
+  },
+  "Wanted": {
+    "Enabled": true,
+    "Stars": 2
+  },
+  "Drunk": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Clipset": "move_m@drunk@verydrunk",
+    "Timecycle": "Drunk",
+    "BottleModels": [
+      "ng_proc_beerbottle_01a",
+      "ng_proc_beerbottle_01b",
+      "prop_wine_bot_01",
+      "prop_amb_beer_bottle"
+    ]
+  },
+  "FlatTires": {
+    "Enabled": true
+  },
+  "Disarmed": {
+    "Enabled": true
+  },
+  "LesterTax": {
+    "Enabled": true,
+    "Percent": 10,
+    "Minimum": 0
+  },
+  "Paparazzi": {
+    "Enabled": true,
+    "Count": 6,
+    "Cars": 2,
+    "Duration": 45000,
+    "SpawnDistance": 30,
+    "Model": "a_m_m_paparazzi_01",
+    "CarModel": "blista"
+  },
+  "Clowns": {
+    "Enabled": true,
+    "Count": 4,
+    "Duration": 90000,
+    "SpawnDistance": 60,
+    "VanModel": "speedo2",
+    "ClownModel": "s_m_y_clown_01",
+    "Weapon": "WEAPON_BAT",
+    "VisionDuration": 0
+  },
+  "MoonGravity": {
+    "Enabled": true,
+    "Duration": 30000,
+    "Level": 1
+  },
+  "Blizzard": {
+    "Enabled": true,
+    "Duration": 120000,
+    "Weather": "XMAS",
+    "SnowTracks": true,
+    "GroundSnow": true,
+    "IcyRoads": true,
+    "IcyRadius": 250,
+    "GripLevel": 3
+  },
+  "Nightfall": {
+    "Enabled": true,
+    "Hour": 0
+  },
+  "Ragdoll": {
+    "Enabled": true,
+    "Duration": 4000
+  },
+  "LiftOff": {
+    "Enabled": true,
+    "Duration": 10000,
+    "Radius": 120,
+    "UpSpeed": 2.5,
+    "ProtectPlayer": true
+  },
+  "PhantomCar": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Speed": 30,
+    "ChargeDistance": 45,
+    "VanishInterval": 12000,
+    "Timecycle": "glasses_red",
+    "Weather": "FOGGY",
+    "Hour": 0,
+    "Models": [
+      "romero",
+      "hearse"
+    ]
+  },
+  "PhantomWedge": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Cars": 5,
+    "Passengers": 0,
+    "Accuracy": 0,
+    "Color": -1,
+    "SpawnDistance": 60,
+    "Boost": 14,
+    "RamSpeed": 42,
+    "MaxVehicles": 18,
+    "VehicleModels": [
+      "phantom2",
+      "phantom"
+    ],
+    "PedModels": [
+      "s_m_y_dockwork_01",
+      "s_m_m_trucker_01"
+    ],
+    "Weapons": [],
+    "Waves": 5,
+    "WaveInterval": 9000
+  },
+  "RedLight": {
+    "Enabled": true,
+    "Duration": 60000,
+    "MinGreen": 3000,
+    "MaxGreen": 6000,
+    "MinRed": 3000,
+    "MaxRed": 5000,
+    "Grace": 700,
+    "MoveTolerance": 0.6,
+    "Damage": 25,
+    "ShotInterval": 600,
+    "Weapon": "WEAPON_SNIPERRIFLE"
+  },
+  "Speed": {
+    "Enabled": true,
+    "Duration": 45000,
+    "MinSpeedKmh": 60,
+    "ArmDelay": 15000,
+    "Tolerance": 1500,
+    "SurviveBlast": false,
+    "BusModels": [
+      "bus",
+      "coach"
+    ]
+  },
+  "TimeMachine": {
+    "Enabled": true,
+    "Duration": 90000,
+    "TargetMph": 88,
+    "Boost": 7,
+    "PowerMultiplier": 2,
+    "FireTrails": true,
+    "PastDuration": 120000,
+    "PastTimecycle": "NG_filmnoir_BW01",
+    "PastWeather": "SNOWLIGHT",
+    "Year": 1955,
+    "OldCarCount": 10,
+    "OldDriver": "a_m_m_farmer_01",
+    "FarWestYear": 1885,
+    "FarWestTimecycle": "glasses_brown",
+    "Models": [
+      "deluxo"
+    ],
+    "OldCars": [
+      "tornado",
+      "tornado2",
+      "peyote",
+      "manana",
+      "btype",
+      "roosevelt",
+      "virgo",
+      "stinger",
+      "casco",
+      "ztype"
+    ],
+    "Past": {
+      "Name": "North Yankton",
+      "X": 3360.19,
+      "Y": -4849.67,
+      "Z": 111.8,
+      "Heading": 0,
+      "Clearance": 0
+    },
+    "Present": {
+      "Name": "Sandy Shores",
+      "X": 1850.0,
+      "Y": 3700.0,
+      "Z": 33.0,
+      "Heading": 120,
+      "Clearance": 4
+    }
+  },
+  "Purge": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Hour": 23,
+    "Hunters": 4,
+    "CrowdRadius": 80,
+    "CrowdMax": 20,
+    "Alarm": true,
+    "Models": [
+      "g_m_y_lost_01",
+      "g_m_y_lost_02",
+      "g_m_y_lost_03",
+      "g_m_y_salvagoon_01",
+      "g_m_y_salvagoon_02"
+    ],
+    "Weapons": [
+      "WEAPON_MACHETE",
+      "WEAPON_BAT",
+      "WEAPON_HATCHET",
+      "WEAPON_PISTOL",
+      "WEAPON_SAWNOFFSHOTGUN"
+    ],
+    "CrowdWeapons": [
+      "WEAPON_BAT",
+      "WEAPON_KNIFE",
+      "WEAPON_GOLFCLUB",
+      "WEAPON_CROWBAR",
+      "WEAPON_PISTOL"
+    ]
+  },
+  "Terminator": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Model": "s_m_m_bouncer_01",
+    "Weapon": "WEAPON_PUMPSHOTGUN",
+    "Accuracy": 8,
+    "SpawnDistance": 30,
+    "CatchUpDistance": 120,
+    "BikeModel": "bagger"
+  },
+  "Matrix": {
+    "Enabled": true,
+    "Duration": 40000,
+    "TimeScale": 0.45,
+    "Agents": 3,
+    "MaxAgents": 10,
+    "Accuracy": 15,
+    "Timecycle": "glasses_green",
+    "Models": [
+      "s_m_m_highsec_01",
+      "s_m_m_highsec_02",
+      "s_m_m_fiboffice_01"
+    ],
+    "Weapons": [
+      "WEAPON_PISTOL",
+      "WEAPON_COMBATPISTOL"
+    ]
+  },
+  "MadMax": {
+    "Enabled": true,
+    "Duration": 75000,
+    "Cars": 3,
+    "Passengers": 2,
+    "Accuracy": 15,
+    "Color": -1,
+    "SpawnDistance": 70,
+    "Boost": 4,
+    "VehicleModels": [
+      "ratloader",
+      "ratloader2",
+      "dune",
+      "bfinjection",
+      "rebel",
+      "technical"
+    ],
+    "PedModels": [
+      "a_m_m_hillbilly_01",
+      "a_m_m_hillbilly_02",
+      "a_m_y_methhead_01",
+      "g_m_y_lost_01",
+      "u_m_y_hippie_01"
+    ],
+    "Weapons": [
+      "WEAPON_SAWNOFFSHOTGUN",
+      "WEAPON_MICROSMG",
+      "WEAPON_MOLOTOV"
+    ],
+    "Waves": 5,
+    "WaveInterval": 15000
+  },
+  "Jaws": {
+    "Enabled": true,
+    "Duration": 40000,
+    "RainInterval": 600,
+    "Lead": 1.8,
+    "MaxFallen": 30,
+    "SharkModels": [
+      "a_c_sharktiger",
+      "a_c_sharkhammer"
+    ]
+  },
+  "MacheteGranny": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Count": 5,
+    "SpawnDistance": 45,
+    "Respawn": true,
+    "MoveRate": 1.2,
+    "Accuracy": 20,
+    "Models": [
+      "a_f_o_genstreet_01",
+      "a_f_o_soucent_01",
+      "a_f_o_soucent_02",
+      "a_f_o_salton_01",
+      "a_f_o_ktown_01",
+      "a_f_o_indian_01"
+    ],
+    "Weapons": [
+      "WEAPON_MACHETE"
+    ]
+  },
+  "HereWeGoAgain": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Cars": 2,
+    "Passengers": 3,
+    "Accuracy": 20,
+    "Color": 145,
+    "SpawnDistance": 70,
+    "Boost": 4,
+    "VehicleModels": [
+      "buccaneer",
+      "voodoo",
+      "emperor",
+      "manana"
+    ],
+    "PedModels": [
+      "g_m_y_ballaorig_01",
+      "g_m_y_ballaeast_01",
+      "g_m_y_ballasout_01"
+    ],
+    "Weapons": [
+      "WEAPON_MICROSMG",
+      "WEAPON_PISTOL"
+    ],
+    "Friends": 2,
+    "FriendModels": [
+      "g_m_y_famca_01",
+      "g_m_y_famdnf_01",
+      "g_m_y_famfor_01"
+    ],
+    "FriendWeapons": [
+      "WEAPON_PISTOL",
+      "WEAPON_MICROSMG"
+    ],
+    "Waves": 3,
+    "WaveInterval": 20000
+  },
+  "Bowling": {
+    "Enabled": true,
+    "Duration": 35000,
+    "VehicleModel": "taxi",
+    "DriverModel": "s_m_m_gentransport",
+    "Speed": 22,
+    "Crazy": false
+  },
+  "ViceCity": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Timecycle": "glasses_pink",
+    "Weather": "RAIN",
+    "Hour": 22,
+    "Cars": 2,
+    "Stars": 2,
+    "VehicleModels": [
+      "infernus"
+    ],
+    "CopModels": [
+      "s_m_y_cop_01"
+    ],
+    "Lights": 12,
+    "NeonRadius": 80
+  },
+  "BigSmoke": {
+    "Enabled": true,
+    "Model": "u_m_y_burgerdrug_01",
+    "Count": 40,
+    "Interval": 250,
+    "ThrowSpeed": 14,
+    "FoodModels": [
+      "prop_cs_burger_01",
+      "ng_proc_food_burg01a",
+      "ng_proc_food_burg02a",
+      "ng_proc_food_chips01a",
+      "ng_proc_sodacan_01a"
+    ]
+  },
+  "BattleRoyale": {
+    "Enabled": true,
+    "Duration": 90000,
+    "StartRadius": 200,
+    "EndRadius": 30,
+    "MinOffset": 320,
+    "MaxOffset": 450,
+    "EnemyModel": "ig_jimmydisanto",
+    "EnemyName": "Jimmy",
+    "EnemyWeapon": "WEAPON_PISTOL",
+    "EnemyHealth": 400,
+    "Grace": 30000,
+    "DamagePerTick": 4,
+    "DamageInterval": 600
+  },
+  "MarioKart": {
+    "Enabled": true,
+    "Duration": 45000,
+    "Peels": 12,
+    "PeelInterval": 2500,
+    "SpinTime": 1500,
+    "BlueShell": true,
+    "ShellDelay": 20000,
+    "ShellSpeed": 32,
+    "PeelModels": [
+      "ng_proc_food_nana1a",
+      "prop_bananas",
+      "prop_food_bs_chips"
+    ],
+    "ShellTurnRate": 1.2,
+    "ShellLifetime": 15000
+  },
+  "TopDown": {
+    "Enabled": true,
+    "Duration": 30000,
+    "Height": 35
+  },
+  "UpsideDown": {
+    "Enabled": true,
+    "Duration": 20000,
+    "Height": 0
+  },
+  "Clones": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Count": 10,
+    "Stars": 2,
+    "Weapon": "",
+    "PoliceUnits": 3,
+    "CopModel": "s_m_y_cop_01",
+    "PoliceCars": [
+      "police",
+      "police2",
+      "police3"
+    ]
+  },
+  "Kidnap": {
+    "Enabled": true,
+    "Duration": 30000,
+    "VehicleModel": "asterope",
+    "DriverModel": "a_m_y_stlat_01",
+    "Speed": 45,
+    "Crazy": true
+  },
+  "ObjectRain": {
+    "Enabled": true,
+    "Duration": 30000,
+    "Count": 45,
+    "Interval": 400,
+    "Spread": 18,
+    "MinHeight": 18,
+    "MaxHeight": 32,
+    "PropModels": [
+      "prop_toilet_01",
+      "prop_ld_toilet_01",
+      "prop_rub_trolley01a",
+      "prop_bin_01a",
+      "prop_tv_flat_01",
+      "prop_couch_01",
+      "prop_wheelchair_01",
+      "prop_beach_ball_01"
+    ],
+    "PedModels": [
+      "a_c_cow",
+      "a_c_pig",
+      "a_c_hen"
+    ]
+  },
+  "GiantBalls": {
+    "Enabled": true,
+    "Duration": 30000,
+    "Interval": 3500,
+    "Distance": 45,
+    "Speed": 16,
+    "MaxBalls": 8,
+    "Models": [
+      "stt_prop_stunt_soccer_lball",
+      "stt_prop_stunt_soccer_ball",
+      "stt_prop_stunt_soccer_sball",
+      "prop_beach_ball_01"
+    ]
+  },
+  "FailedHeroes": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Count": 4,
+    "SpawnDistance": 40,
+    "Respawn": true,
+    "MoveRate": 1.1,
+    "Accuracy": 20,
+    "Models": [
+      "u_m_y_imporage",
+      "u_m_y_pogo_01"
+    ],
+    "Weapons": [
+      "WEAPON_UNARMED",
+      "WEAPON_BAT"
+    ]
+  },
+  "Mariachi": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Count": 3,
+    "Scenario": "WORLD_HUMAN_MUSICIAN",
+    "Models": [
+      "s_m_m_mariachi_01"
+    ],
+    "FollowDistance": 9
+  },
+  "FloatingCars": {
+    "Enabled": true,
+    "Duration": 25000,
+    "Radius": 120,
+    "HoverHeight": 6,
+    "UpSpeed": 1.5,
+    "IncludePlayer": false
+  },
+  "Kamikaze": {
+    "Enabled": true,
+    "Duration": 30000,
+    "Interval": 1200,
+    "MinAhead": 25,
+    "MaxAhead": 45,
+    "Models": [
+      "a_m_y_hipster_01",
+      "a_m_m_tourist_01",
+      "a_f_y_tourist_01",
+      "a_m_y_beach_01",
+      "a_m_m_fatlatin_01"
+    ]
+  },
+  "FlashMob": {
+    "Enabled": true,
+    "Duration": 40000,
+    "Radius": 60,
+    "MaxPeds": 25,
+    "SongLength": 8000,
+    "FollowDistance": 7,
+    "Emotes": [
+      {
+        "Dict": "special_ped@mountain_dancer@monologue_3@monologue_3a",
+        "Name": "mnt_dnc_buttwag"
+      },
+      {
+        "Dict": "missfbi3_sniping",
+        "Name": "dance_m_default"
+      },
+      {
+        "Dict": "anim@mp_player_intcelebrationmale@chicken_taunt",
+        "Name": "chicken_taunt"
+      },
+      {
+        "Scenario": "WORLD_HUMAN_PARTYING"
+      }
+    ]
+  },
+  "InitialD": {
+    "Enabled": true,
+    "Duration": 120000,
+    "Hour": 4,
+    "Drift": true,
+    "SpillThreshold": 10,
+    "SpillRate": 1.2,
+    "RivalDriver": "a_m_y_ktown_01",
+    "Models": [
+      "futo"
+    ],
+    "RivalModels": [
+      "zr350",
+      "elegy",
+      "sultan"
+    ],
+    "Destinations": [
+      {
+        "Name": "Galileo Observatory",
+        "X": -411.0,
+        "Y": 1176.0,
+        "Z": 325.6,
+        "Heading": 0,
+        "Clearance": 0
+      }
+    ],
+    "Reward": 5000,
+    "DriftSlide": 0.25,
+    "MaxDriftAngle": 35,
+    "MaxYawRate": 2.2,
+    "DeliveryRadius": 8,
+    "Delivery": {
+      "Name": "Fujiwara Tofu Shop",
+      "X": 300.0,
+      "Y": 180.0,
+      "Z": 104.0,
+      "Heading": 0,
+      "Clearance": 0
+    }
+  },
+  "ForrestGump": {
+    "Enabled": true,
+    "Duration": 45000,
+    "Radius": 80,
+    "MaxPeds": 20,
+    "MinFollowers": 10,
+    "FollowDistance": 3,
+    "RunSpeed": 3
+  },
+  "WalkingDead": {
+    "Enabled": true,
+    "Duration": 60000,
+    "Model": "u_m_y_zombie_01",
+    "Clipset": "move_m@drunk@verydrunk",
+    "Count": 14,
+    "Convert": 10,
+    "Radius": 60,
+    "SpawnDistance": 35,
+    "MoveRate": 0.85,
+    "Health": 250,
+    "Hour": 23,
+    "Weather": "HALLOWEEN",
+    "Blackout": true,
+    "Timecycle": "NG_filmnoir_BW01",
+    "TimecycleStrength": 0.35
+  }
+}

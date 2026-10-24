@@ -1,0 +1,15 @@
+{
+  "EnableMenu": true,
+  "MenuKey": "F6",
+  "VerboseLog": false,
+  "AutoConnect": true,
+  "ShowReceived": true,
+  "ShowSent": true,
+  "ShowChat": true,
+  "ShowHints": true,
+  "NotificationDelay": 900,
+  "TrapQueueLimit": 5,
+  "TrapsAfterGoal": false,
+  "LogSize": 80,
+  "OnlineGuard": true
+}

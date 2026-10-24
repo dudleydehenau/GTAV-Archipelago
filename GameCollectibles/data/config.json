@@ -1,0 +1,22 @@
+{
+  "EnableMenu": false,
+  "MenuKey": "F10",
+  "VerboseLog": false,
+  "Model": "prop_ld_case_01",
+  "Size": 0.7,
+  "HoverHeight": 0.6,
+  "SpinSpeed": 90,
+  "Glow": true,
+  "StreamDistance": 150,
+  "PickupRadius": 1.6,
+  "VehiclePickupRadius": 3,
+  "UnderwaterPickupRadius": 4.5,
+  "Blips": "Nearby",
+  "BlipDistance": 250,
+  "HideGameCollectibles": true,
+  "Notify": false,
+  "SpaceshipParts": true,
+  "LetterScraps": true,
+  "NuclearWaste": true,
+  "SubmarineParts": true
+}

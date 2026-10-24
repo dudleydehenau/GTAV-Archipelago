@@ -1,0 +1,2 @@
+Copy ScriptHookVDotNet3.dll (3.7+) and LemonUI.SHVDN3.dll (2.x) here before building.
+They are referenced only and are not copied to the output.

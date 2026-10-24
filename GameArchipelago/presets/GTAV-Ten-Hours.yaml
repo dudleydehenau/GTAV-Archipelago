@@ -1,0 +1,525 @@
+﻿# Q. What is this file?
+# A. This file contains options which allow you to configure your multiworld experience while allowing
+#    others to play how they want as well.
+#
+# Q. How do I use it?
+# A. The options in this file are weighted. This means the higher number you assign to a value, the
+#    more chances you have for that option to be chosen. For example, an option like this:
+#
+#    map_shuffle:
+#      on: 5
+#      off: 15
+#
+#    Means you have 5 chances for map shuffle to occur, and 15 chances for map shuffle to be turned
+#    off.
+#
+# Q. I've never seen a file like this before. What characters am I allowed to use?
+# A. This is a .yaml file. You are allowed to use most characters.
+#    To test if your yaml is valid or not, you can use this website:
+#        http://www.yamllint.com/
+#    You can also verify that your Archipelago options are valid at this site:
+#        https://archipelago.gg/check
+
+# Your name in-game, limited to 16 characters.
+#     {player} will be replaced with the player's slot number.
+#     {PLAYER} will be replaced with the player's slot number, if that slot number is greater than 1.
+#     {number} will be replaced with the counter value of the name.
+#     {NUMBER} will be replaced with the counter value of the name, if the counter value is greater than 1.
+name: Player{number}
+
+# Used to describe your yaml. Useful if you have multiple files.
+description: Ten Hours Preset for Grand Theft Auto V
+
+game: Grand Theft Auto V
+requires:
+  version: 0.6.9 # Version of Archipelago required for this yaml to work as expected.
+  game:
+    Grand Theft Auto V: 1.7.2 # Version of the world required for this yaml to work as expected.
+
+Grand Theft Auto V:
+  ################
+  # Game Options #
+  ################
+  progression_balancing:
+    # A system that can move progression earlier, to try and prevent the player from getting stuck and bored early.
+    # 
+    # A lower setting means more getting stuck. A higher setting means less getting stuck.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 99
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-99: 0 # random value between 0 and 99
+    disabled: 0 # equivalent to 0
+    normal: 50 # equivalent to 50
+    extreme: 0 # equivalent to 99
+
+  accessibility:
+    # Set rules for reachability of your items/locations.
+    # 
+    # **Full:** ensure everything can be reached and acquired.
+    # 
+    # **Minimal:** ensure what is needed to reach your goal can be acquired.
+    full: 50
+    minimal: 0
+
+  death_link:
+    # When you die, everyone who enabled death link dies. Of course, the reverse is true too.
+    'false': 50
+    'true': 0
+
+  ##################
+  # Goal and Start #
+  ##################
+  goal:
+    # What you need to do to finish your game. When it is done, the server can release your remaining items to the
+    # others (depending on the room's release setting).
+    # 
+    # - **finale**: pass one of the three final missions (Something Sensible, The Time's Come or The Third Way).
+    # - **the_third_way**: pass The Third Way, the ending where the three of them survive.
+    # - **mission_percentage**: pass a share of all the missions of your world (set the share with Mission Goal
+    #   Percentage, for example 70 % of 30 missions = 21 missions, any of them).
+    # - **one_mission**: pass a single mission, the one you pick in Goal Mission (or a random one).
+    # - **one_collectible**: pick up one random collectible (a spaceship part, a letter scrap, a nuclear waste barrel
+    #   or a submarine part). The client tells you which one and can route you to it. It can be very short!
+    # - **one_check**: one random location of your world (a mission, a medal counter, a collectible milestone...).
+    #   The client tells you which one. Silly and random on purpose.
+    finale: 50
+    the_third_way: 0
+    mission_percentage: 0
+    one_mission: 0
+    one_collectible: 0
+    one_check: 0
+
+  goal_mission:
+    # With the one_mission goal: the mission you need to pass. "surprise" picks one that needs a character you do not
+    # start with. The mission you pick is always in your world, even if it is a Strangers and Freaks mission and they
+    # are off.
+    surprise: 50
+    franklin_and_lamar: 0
+    repossession: 0
+    complications: 0
+    chop: 0
+    marriage_counseling: 0
+    daddy_s_little_girl: 0
+    friend_request: 0
+    casing_the_jewel_store: 0
+    carbine_rifles: 0
+    bugstars_equipment: 0
+    bz_gas_grenades: 0
+    the_jewel_store_job: 0
+    the_long_stretch: 0
+    mr_philips: 0
+    trevor_philips_industries: 0
+    nervous_ron: 0
+    crystal_maze: 0
+    friends_reunited: 0
+    fame_or_shame: 0
+    dead_man_walking: 0
+    three_s_company: 0
+    hood_safari: 0
+    scouting_the_port: 0
+    cargobob: 0
+    the_merryweather_heist_offshore: 0
+    the_merryweather_heist_freighter: 0
+    blitz_play: 0
+    i_fought_the_law: 0
+    eye_in_the_sky: 0
+    mr_richards: 0
+    caida_libre: 0
+    deep_inside: 0
+    pack_man: 0
+    did_somebody_say_yoga: 0
+    by_the_book: 0
+    monkey_business: 0
+    hang_ten: 0
+    surveying_the_score: 0
+    bury_the_hatchet: 0
+    fresh_meat: 0
+    the_ballad_of_rocco: 0
+    cleaning_out_the_bureau: 0
+    minor_turbulence: 0
+    predator: 0
+    derailed: 0
+    paleto_score_setup: 0
+    military_hardware: 0
+    the_paleto_score: 0
+    reuniting_the_family: 0
+    architect_s_plans: 0
+    the_bureau_raid_fire_crew: 0
+    the_bureau_raid_roof_entry: 0
+    the_wrap_up: 0
+    lamar_down: 0
+    meltdown: 0
+    legal_trouble: 0
+    the_big_score_prep_train: 0
+    the_big_score_subtle: 0
+    the_big_score_obvious: 0
+    something_sensible: 0
+    the_time_s_come: 0
+    the_third_way: 0
+    the_hotel_assassination: 0
+    the_multi_target_assassination: 0
+    the_vice_assassination: 0
+    the_bus_assassination: 0
+    the_construction_assassination: 0
+    grass_roots_michael: 0
+    grass_roots_trevor: 0
+    grass_roots_the_pickup: 0
+    grass_roots_the_drag: 0
+    dreyfuss: 0
+    chasing_the_truth: 0
+    delivering_the_truth: 0
+    unknowing_the_truth: 0
+    risk_assessment: 0
+    liquidity_risk: 0
+    targeted_risk: 0
+    uncalculated_risk: 0
+    exercising_demons_michael: 0
+    exercising_demons_trevor: 0
+    exercising_demons_franklin: 0
+    shift_work: 0
+    target_practice: 0
+    fair_game: 0
+    closing_the_deal: 0
+    surreal_estate: 0
+    breach_of_contract: 0
+    the_civil_border_patrol: 0
+    an_american_welcome: 0
+    minute_man_blues: 0
+    vinewood_souvenirs_1: 0
+    vinewood_souvenirs_2: 0
+    vinewood_souvenirs_3: 0
+    vinewood_souvenirs_4: 0
+    vinewood_souvenirs_5: 0
+    vinewood_souvenirs_the_last_act: 0
+    paparazzo: 0
+    paparazzo_the_sex_tape: 0
+    paparazzo_3a: 0
+    paparazzo_3b: 0
+    paparazzo_the_partner: 0
+    rampage_1: 0
+    rampage_2: 0
+    rampage_3: 0
+    rampage_4: 0
+    rampage_5: 0
+    the_last_one: 0
+    pulling_favors: 0
+    pulling_another_favor: 0
+    pulling_one_last_favor: 0
+
+  mission_goal_percentage:
+    # With the mission_percentage goal, the share of the missions of your world you need to pass (any of them).
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 10
+    # Maximum value is 100
+    70: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-10-100: 0 # random value between 10 and 100
+
+  mission_count:
+    # How many missions are in your world (67 story missions, plus 44 Strangers and Freaks if they are on; the
+    # free-roam preparations that steal a vehicle or an item are never used, they do not work as replays). The missions are
+    # picked at random, the ones your goal needs are always kept. A story mission takes about 10 minutes (20 for a
+    # heist), a Strangers and Freaks mission about 6. The spoiler log and the client show the estimated time to your
+    # goal and for every location.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 10
+    # Maximum value is 111
+    80: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-10-111: 0 # random value between 10 and 111
+
+  starting_character:
+    # The character you start with. The two others are locked and are items in the multiworld.
+    # Michael, Franklin and Trevor each trigger different missions.
+    michael: 0
+    franklin: 0
+    trevor: 0
+    random: 50
+
+  starting_missions:
+    # How many missions of your starting character are unlocked from the start.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 10
+    3: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-10: 0 # random value between 1 and 10
+
+  #############
+  # Locations #
+  #############
+  strangers_and_freaks:
+    # Adds the replayable Strangers and Freaks missions (Barry, Epsilon, Dom, Mary-Ann, Hao, Cletus, Josh, the
+    # Minutemen, Nigel, Beverly, the rampages, the Last One and Tonya) as items and locations.
+    'false': 0
+    'true': 50
+
+  checks_per_mission:
+    # How many locations each mission is worth. With 2 or 3, passing a mission also sends its bonus locations.
+    # Raise it to get more room for items without adding new tasks.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 3
+    1: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-3: 0 # random value between 1 and 3
+
+  gold_medal_checks:
+    # Number of "Gold Medal" locations. Gold Medal N is sent when you have finished N different missions with a gold
+    # medal (all optional objectives passed). Capped at three quarters of the missions in your world.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 92
+    10: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-92: 0 # random value between 0 and 92
+
+  objective_checks:
+    # Number of "Objective" locations. Objective N is sent when you have passed N different optional mission
+    # objectives (accuracy, time, headshots...), even without a gold medal. Capped at one and a half per mission in
+    # your world.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 184
+    40: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-184: 0 # random value between 0 and 184
+
+  spaceship_parts_per_check:
+    # How many spaceship parts (50 in the world) you need to pick up for each check. 0 removes them from the
+    # locations. 1 makes every part a check, 5 makes 10 checks ("at 5 collected", "at 10 collected"...).
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 50
+    2: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-50: 0 # random value between 0 and 50
+
+  letter_scraps_per_check:
+    # How many letter scraps (50 in the world) you need to pick up for each check. 0 removes them from the locations.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 50
+    2: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-50: 0 # random value between 0 and 50
+
+  nuclear_waste_per_check:
+    # How many nuclear waste barrels (30, underwater) you need to pick up for each check. 0 removes them from the
+    # locations. With Guaranteed Vehicles on, they need the Underwater Vehicle item in logic.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 30
+    3: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-30: 0 # random value between 0 and 30
+
+  submarine_parts_per_check:
+    # How many submarine parts (30, underwater) you need to pick up for each check. 0 removes them from the
+    # locations. With Guaranteed Vehicles on, they need the Underwater Vehicle item in logic.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 30
+    3: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-30: 0 # random value between 0 and 30
+
+  checks_per_collectible:
+    # How many locations each collectible check is worth. Finding things on such a big map is slow, so each find can
+    # count for more.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 1
+    # Maximum value is 3
+    2: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-1-3: 0 # random value between 1 and 3
+
+  #########
+  # Items #
+  #########
+  collectible_radar:
+    # The "Route to the nearest collectible" command in the F6 menu.
+    # start: you have it from the start.
+    # item: it is an item ("Collectible Radar") somewhere in the multiworld.
+    start: 0
+    item: 50
+
+  guaranteed_vehicles:
+    # Adds six vehicle items to the pool: a sports car, a motorcycle, a helicopter, an underwater vehicle, a boat and
+    # the Scramjet. The helicopter and the underwater vehicle are placed early. With this on, the underwater
+    # collectibles need the underwater vehicle in logic.
+    'false': 0
+    'true': 50
+
+  trap_percentage:
+    # Percentage of the filler items replaced by traps.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 100
+    30: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-100: 0 # random value between 0 and 100
+
+  enabled_traps:
+    # The traps that can be placed in your world. Use the names in the list below.
+    # "Irresistible" can show nightclub dancers: remove it if you stream.
+    ['Clowns', 'PhantomWedge', 'Ragdoll', 'WalkingDead', 'TurboTraffic', 'Mariachi', 'Speed', 'GiantBalls', 'TimeMachine', 'HereWeGoAgain', 'FallingPlanes', 'FlashMob', 'Blizzard', 'Nightfall', 'Kamikaze', 'Paparazzi', 'FlatTires', 'ObjectRain', 'Ramp', 'Terminator', 'ForrestGump', 'Purge', 'Bowling', 'Disarmed', 'PhantomCar', 'MarioKart', 'BigSmoke', 'ViceCity', 'SecondComing', 'AnimalHunt', 'MadMax', 'Matrix', 'Clones', 'Irresistible', 'RedLight', 'Jaws', 'AlienAbduction', 'MoonGravity', 'TopDown', 'UpsideDown', 'LiftOff', 'BattleRoyale', 'FailedHeroes', 'FloatingCars', 'Drunk', 'MacheteGranny', 'LesterTax', 'InitialD', 'Kidnap', 'AnimalTransform', 'ScooterBrother', 'Wanted']
+
+  money_weight:
+    # Weight of money among the non-trap filler items.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 10
+    3: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-10: 0 # random value between 0 and 10
+
+  weapon_weight:
+    # Weight of Weapon Gifts among the non-trap filler items. Each one gives a random weapon (online weapons included)
+    # from the list in the client's weapons.json, with its ammo, to the three characters. Missions need weapons, so
+    # this is the most common filler by default.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 10
+    6: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-10: 0 # random value between 0 and 10
+
+  vehicle_weight:
+    # Weight of Vehicle Gifts among the non-trap filler items. Each one gives a random vehicle from the list in the
+    # client's vehicles.json (Deluxo, Oppressor Mk II, Stromberg, helicopters, submarine...). Vehicles are kept in your
+    # garage and can be delivered next to you from the F6 menu.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 10
+    2: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-10: 0 # random value between 0 and 10
+
+  money_multiplier:
+    # Multiplies every money item, in percent. 100 gives $5,000, $20,000 and $100,000.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 10
+    # Maximum value is 500
+    100: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-10-500: 0 # random value between 10 and 500
+
+  ############
+  # Gameplay #
+  ############
+  starting_drive_by_weapon:
+    # Start with a Micro SMG and plenty of ammo for the three characters: it can be fired from a car, which many
+    # missions need (chases, drive-bys). Off: you depend on your Weapon Gifts.
+    'false': 0
+    'true': 50
+
+  mission_weapons:
+    # Off by default: you fight with the weapons you received, and a mission you cannot do yet waits for more Weapon
+    # Gifts. On: each mission starts with a basic kit (pistol, SMG, carbine rifle, shotgun, sniper rifle and a few
+    # grenades, sticky bombs for some assassinations), taken back after the mission.
+    'false': 50
+    'true': 0
+
+  mission_traps:
+    # Traps you receive during a mission can trigger in the mission (only the ones that cannot break it). Gifts received
+    # during a mission are always given right away.
+    'false': 0
+    'true': 50
+
+  post_goal_chaos:
+    # After your goal, keep playing for fun: passed missions come back at random on the map, and the checks of the other
+    # players trigger random traps and gifts in your game. Nothing is sent to the multiworld any more.
+    'false': 0
+    'true': 50
+
+  ###########################
+  # Item & Location Options #
+  ###########################
+  local_items:
+    # Forces these items to be in their native world.
+    []
+
+  non_local_items:
+    # Forces these items to be outside their native world.
+    []
+
+  start_inventory:
+    # Start with the specified amount of these items. Example: {Bomb: 1, Arrow: 3}
+    {}
+
+  start_hints:
+    # Start with these item's locations prefilled into the ``!hint`` command.
+    []
+
+  start_location_hints:
+    # Start with these locations and their item prefilled into the ``!hint`` command.
+    []
+
+  exclude_locations:
+    # Prevent these locations from having an important item.
+    []
+
+  priority_locations:
+    # Prevent these locations from having an unimportant item.
+    []
+
+  item_links:
+    # Share part of your item pool with other players.
+    []
+
+  plando_items:
+    # Generic items plando.
+    []
