@@ -50,7 +50,7 @@ The full guide (quick start, options, in-game menu, how checks work) is in
 - The mods never save the game, and any save the game writes by itself is deleted: every start is a new game that
   keeps your money, weapons, vehicles and characters. If you played an older version, move the `SGTA5...` files out
   of `Documents\Rockstar Games\GTA V\Profiles\<your profile>` once.
-- If the game still stays on the loading screen, move the newest `SGTA5...` file (and its `.bak`) out of that folder
+- If the game still stays on the loading screen, move the newest savefile out of that folder
   and start again. Your Archipelago progress is not affected.
 
 ## Feedback and bug reports
