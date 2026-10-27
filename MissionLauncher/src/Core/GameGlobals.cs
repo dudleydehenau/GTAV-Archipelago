@@ -7,12 +7,12 @@ namespace MissionLauncher.Core
     internal sealed class GameGlobals
     {
         private const int MissionStride = 34;
-        private readonly GlobalsConfig _cfg;
+        private GlobalsConfig _cfg;
         private int _replayControllerHash;
 
-        public GameGlobals(GlobalsConfig cfg)
+        public GameGlobals()
         {
-            _cfg = cfg;
+            _cfg = GlobalsConfig.Candidates(GameBuild.Number)[0];
         }
 
         public bool Available { get; private set; }
@@ -23,16 +23,26 @@ namespace MissionLauncher.Core
         public void Validate()
         {
             Available = false;
+            string first = null;
+            foreach (GlobalsConfig candidate in GlobalsConfig.Candidates(GameBuild.Number))
+            {
+                string error = TryProfile(candidate);
+                if (error == null) return;
+                first = first ?? error;
+            }
+            Status = $"game build {GameBuild.Describe()}: {first}";
+        }
+
+        private string TryProfile(GlobalsConfig candidate)
+        {
             try
             {
-                int definitions = Read(_cfg.StatDefinitions);
-                int active = Read(_cfg.ActiveStats);
-                int missions = Read(_cfg.MissionTable);
-                if (definitions != _cfg.StatDefinitionCount || active != _cfg.ActiveStatMax || missions < 90 || missions > 200)
-                {
-                    Status = $"unexpected array sizes (stats={definitions}/{_cfg.StatDefinitionCount}, active={active}/{_cfg.ActiveStatMax}, missions={missions}). Unsupported game build?";
-                    return;
-                }
+                int definitions = Read(candidate.StatDefinitions);
+                int active = Read(candidate.ActiveStats);
+                int missions = Read(candidate.MissionTable);
+                if (definitions != candidate.StatDefinitionCount || active != candidate.ActiveStatMax || missions < 90 || missions > 200)
+                    return $"unexpected array sizes for build {candidate.Build} (stats={definitions}/{candidate.StatDefinitionCount}, active={active}/{candidate.ActiveStatMax}, missions={missions}). Unsupported game build?";
+                _cfg = candidate;
                 _replayControllerHash = Function.Call<int>(Hash.GET_HASH_KEY, "mission_repeat_controller");
                 Available = true;
                 int storyRecords = Read(_cfg.StoryCompletion);
@@ -41,11 +51,12 @@ namespace MissionLauncher.Core
                 string completion = CompletionAvailable
                     ? "OK"
                     : $"unexpected ({storyRecords}/{_cfg.StoryCompletionCount}, {strangerRecords}/{_cfg.StrangersCompletionCount})";
-                Status = $"OK ({missions} missions, {definitions} stats, completion records {completion})";
+                Status = $"OK (game build {GameBuild.Describe()}, addresses {_cfg.Build}, {missions} missions, {definitions} stats, completion records {completion})";
+                return null;
             }
             catch (Exception ex)
             {
-                Status = "read error: " + ex.Message;
+                return "read error: " + ex.Message;
             }
         }
 

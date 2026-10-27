@@ -235,6 +235,7 @@ TRAPS = (
     ("InitialD", "Initial D"),
     ("ForrestGump", "Run, Forrest, Run"),
     ("WalkingDead", "The Walking Dead"),
+    ("Bouncy", "Boing Boing"),
 )
 STREAM_RISKY_TRAPS = ("Irresistible",)
 

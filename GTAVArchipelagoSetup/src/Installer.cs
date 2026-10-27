@@ -305,7 +305,7 @@ namespace GTAVArchipelagoSetup
             }
         }
 
-        public void InstallScriptHookV(string zipPath)
+        public string InstallScriptHookV(string zipPath)
         {
             int count = 0;
             using (ZipArchive zip = ZipFile.OpenRead(zipPath))
@@ -318,8 +318,49 @@ namespace GTAVArchipelagoSetup
                     count++;
                 }
             }
-            if (count < 2) throw new InvalidOperationException("This zip does not contain ScriptHookV.dll and dinput8.dll (take the zip from dev-c.com).");
-            _log("ScriptHookV installed.");
+            if (count < 2) throw new InvalidOperationException("This zip does not contain ScriptHookV.dll and dinput8.dll. Take the zip from the ScriptHookV page on dev-c.com.");
+            string name = Path.GetFileName(zipPath);
+            Directory.CreateDirectory(ModsPath);
+            InstallManifest manifest = LoadManifest();
+            manifest.Installed["ScriptHookV"] = name;
+            SaveManifest(manifest);
+            _log($"ScriptHookV installed from {name}.");
+            return name;
+        }
+
+        public string ScriptHookVSource
+        {
+            get
+            {
+                InstallManifest manifest = LoadManifest();
+                return manifest.Installed.TryGetValue("ScriptHookV", out string name) ? name : null;
+            }
+        }
+
+        public static IReadOnlyList<int> BuildsIn(string fileName)
+        {
+            var builds = new List<int>();
+            if (string.IsNullOrEmpty(fileName)) return builds;
+            foreach (Match match in Regex.Matches(fileName, @"(?<!\d)(\d{3,4})\.\d+"))
+                if (int.TryParse(match.Groups[1].Value, out int build)) builds.Add(build);
+            return builds;
+        }
+
+        public static string FindScriptHookVZip()
+        {
+            string downloads = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+            try
+            {
+                if (!Directory.Exists(downloads)) return null;
+                return new DirectoryInfo(downloads).GetFiles("ScriptHookV*.zip")
+                    .OrderByDescending(f => f.LastWriteTimeUtc)
+                    .Select(f => f.FullName)
+                    .FirstOrDefault();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public void DisableMods()

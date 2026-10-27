@@ -14,7 +14,9 @@ namespace GameTraps.Core
         public bool RevealNames { get; set; } = true;
         public int GapBetweenTraps { get; set; } = 1500;
         public bool StackTraps { get; set; } = true;
-        public int MaxActive { get; set; } = 2;
+        public int MaxActive { get; set; } = 4;
+        public bool DebugAllTraps { get; set; }
+        public string DebugKey { get; set; } = "F11";
         public bool AllowInMissions { get; set; }
         public List<string> MissionTraps { get; set; }
         public bool AnnounceQueue { get; set; } = true;

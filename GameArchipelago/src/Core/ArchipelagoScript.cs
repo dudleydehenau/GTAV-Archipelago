@@ -47,11 +47,12 @@ namespace GameArchipelago.Core
         private int _nextSaveAt;
         private int _lastCheckAt = -1;
         private int _announceCalmSince = -1;
+        private int _announceBlockedSince = -1;
         private string _markerSnapshot;
         private string _kitMission;
         private readonly HashSet<uint> _kitGiven = new HashSet<uint>();
         private int _objectivePollUntil;
-        private int _lastErrorAt = -1;
+        private readonly Dictionary<string, int> _errorTimes = new Dictionary<string, int>();
         private DeathLink _pendingDeath;
         private int _serverCheckedCount = -1;
         private bool _wasReplay;
@@ -179,47 +180,62 @@ namespace GameArchipelago.Core
                 Hook();
                 if (Save != null)
                 {
-                    if (Client.IsConnected) PullItems();
-                    RefreshOwned();
-                    Announce();
-                    WatchReplay();
-                    ApplyGifts();
-                    ApplyMissionGifts();
-                    GiveMissionKit();
-                    PollObjectives();
-                    ApplyTraps();
+                    if (Client.IsConnected) Step("items", PullItems);
+                    Step("owned", RefreshOwned);
+                    Step("announce", Announce);
+                    Step("replay", WatchReplay);
+                    Step("gifts", ApplyGifts);
+                    Step("mission gifts", ApplyMissionGifts);
+                    Step("mission kit", GiveMissionKit);
+                    Step("objectives", PollObjectives);
+                    Step("traps", ApplyTraps);
                     if (Game.GameTime >= _nextSync)
                     {
                         _nextSync = Game.GameTime + SyncInterval;
-                        ApplySlotOptions();
-                        SyncServer();
-                        SyncCollectibles();
-                        SyncRoster();
-                        SyncMarkers();
-                        CheckGoal();
-                        ShuffleChaos();
+                        Step("slot options", ApplySlotOptions);
+                        Step("server sync", SyncServer);
+                        Step("collectibles", SyncCollectibles);
+                        Step("roster", SyncRoster);
+                        Step("markers", SyncMarkers);
+                        Step("goal", CheckGoal);
+                        Step("chaos", ShuffleChaos);
                     }
-                    WatchDeath();
+                    Step("death", WatchDeath);
                     if (_saveDirty && Game.GameTime >= _nextSaveAt)
                     {
                         _saveDirty = false;
                         _nextSaveAt = Game.GameTime + 2000;
-                        Store.Save(Save);
+                        Step("save", () => Store.Save(Save));
                     }
                 }
-                SubmarineDock.Process(Notifier);
-                Notifier.Process();
+                Step("submarine", () => SubmarineDock.Process(Notifier));
             }
             catch (Exception ex)
             {
-                int now = System.Environment.TickCount;
-                if (_lastErrorAt < 0 || now - _lastErrorAt > 5000)
-                {
-                    _lastErrorAt = now;
-                    Log.Error("Tick error.", ex);
-                    History.Write("ERROR", "message", ex.GetBaseException().Message);
-                }
+                Report("tick", ex);
             }
+            Step("notifications", Notifier.Process);
+        }
+
+        private void Step(string name, Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                Report(name, ex);
+            }
+        }
+
+        private void Report(string step, Exception ex)
+        {
+            int now = System.Environment.TickCount;
+            if (_errorTimes.TryGetValue(step, out int last) && now - last < 5000) return;
+            _errorTimes[step] = now;
+            Log.Error($"Tick error ({step}).", ex);
+            History.Write("ERROR", "step", step, "message", ex.GetBaseException().Message);
         }
 
         private void OnAborted(object sender, EventArgs e)
@@ -473,26 +489,39 @@ namespace GameArchipelago.Core
             _nextSync = 0;
         }
 
-        private bool CanAnnounce()
+        private bool CanAnnounce(out string reason)
         {
-            if (Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE) || !GTA.UI.Screen.IsFadedIn) return false;
-            if (Function.Call<bool>(Hash.IS_PLAYER_SWITCH_IN_PROGRESS) || Function.Call<bool>(Hash.IS_MISSION_COMPLETE_PLAYING)) return false;
-            if (MissionApi.IsReady && MissionApi.IsReplayActive)
+            reason = null;
+            if (Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE) || !GTA.UI.Screen.IsFadedIn) reason = "screen not visible";
+            else if (Function.Call<bool>(Hash.IS_PLAYER_SWITCH_IN_PROGRESS)) reason = "character switch";
+            else if (Function.Call<bool>(Hash.IS_MISSION_COMPLETE_PLAYING)) reason = "mission complete screen";
+            else if (MissionApi.IsReady && MissionApi.IsReplayActive)
             {
-                if (!Function.Call<bool>(Hash.GET_MISSION_FLAG)) return false;
-                if (_lastCheckAt >= 0 && Game.GameTime - _lastCheckAt < 120000) return false;
+                if (!Function.Call<bool>(Hash.GET_MISSION_FLAG)) reason = "replay starting or ending";
+                else if (_lastCheckAt >= 0 && Game.GameTime - _lastCheckAt < 120000) reason = "mission just checked";
             }
-            return true;
+            return reason == null;
         }
 
         private void Announce()
         {
-            if (Save.NotifiedIndex >= Save.Items.Count) return;
-            if (!CanAnnounce())
+            if (Save.NotifiedIndex >= Save.Items.Count)
             {
-                if (_announceCalmSince >= 0) _announceCalmSince = -1;
+                _announceBlockedSince = -1;
                 return;
             }
+            if (!CanAnnounce(out string reason))
+            {
+                if (_announceCalmSince >= 0) _announceCalmSince = -1;
+                if (_announceBlockedSince < 0) _announceBlockedSince = Game.GameTime;
+                else if (Game.GameTime - _announceBlockedSince > 30000)
+                {
+                    Log.Info($"{Save.Items.Count - Save.NotifiedIndex} item messages waiting for 30 s ({reason}).");
+                    _announceBlockedSince = Game.GameTime;
+                }
+                return;
+            }
+            _announceBlockedSince = -1;
             if (_announceCalmSince < 0) _announceCalmSince = Game.GameTime;
             if (Game.GameTime - _announceCalmSince < 2000) return;
             for (int i = Save.NotifiedIndex; i < Save.Items.Count; i++)

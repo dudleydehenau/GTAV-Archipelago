@@ -1,6 +1,6 @@
 # GameTraps
 
-52 traps for GTA V story mode (Legacy, build 1.0.3725), made for the
+53 traps for GTA V story mode (Legacy, builds 1.0.3889 and 1.0.3725), made for the
 [Archipelago](https://archipelago.gg) multiworld randomizer and usable by any other mod through a public API.
 
 > [!WARNING]
@@ -12,7 +12,7 @@
 
 ## Requirements
 
-- GTA V **Legacy** 1.0.3725, story mode, BattlEye turned off
+- GTA V **Legacy** 1.0.3889 (latest) or 1.0.3725, story mode, BattlEye turned off
 - [ScriptHookV](http://www.dev-c.com/gtav/scripthookv/)
 - [ScriptHookVDotNet](https://github.com/scripthookvdotnet/scripthookvdotnet-nightly/releases) 3.7 (nightly)
 - [LemonUI](https://github.com/LemonUIbyLemon/LemonUI/releases) 2.x (`LemonUI.SHVDN3.dll`)
@@ -80,23 +80,19 @@ your game (the folder set as `ScriptsLocation` in `ScriptHookVDotNet.ini`; it is
 | `InitialD` | Initial D | Night falls and you are put in a two-tone Futo at the top of the Galileo Observatory road, with a rival on your tail. Drive down the mountain to the tofu shop (yellow route, `Delivery`) before the timer ends without spilling the water (violent moves spill it): you are paid up to $5,000 (`Reward`) according to the water left. Assisted drift: hold the handbrake or steer hard to slide, the slide angle (`MaxDriftAngle`) and the spin (`MaxYawRate`) are capped so it never turns into a spinning top. DEJA VU on every slide. |
 | `ForrestGump` | Run, Forrest, run! | Unlimited stamina, and a growing crowd of people runs behind you in a pack wherever you go, stopping when you stop. Forrest's lines in subtitles. On foot. |
 | `WalkingDead` | The Walking Dead | Halloween night (`Weather`), city blackout (`Blackout`) and washed-out colors (`Timecycle`), all undone at the end: people around you turn into the Vinewood street zombie (`Model`) and more shamble in with a drunk walk (`Clipset`); they attack bare-handed and keep coming until the end. No police. |
+| `Bouncy` | Boing Boing | For `Duration` (30 s), every car and every person within `Radius` (80 m) bounces like a ball each time they touch the ground, you included. You take no damage (`ProtectPlayer`). |
 
 ## How traps run
 
 A timer bar shows how long a timed trap lasts.
 
-Traps can overlap (`StackTraps`), at most `MaxActive` at a time (2), started `GapBetweenTraps` ms apart, under
-strict rules so they never fight each other:
+Traps can overlap (`StackTraps`), at most `MaxActive` at a time (4), started `GapBetweenTraps` ms apart:
 
-- **Heavy traps always run alone**: nothing else starts while they run, and they wait until nothing else runs.
-  These are the traps that teleport you, put you in a vehicle, take over the camera, the time scale or the whole
-  street: `AlienAbduction`, `AnimalTransform`, `SecondComing`, `TimeMachine`, `Kidnap`, `Bowling`, `InitialD`,
-  `Speed`, `BattleRoyale`, `Purge`, `ViceCity`, `WalkingDead`, `PhantomCar`, `Matrix`, `TopDown`, `UpsideDown`,
-  `Clones`, `PhantomWedge`, `MadMax`, `HereWeGoAgain`, `Irresistible`. The next trap waits at least 2.5 s after a
-  heavy one ends.
-- **Light traps** (`Ramp`, `FlatTires`, `Disarmed`, `LesterTax`, `Wanted`, `Nightfall`, `Ragdoll`) can join any
-  trap that is not heavy.
-- **Every other trap** is medium: one medium trap at a time, plus light ones.
+- **Traps that move you run alone**: nothing else starts while they run, and they wait until nothing else runs.
+  These are `AlienAbduction`, `SecondComing`, `TimeMachine`, `InitialD`, `Kidnap` and `Bowling`. The next trap
+  waits at least 2.5 s after a heavy one ends.
+- **Every other trap can run together**, except two traps that change the same thing (the player model, the
+  camera, the weather, gravity, time, the police or the phone): the second one waits until the first ends.
 - Some traps need a situation and wait for it: **on foot** (not in a vehicle, not swimming) for `AnimalHunt`,
   `AnimalTransform`, `AlienAbduction`, `SecondComing`, `Kidnap`, `Bowling`, `TimeMachine`, `Clowns`, `Irresistible`,
   `FlashMob`, `ForrestGump`, `WalkingDead`, `Matrix`, `Drunk`, `BigSmoke`, `MacheteGranny`, `FailedHeroes`;
@@ -138,7 +134,9 @@ every trap, a random trap, stream safe mode and a button to clear the queue. `Me
 | `MissionTraps` | 27 traps | The traps allowed in missions: the ones that cannot break a mission (Animal Transform is never allowed, it changes the character model) (Mayday, Matrix, Terminator, Walking Dead, Phantom Car, Jaws...). |
 | `GapBetweenTraps` | `1500` | Delay between two traps that start together. |
 | `StackTraps` | `true` | Lets compatible traps run at the same time (see the rules above). |
-| `MaxActive` | `2` | Most traps running at the same time. |
+| `MaxActive` | `4` | Most traps running at the same time. |
+| `DebugAllTraps` | `false` | Testing: `DebugKey` queues every enabled trap and starts them all together, ignoring `MaxActive` and the rules above. |
+| `DebugKey` | `"F11"` | The key used by `DebugAllTraps`. |
 | `AnnounceQueue` | `true` | "X traps waiting..." when traps are queued. |
 | `StreamSafe` | `false` | Never uses dancer or hooker models. Also in the menus, saved in `menu.json`. |
 | `MaxWait` | `180000` | A trap that cannot start after this delay is dropped. |
@@ -930,6 +928,19 @@ animation falls back to a scenario and is logged. `Destinations` entries are `{ 
 | `Blackout` | `true` |
 | `Timecycle` | `"NG_filmnoir_BW01"` |
 | `TimecycleStrength` | `0.35` |
+
+</details>
+
+<details><summary><code>Bouncy</code></summary>
+
+| Setting | Default |
+|---|---|
+| `Enabled` | `true` |
+| `Duration` | `30000` |
+| `Radius` | `80` |
+| `VehicleBounce` | `7` |
+| `PedBounce` | `6` |
+| `ProtectPlayer` | `true` |
 
 </details>
 

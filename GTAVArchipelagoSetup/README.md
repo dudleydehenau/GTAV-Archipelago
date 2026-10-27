@@ -14,7 +14,7 @@ A small Windows program that downloads and installs everything needed to play GT
 ## What it does
 
 - Finds your **GTA V Legacy** folder (Rockstar Games Launcher, Steam or Epic), shows the game version and warns if it
-  is not 1.0.3725 or if it is the Enhanced edition.
+  is not 1.0.3889 or 1.0.3725, or if it is the Enhanced edition.
 - Downloads the latest releases from GitHub and installs them:
   - ScriptHookVDotNet 3.7 (nightly) next to `GTA5.exe`,
   - LemonUI, MissionLauncher, GameEnvironment, GameTraps, GameCollectibles and GameArchipelago into a new
@@ -25,7 +25,9 @@ A small Windows program that downloads and installs everything needed to play GT
   `NativeTrainer.asi.disabled` so its F4 menu cannot be opened in game.
 - Moves older installs of these mods from `scripts` to `Archipelago`, with their settings and saves.
 - Keeps your `config.json` files on update (uncheck "Keep my settings" to reset them).
-- Installs ScriptHookV from the zip you download from dev-c.com (it cannot be redistributed).
+- Installs ScriptHookV from the zip you download from dev-c.com (it cannot be redistributed). The setup finds the
+  newest `ScriptHookV*.zip` in your Downloads folder, you can also drag the zip onto the window, and it warns when
+  the installed ScriptHookV is not made for your game version.
 - **Disable mods (GTA Online)** moves `dinput8.dll`, `ScriptHookV.dll` and `ScriptHookVDotNet.asi` aside;
   **Enable mods (story mode)** puts them back.
 - Shows how to turn BattlEye off on your platform, and on Steam starts the game with `-nobattleye`.

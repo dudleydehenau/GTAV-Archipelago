@@ -1,8 +1,5 @@
 ScriptHookVDotNet3.dll (3.7+) and LemonUI.SHVDN3.dll (2.x) go here. They are referenced only and are not copied
 to the output.
 
-MissionLauncher.dll, GameEnvironment.dll, GameTraps.dll and GameCollectibles.dll can go here too. If they are
-missing, the project uses the Release or Debug build of the sibling folders (..\MissionLauncher\bin\Release\net48\...),
-so building GTAV-Archipelago.sln builds everything in the right order.
-
+The four other mods are referenced as projects of GTAV-Archipelago.sln and are built first.
 Archipelago.MultiClient.Net and Newtonsoft.Json come from NuGet and are copied to the output.

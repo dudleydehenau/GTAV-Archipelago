@@ -1,6 +1,6 @@
 # GameEnvironment
 
-A sterile free-roam start for GTA V story mode (Legacy, build 1.0.3725), built for randomizers such as
+A sterile free-roam start for GTA V story mode (Legacy, builds 1.0.3889 and 1.0.3725), built for randomizers such as
 [Archipelago](https://archipelago.gg) and for anyone who wants the open world without the story.
 
 When you choose **New Game**, GameEnvironment skips North Yankton and drops you in Los Santos. No story mission
@@ -12,7 +12,7 @@ Story saves are never touched: GameEnvironment only acts on a new game and on th
 
 ## Requirements
 
-- GTA V **Legacy** 1.0.3725, story mode, BattlEye turned off
+- GTA V **Legacy** 1.0.3889 (latest) or 1.0.3725, story mode, BattlEye turned off
 - [ScriptHookV](http://www.dev-c.com/gtav/scripthookv/)
 - [ScriptHookVDotNet](https://github.com/scripthookvdotnet/scripthookvdotnet-nightly/releases) 3.7 (nightly)
 - [LemonUI](https://github.com/LemonUIbyLemon/LemonUI/releases) 2.x (`LemonUI.SHVDN3.dll`)
@@ -30,7 +30,7 @@ Then start a **New Game** from the pause menu (Game > New Game). Keep your story
 ## What it does
 
 - **New game**: halts the story flow (the "story finished" flag), stops the prologue, cleans up North
-  Yankton, picks the start character (`StartCharacter`: `Random`, `Michael`, `Franklin` or `Trevor`), places
+  Yankton, picks the start character (`StartCharacter`: `Michael` by default, `Franklin`, `Trevor` or `Random`), places
   them next to their home, removes their weapons, sets the money to `StartMoney` and requests an autosave.
 - **Character wheel**: locked characters are greyed out, using the game's own availability flags. A
   character is never locked again unless `AllowRelock` is `true`, and at least one stays unlocked.
@@ -73,7 +73,7 @@ money, completion `???`, characters (unlocked or locked) and vehicles (deliver, 
 | `VerboseLog` | `false` | More details in `GameEnvironment.log`. |
 | `ShowInactiveNotice` | `true` | Message above the minimap on a story save, reminding that a New Game is needed. |
 | `NewGameSetup` | `true` | Turns a new game into a sterile game. |
-| `StartCharacter` | `"Random"` | `Random`, `Michael`, `Franklin` or `Trevor`. The Archipelago client overrides it with your slot's character. |
+| `StartCharacter` | `"Michael"` | `Michael`, `Franklin`, `Trevor` or `Random`. The Archipelago client overrides it with your slot's character. |
 | `CharacterLocking` | `true` | Only the start character is unlocked at first. `false` unlocks all three. |
 | `AllowRelock` | `false` | Lets the API lock a character again (`SetUnlockedCharacters` ignores it). |
 | `StartMoney` | `0` | Money of each character on a new game. |
@@ -81,13 +81,14 @@ money, completion `???`, characters (unlocked or locked) and vehicles (deliver, 
 | `DisableRandomEvents` | `true` | No random events. |
 | `UnlockSpecialAbilities` | `true` | Michael's bullet time, Franklin's driving focus and Trevor's rage are unlocked and kept on, missions included (some gold objectives need them; during a replay they are unlocked but left to the mission). |
 | `BlockCommunications` | `true` | Drops pending story calls, texts and emails. |
+| `NoSaves` | `true` | The mod never saves the game, and any save the game writes by itself during a sterile session is deleted (saves that were already there are never touched). With no save in your profile, every start is a new game that keeps your money, weapons, vehicles and characters as you left them, with the last character you played. `AutoSaveAfterSetup` and `AutoSaveMinutes` are ignored. |
+| `OpenGunShopsInMissions` | `true` | Ammu-Nation opens during missions and replays (some missions need it) and closes again afterwards, so weapons cannot be bought outside missions. |
 | `AutoSaveAfterSetup` | `true` | Autosave right after the new game setup. |
 | `VehicleStoreDistance` | `300` | A delivered vehicle left this far away goes back to the garage. |
 | `DefaultRepairCost` | `1000` | Price to repair a destroyed vehicle. |
 | `RepairCosts` | `Super`, `Planes`, `Helicopters`, `Military`: `10000` | Repair price per vehicle class. |
 | `Spawns` | the three homes | Where each character appears on a new game (`Character`, `X`, `Y`, `Z`, `Heading`). |
 | `OpenDoors` | 10 places | Doors opened near the player in free roam (see above). |
-| `Globals` | build 3725 | Game memory addresses. Do not change them unless you know the new build's values. |
 
 ## Files
 

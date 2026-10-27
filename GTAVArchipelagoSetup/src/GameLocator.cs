@@ -18,7 +18,18 @@ namespace GTAVArchipelagoSetup
 
     internal static class GameLocator
     {
-        public const string ExpectedVersion = "1.0.3725";
+        public static readonly string[] SupportedVersions = { "1.0.3889", "1.0.3725" };
+
+        public static bool IsSupported(string version) => Array.IndexOf(SupportedVersions, version) >= 0;
+
+        public static int LatestBuild => Build(SupportedVersions[0]);
+
+        public static int Build(string version)
+        {
+            if (string.IsNullOrEmpty(version)) return 0;
+            string last = version.Split('.').Last();
+            return int.TryParse(last, out int build) ? build : 0;
+        }
 
         public static string Find()
         {

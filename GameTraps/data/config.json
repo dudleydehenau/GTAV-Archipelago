@@ -2,11 +2,13 @@
   "EnableMenu": false,
   "MenuKey": "F9",
   "VerboseLog": false,
+  "DebugAllTraps": false,
+  "DebugKey": "F11",
   "Announce": true,
   "RevealNames": true,
   "GapBetweenTraps": 1500,
   "StackTraps": true,
-  "MaxActive": 2,
+  "MaxActive": 4,
   "AllowInMissions": false,
   "MissionTraps": [
     "FallingPlanes",
@@ -933,5 +935,13 @@
     "Blackout": true,
     "Timecycle": "NG_filmnoir_BW01",
     "TimecycleStrength": 0.35
+  },
+  "Bouncy": {
+    "Enabled": true,
+    "Duration": 30000,
+    "Radius": 80,
+    "VehicleBounce": 7,
+    "PedBounce": 6,
+    "ProtectPlayer": true
   }
 }

@@ -34,7 +34,7 @@ namespace MissionLauncher.Core
             Config = LauncherConfig.Load(directory);
             Log.Verbose = Config.VerboseLog;
 
-            _globals = new GameGlobals(Config.Globals);
+            _globals = new GameGlobals();
             _stats = new StatReader(_globals);
             _observer = new ReplayObserver(_globals, _stats, Catalog, directory);
             _confirmer = new RestorePointConfirmer(Config.RestorePointKeyFallback);

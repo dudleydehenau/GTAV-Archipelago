@@ -38,7 +38,7 @@ namespace GameArchipelago.Core
             { "ASS5", new List<string> { "WEAPON_STICKYBOMB:3" } },
         };
         public int FeedSize { get; set; } = 1500;
-        public int TrapQueueLimit { get; set; } = 5;
+        public int TrapQueueLimit { get; set; } = 10;
         public bool TrapsAfterGoal { get; set; }
 
         public static ClientConfig Load(string directory)

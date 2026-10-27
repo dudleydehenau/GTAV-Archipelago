@@ -6,7 +6,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <AssemblyName>GameArchipelago</AssemblyName>
     <RootNamespace>GameArchipelago</RootNamespace>
-    <Version>1.7.4</Version>
+    <Version>1.7.5</Version>
     <Product>GameArchipelago</Product>
     <Description>Archipelago multiworld client for GTA V story mode: connects to the server, applies the items and sends the checks of the GTA V Archipelago mods.</Description>
   </PropertyGroup>
@@ -24,38 +24,6 @@
       <HintPath>lib\LemonUI.SHVDN3.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="MissionLauncher" Condition="Exists('lib\MissionLauncher.dll')">
-      <HintPath>lib\MissionLauncher.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="MissionLauncher" Condition="!Exists('lib\MissionLauncher.dll')">
-      <HintPath>..\MissionLauncher\bin\$(Configuration)\net48\MissionLauncher.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="GameEnvironment" Condition="Exists('lib\GameEnvironment.dll')">
-      <HintPath>lib\GameEnvironment.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="GameEnvironment" Condition="!Exists('lib\GameEnvironment.dll')">
-      <HintPath>..\GameEnvironment\bin\$(Configuration)\net48\GameEnvironment.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="GameTraps" Condition="Exists('lib\GameTraps.dll')">
-      <HintPath>lib\GameTraps.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="GameTraps" Condition="!Exists('lib\GameTraps.dll')">
-      <HintPath>..\GameTraps\bin\$(Configuration)\net48\GameTraps.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="GameCollectibles" Condition="Exists('lib\GameCollectibles.dll')">
-      <HintPath>lib\GameCollectibles.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="GameCollectibles" Condition="!Exists('lib\GameCollectibles.dll')">
-      <HintPath>..\GameCollectibles\bin\$(Configuration)\net48\GameCollectibles.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -70,6 +38,21 @@
     <None Include="data\config.json" Link="GameArchipelago\config.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="data\vehicles.json" Link="GameArchipelago\vehicles.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="data\weapons.json" Link="GameArchipelago\weapons.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MissionLauncher\MissionLauncher.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GameEnvironment\GameEnvironment.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GameTraps\GameTraps.csproj">
+      <Private>false</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GameCollectibles\GameCollectibles.csproj">
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

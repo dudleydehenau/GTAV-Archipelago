@@ -13,11 +13,15 @@ namespace GameCollectibles.Core
 
     internal sealed class CollectiblesConfig
     {
+        public const string DefaultModel = "ch_prop_casino_diamonds_01a";
+        public const float DefaultSize = 0.8f;
+        private const string OldModel = "prop_ld_case_01";
+
         public bool EnableMenu { get; set; }
         public string MenuKey { get; set; } = "F10";
         public bool VerboseLog { get; set; }
-        public string Model { get; set; } = "prop_ld_case_01";
-        public float Size { get; set; } = 1f;
+        public string Model { get; set; } = DefaultModel;
+        public float Size { get; set; } = DefaultSize;
         public float HoverHeight { get; set; } = 0.6f;
         public float SpinSpeed { get; set; } = 90f;
         public bool Glow { get; set; } = true;
@@ -60,8 +64,15 @@ namespace GameCollectibles.Core
                 Log.Info("config.json not found, using defaults.");
             }
             config = config ?? new CollectiblesConfig();
-            if (string.IsNullOrWhiteSpace(config.Model)) config.Model = "prop_ld_case_01";
-            if (config.Size <= 0.05f || config.Size > 5f) config.Size = 1f;
+            if (string.IsNullOrWhiteSpace(config.Model)) config.Model = DefaultModel;
+            if (string.Equals(config.Model, OldModel, StringComparison.OrdinalIgnoreCase))
+            {
+                config.Model = DefaultModel;
+                config.Size = DefaultSize;
+                Log.Info($"Collectible model changed from {OldModel} to {DefaultModel}.");
+            }
+            if (Math.Abs(config.Size - 1.6f) < 0.001f && string.Equals(config.Model, DefaultModel, StringComparison.OrdinalIgnoreCase)) config.Size = DefaultSize;
+            if (config.Size <= 0.05f || config.Size > 5f) config.Size = DefaultSize;
             if (config.StreamDistance < 30f) config.StreamDistance = 30f;
             if (config.PickupRadius <= 0f) config.PickupRadius = 1.6f;
             config._path = path;

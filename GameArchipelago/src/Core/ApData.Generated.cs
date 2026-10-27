@@ -212,6 +212,7 @@ namespace GameArchipelago.Core
             new TrapInfo(7354249, "InitialD", "Initial D"),
             new TrapInfo(7354250, "ForrestGump", "Run, Forrest, Run"),
             new TrapInfo(7354251, "WalkingDead", "The Walking Dead"),
+            new TrapInfo(7354252, "Bouncy", "Boing Boing"),
         };
 
         public static readonly MoneyInfo[] Money =

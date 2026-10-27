@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.8.0
+
+- `StartCharacter` is now `Michael` by default (Trevor's trailer in Sandy Shores was a rough start).
+- `NoSaves` (on by default): the mod no longer saves the game, and any save the game writes by itself during a
+  sterile session (its own autosave right after the new game, for example) is deleted a few seconds later and when
+  the game closes. Saves that were already there are never touched. Without any save, each start is a new game that
+  keeps your progress: money, weapons, vehicles and unlocked characters stay exactly as you left them (nothing is
+  given twice), and you start as the last character you played.
+- `OpenGunShopsInMissions` (on by default): Ammu-Nation opens during missions and replays, then closes again, so a
+  mission that sends you to buy a weapon works but nothing can be bought outside missions.
+
+## 1.7.1
+
+- Fall guard: for 25 s after a mission replay or a building swap (Lester's factory), a player who falls under the
+  map is put back on the ground.
+
+## 1.7.0
+
+- Works with GTA V Legacy 1.0.3889 (latest) and still with 1.0.3725. The game version is detected at startup and the
+  matching memory addresses are used. The log shows the detected build on the `Game data` line.
+- The `Globals` section of `config.json` is no longer used.
+
 ## 1.6.2
 
 - Melee weapons (machete, knife...) are no longer "given back their ammo" every second.

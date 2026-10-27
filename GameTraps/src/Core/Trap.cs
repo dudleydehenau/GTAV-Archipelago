@@ -42,6 +42,13 @@ namespace GameTraps.Core
 
         public static TrapWeight Of(string id) =>
             Heavy.Contains(id) ? TrapWeight.Heavy : Light.Contains(id) ? TrapWeight.Light : TrapWeight.Medium;
+
+        private static readonly HashSet<string> Moving = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "AlienAbduction", "SecondComing", "TimeMachine", "InitialD", "Kidnap", "Bowling",
+        };
+
+        public static bool MovesPlayer(string id) => Moving.Contains(id);
     }
 
     internal static class Preconditions

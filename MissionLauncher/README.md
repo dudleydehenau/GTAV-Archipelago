@@ -14,7 +14,7 @@ Your save is never modified.
 
 ## Requirements
 
-- GTA V **Legacy** 1.0.3725, story mode, BattlEye turned off
+- GTA V **Legacy** 1.0.3889 (latest) or 1.0.3725, story mode, BattlEye turned off
 - [ScriptHookV](http://www.dev-c.com/gtav/scripthookv/)
 - [ScriptHookVDotNet](https://github.com/scripthookvdotnet/scripthookvdotnet-nightly/releases) 3.7 (nightly)
 - [LemonUI](https://github.com/LemonUIbyLemon/LemonUI/releases) 2.x (`LemonUI.SHVDN3.dll`)
@@ -84,7 +84,6 @@ character), and they cannot be started.
 | `MarkerAutoStart` | `true` | Walking into a single mission marker starts it without pressing E |
 | `MarkerRadius` | `1.5` | Size of the markers, in metres |
 | `VerboseLog` | `false` | Writes the full mission list and debug details to the log |
-| `Globals` | | Game memory addresses for build 3725. Do not change them unless you know what you are doing |
 
 The start point of each mission for each character (from the game's own data) is built into the DLL. A
 `missions.json` placed in `Archipelago/MissionLauncher` replaces it.

@@ -6,7 +6,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <AssemblyName>MissionLauncher</AssemblyName>
     <RootNamespace>MissionLauncher</RootNamespace>
-    <Version>1.4.8</Version>
+    <Version>1.5.0</Version>
     <Product>MissionLauncher</Product>
     <Description>Replay any GTA V story mission or Strangers and Freaks mission, with a public API reporting results.</Description>
   </PropertyGroup>

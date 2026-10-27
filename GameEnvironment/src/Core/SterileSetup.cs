@@ -22,7 +22,7 @@ namespace GameEnvironment.Core
             _characters = characters;
         }
 
-        public PlayableCharacter Run()
+        public PlayableCharacter Run(bool keepProgress)
         {
             Log.Info("New game detected, building the sterile start. " + _globals.Describe());
             _globals.FlowHalted = true;
@@ -30,30 +30,43 @@ namespace GameEnvironment.Core
             StopPrologue();
             CleanWorld();
 
-            PlayableCharacter start = PickStart();
-            _store.Reset();
             EnvironmentState state = _store.State;
-            state.Sterile = true;
-            state.CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            state.StartCharacter = (int)start;
-            state.LastCharacter = (int)start;
-            state.PendingStartCharacter = -1;
-            foreach (PlayableCharacter character in Characters.All)
+            bool keep = keepProgress && state.Sterile && !string.IsNullOrEmpty(state.CreatedAt);
+            PlayableCharacter start;
+            if (keep)
             {
-                CharacterRecord record = state.For(character);
-                record.Unlocked = !_config.CharacterLocking || character == start;
-                record.Money = _config.StartMoney;
+                start = PickContinue();
+                state.LastCharacter = (int)start;
+                state.PendingStartCharacter = -1;
+                _store.Save();
+                Log.Info($"Progress kept from {state.CreatedAt} (no saves mode): money, weapons, vehicles and characters stay as they were. Playing {start}.");
             }
-            _store.Save();
-            Log.Info($"Start character: {start}.");
+            else
+            {
+                start = PickStart();
+                _store.Reset();
+                state = _store.State;
+                state.Sterile = true;
+                state.CreatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                state.StartCharacter = (int)start;
+                state.LastCharacter = (int)start;
+                state.PendingStartCharacter = -1;
+                foreach (PlayableCharacter character in Characters.All)
+                {
+                    CharacterRecord record = state.For(character);
+                    record.Unlocked = !_config.CharacterLocking || character == start;
+                    record.Money = _config.StartMoney;
+                }
+                _store.Save();
+                Log.Info($"Start character: {start}.");
+            }
 
             Become(start);
             _characters.Apply();
             PlaceAt(_config.SpawnFor(start));
             RestorePlayer();
-            Economy.SetCash(PlayableCharacter.Michael, _config.StartMoney);
-            Economy.SetCash(PlayableCharacter.Franklin, _config.StartMoney);
-            Economy.SetCash(PlayableCharacter.Trevor, _config.StartMoney);
+            foreach (PlayableCharacter character in Characters.All)
+                Economy.SetCash(character, keep ? state.For(character).Money : _config.StartMoney);
 
             Function.Call(Hash.SHUTDOWN_LOADING_SCREEN);
             Script.Wait(500);
@@ -64,7 +77,7 @@ namespace GameEnvironment.Core
 
         public bool AutoSave()
         {
-            if (!_config.AutoSaveAfterSetup) return true;
+            if (_config.NoSaves || !_config.AutoSaveAfterSetup) return true;
             if (Function.Call<bool>(Hash.IS_AUTO_SAVE_IN_PROGRESS)) return false;
             if (Function.Call<bool>(Hash.GET_MISSION_FLAG) || Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE)) return false;
             if (!Function.Call<bool>(Hash.IS_SCREEN_FADED_IN) || Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE)) return false;
@@ -96,6 +109,18 @@ namespace GameEnvironment.Core
             Function.Call(Hash.SET_MISSION_FLAG, false);
             if (_globals.ReleaseMissionCandidate()) Log.Info("Story mission slot released (mission type reset to none).");
             if (_globals.EnableSelector()) Log.Info("Character wheel re-enabled (the prologue had disabled it).");
+        }
+
+        private PlayableCharacter PickContinue()
+        {
+            EnvironmentState state = _store.State;
+            bool Usable(int index) => Characters.IsValid(index) && (!_config.CharacterLocking || state.For((PlayableCharacter)index).Unlocked);
+            if (Usable(state.LastCharacter)) return (PlayableCharacter)state.LastCharacter;
+            if (Usable(state.PendingStartCharacter)) return (PlayableCharacter)state.PendingStartCharacter;
+            if (Usable(state.StartCharacter)) return (PlayableCharacter)state.StartCharacter;
+            foreach (PlayableCharacter character in Characters.All)
+                if (Usable((int)character)) return character;
+            return PickStart();
         }
 
         private PlayableCharacter PickStart()

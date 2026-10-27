@@ -6,7 +6,7 @@ namespace GTAVArchipelagoSetup
   ""Components"": [
     {
       ""Name"": ""ScriptHookVDotNet"",
-      ""Description"": ""Runs the .NET scripts (nightly build, needed for game version 1.0.3725)."",
+      ""Description"": ""Runs the .NET scripts (nightly build, needed for game versions 1.0.3889 and 1.0.3725)."",
       ""Repo"": ""scripthookvdotnet/scripthookvdotnet-nightly"",
       ""Asset"": ""^ScriptHookVDotNet.*\\.zip$"",
       ""Prerelease"": true,

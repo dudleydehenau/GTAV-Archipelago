@@ -6,7 +6,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <AssemblyName>GameTraps</AssemblyName>
     <RootNamespace>GameTraps</RootNamespace>
-    <Version>1.3.3</Version>
+    <Version>1.4.0</Version>
     <Product>GameTraps</Product>
     <Description>Traps for GTA V free roam (scooters, ramps, hunting animals, falling planes, aliens and more), triggered through a public API.</Description>
   </PropertyGroup>

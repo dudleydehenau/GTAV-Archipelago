@@ -35,15 +35,17 @@ Each mod also works on its own and has its own README and changelog.
 
 ## Requirements
 
-- GTA V **Legacy** 1.0.3725 (Steam, Epic or Rockstar Games Launcher). The Enhanced edition is not supported.
+- GTA V **Legacy** 1.0.3889 (the latest version) or 1.0.3725 (Steam, Epic or Rockstar Games Launcher). The Enhanced edition is not supported.
 - [ScriptHookV](http://www.dev-c.com/gtav/scripthookv/) (the setup installs it from the zip you download there).
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases) 0.6.4 or newer to generate a game.
 
 ## Known issues
 
-- If the game is closed while a mission replay is running, the next start can stay on the loading screen. Open
-  `Documents\Rockstar Games\GTA V\Profiles\<your profile>`, move the newest `SGTA5...` file (and its `.bak`) to another
-  folder and start again. Your Archipelago progress is not affected.
+- The mods never save the game: every start is a new game, and your money, weapons, vehicles, characters and checks
+  come back from the mods. Any save the game writes by itself is deleted. If you played with
+  an older version, move the `SGTA5...` files out of `Documents\Rockstar Games\GTA V\Profiles\<your profile>` once.
+- If the game still stays on the loading screen, move the newest `SGTA5...` file (and its `.bak`) out of that folder
+  and start again. Your Archipelago progress is not affected.
 - Bug reports are welcome in the [issues](https://github.com/dudleydehenau/GTAV-Archipelago/issues): attach the zip
   made by **F6 > Settings > Create a bug report**.
 

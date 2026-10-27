@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0
+
+- Works with GTA V Legacy 1.0.3889 (latest) and still with 1.0.3725. The game version is detected at startup and the
+  matching memory addresses are used. The log shows the detected build on the `Game data` line.
+- The `Globals` section of `config.json` is no longer used.
+
 ## 1.4.4
 
 - A replay session can no longer stay open forever: 15 s after the game's replay controller is gone, the session is

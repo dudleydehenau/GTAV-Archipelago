@@ -35,6 +35,7 @@ namespace GameTraps.Core
         public InitialDConfig InitialD { get; set; } = new InitialDConfig();
         public ForrestGumpConfig ForrestGump { get; set; } = new ForrestGumpConfig();
         public WalkingDeadConfig WalkingDead { get; set; } = new WalkingDeadConfig();
+        public BouncyConfig Bouncy { get; set; } = new BouncyConfig();
 
         private void NormalizeExtra()
         {
@@ -69,6 +70,7 @@ namespace GameTraps.Core
             InitialD = InitialD ?? new InitialDConfig();
             ForrestGump = ForrestGump ?? new ForrestGumpConfig();
             WalkingDead = WalkingDead ?? new WalkingDeadConfig();
+            Bouncy = Bouncy ?? new BouncyConfig();
             InitialD.Models = Fill(InitialD.Models, "futo");
             InitialD.Delivery = InitialD.Delivery ?? new Destination { Name = "Fujiwara Tofu Shop", X = 300f, Y = 180f, Z = 104f };
             InitialD.RivalModels = Fill(InitialD.RivalModels, "zr350", "elegy", "sultan");
@@ -558,5 +560,15 @@ namespace GameTraps.Core
         public bool Blackout { get; set; } = true;
         public string Timecycle { get; set; } = "NG_filmnoir_BW01";
         public float TimecycleStrength { get; set; } = 0.35f;
+    }
+
+    internal sealed class BouncyConfig
+    {
+        public bool Enabled { get; set; } = true;
+        public int Duration { get; set; } = 30000;
+        public float Radius { get; set; } = 80f;
+        public float VehicleBounce { get; set; } = 7f;
+        public float PedBounce { get; set; } = 6f;
+        public bool ProtectPlayer { get; set; } = true;
     }
 }

@@ -86,9 +86,23 @@ namespace GameTraps.Core
             _traps.Add(new InitialD(Config));
             _traps.Add(new ForrestGump(Config));
             _traps.Add(new WalkingDead(Config));
+            _traps.Add(new Bouncy(Config));
 
             LoadQueue();
             Log.Info($"{_traps.Count} traps ready, {_queue.Count} waiting in the queue.");
+            if (Config.DebugAllTraps)
+            {
+                if (Enum.TryParse(Config.DebugKey, true, out System.Windows.Forms.Keys key) && key != System.Windows.Forms.Keys.None)
+                {
+                    _debugKey = key;
+                    KeyDown += OnDebugKey;
+                    Log.Info($"Debug: press {key} to start every trap at once.");
+                }
+                else
+                {
+                    Log.Warn($"Invalid DebugKey '{Config.DebugKey}'.");
+                }
+            }
 
             Tick += OnTick;
             Aborted += OnAborted;
@@ -177,8 +191,13 @@ namespace GameTraps.Core
 
                 foreach (Trap trap in _traps)
                     if (!_active.Contains(trap)) trap.Background();
-                if (_queue.Count == 0 || Game.GameTime < _nextStartAt) return;
-                if (_active.Count >= Math.Max(1, Config.MaxActive)) return;
+                if (_queue.Count == 0)
+                {
+                    _burst = false;
+                    return;
+                }
+                if (Game.GameTime < _nextStartAt) return;
+                if (!_burst && _active.Count >= Math.Max(1, Config.MaxActive)) return;
                 _inMission = Safety.InMission;
                 if (_inMission && !Config.AllowInMissions) return;
                 if (!Safety.CanStart(_inMission, out string blocked))
@@ -222,7 +241,8 @@ namespace GameTraps.Core
                     SaveQueue();
                     return null;
                 }
-                if (_active.Contains(trap) || _active.Any(a => (a.Channels & trap.Channels) != TrapChannel.None)) continue;
+                if (_active.Contains(trap)) continue;
+                if (!_burst && _active.Any(a => (a.Channels & trap.Channels) != TrapChannel.None)) continue;
                 if (!CanStack(trap)) continue;
                 if (_inMission && !AllowedInMission(trap)) continue;
                 string reason;
@@ -248,7 +268,7 @@ namespace GameTraps.Core
                 SaveQueue();
                 _active.Add(trap);
                 _started[trap] = new Started { Source = next.Source, At = Game.GameTime };
-                _nextStartAt = Game.GameTime + Math.Max(0, Config.GapBetweenTraps);
+                _nextStartAt = _burst ? Game.GameTime + 100 : Game.GameTime + Math.Max(0, Config.GapBetweenTraps);
                 Log.Info($"Trap started: {trap.Id} ({_active.Count} running).");
                 if (Config.Announce)
                 {
@@ -295,21 +315,52 @@ namespace GameTraps.Core
 
         private bool CanStack(Trap trap)
         {
-            if (_active.Count == 0) return true;
+            if (_active.Count == 0 || _burst) return true;
             if (!Config.StackTraps) return false;
             if (_active.Count >= Math.Max(1, Config.MaxActive)) return false;
-            TrapWeight weight = TrapWeights.Of(trap.Id);
-            if (weight == TrapWeight.Heavy) return false;
-            if (_active.Any(a => TrapWeights.Of(a.Id) == TrapWeight.Heavy)) return false;
-            if (weight == TrapWeight.Medium && _active.Any(a => TrapWeights.Of(a.Id) == TrapWeight.Medium)) return false;
+            if (TrapWeights.MovesPlayer(trap.Id) || _active.Any(a => TrapWeights.MovesPlayer(a.Id))) return false;
             return true;
         }
+
+        private bool _burst;
+
+        internal int StartEverything()
+        {
+            int count = 0;
+            foreach (Trap trap in _traps)
+            {
+                if (!trap.Enabled || _active.Contains(trap) || _queue.Any(q => q.Id == trap.Id)) continue;
+                _queue.Add(new Queued { Id = trap.Id, Source = "Debug" });
+                count++;
+            }
+            SaveQueue();
+            _burst = count > 0;
+            _nextStartAt = 0;
+            Log.Info($"Debug: {count} traps queued to start together.");
+            GTA.UI.Notification.PostTicker($"~r~Debug:~s~ {count} traps start now.", true);
+            return count;
+        }
+
+        private void OnDebugKey(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode != _debugKey) return;
+            try
+            {
+                StartEverything();
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Debug start failed.", ex);
+            }
+        }
+
+        private System.Windows.Forms.Keys _debugKey = System.Windows.Forms.Keys.None;
 
         private void Finish(Trap trap, bool interrupted, string reason)
         {
             _active.Remove(trap);
             _started.Remove(trap);
-            if (TrapWeights.Of(trap.Id) == TrapWeight.Heavy) _nextStartAt = Math.Max(_nextStartAt, Game.GameTime + Math.Max(Config.GapBetweenTraps, 2500));
+            if (!_burst && TrapWeights.Of(trap.Id) == TrapWeight.Heavy) _nextStartAt = Math.Max(_nextStartAt, Game.GameTime + Math.Max(Config.GapBetweenTraps, 2500));
             TrapTimer.Hide(trap.Id);
             try
             {

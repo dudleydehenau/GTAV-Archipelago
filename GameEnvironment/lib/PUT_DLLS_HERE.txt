@@ -1,5 +1,4 @@
 ScriptHookVDotNet3.dll (3.7+) and LemonUI.SHVDN3.dll (2.x) go here. They are referenced only and are not copied
 to the output.
 
-MissionLauncher.dll can go here too. If it is missing, the project uses the build of the MissionLauncher folder
-(..\MissionLauncher\bin\Release\net48\MissionLauncher.dll), so building GTAV-Archipelago.sln is enough.
+MissionLauncher is referenced as a project of GTAV-Archipelago.sln and is built first.

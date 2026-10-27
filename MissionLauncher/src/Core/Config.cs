@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web.Script.Serialization;
 
@@ -16,7 +17,6 @@ namespace MissionLauncher.Core
         public string Markers { get; set; } = "All";
         public bool MarkerAutoStart { get; set; } = true;
         public float MarkerRadius { get; set; } = 1.5f;
-        public GlobalsConfig Globals { get; set; } = new GlobalsConfig();
 
         public static LauncherConfig Load(string directory)
         {
@@ -29,7 +29,6 @@ namespace MissionLauncher.Core
             try
             {
                 LauncherConfig config = new JavaScriptSerializer().Deserialize<LauncherConfig>(File.ReadAllText(path)) ?? new LauncherConfig();
-                if (config.Globals == null) config.Globals = new GlobalsConfig();
                 return config;
             }
             catch (Exception ex)
@@ -42,22 +41,66 @@ namespace MissionLauncher.Core
 
     internal sealed class GlobalsConfig
     {
-        public int FailReason { get; set; } = 80513;
-        public int ReplayRequest { get; set; } = 80527;
-        public int ReplayFlags { get; set; } = 80529;
-        public int ReplayReturnPosition { get; set; } = 80532;
-        public int MissionTable { get; set; } = 93192;
-        public int StatDefinitions { get; set; } = 65235;
+        public int Build { get; set; }
+        public int FailReason { get; set; }
+        public int ReplayRequest { get; set; }
+        public int ReplayFlags { get; set; }
+        public int ReplayReturnPosition { get; set; }
+        public int MissionTable { get; set; }
+        public int StatDefinitions { get; set; }
         public int StatDefinitionCount { get; set; } = 913;
-        public int ActiveStats { get; set; } = 77106;
-        public int ActiveStatCount { get; set; } = 77105;
+        public int ActiveStats { get; set; }
+        public int ActiveStatCount { get; set; }
         public int ActiveStatMax { get; set; } = 16;
-        public int MissionPassedFlag { get; set; } = 65004;
-        public int RampageRecords { get; set; } = 117263;
+        public int MissionPassedFlag { get; set; }
+        public int RampageRecords { get; set; }
         public int RampageCount { get; set; } = 5;
-        public int StoryCompletion { get; set; } = 124326;
+        public int StoryCompletion { get; set; }
         public int StoryCompletionCount { get; set; } = 100;
-        public int StrangersCompletion { get; set; } = 133485;
+        public int StrangersCompletion { get; set; }
         public int StrangersCompletionCount { get; set; } = 63;
+
+        private static readonly GlobalsConfig[] Profiles =
+        {
+            new GlobalsConfig
+            {
+                Build = 3889,
+                FailReason = 80570,
+                ReplayRequest = 80584,
+                ReplayFlags = 80586,
+                ReplayReturnPosition = 80589,
+                MissionTable = 93249,
+                StatDefinitions = 65288,
+                ActiveStats = 77159,
+                ActiveStatCount = 77158,
+                MissionPassedFlag = 65057,
+                RampageRecords = 117322,
+                StoryCompletion = 124387,
+                StrangersCompletion = 133546,
+            },
+            new GlobalsConfig
+            {
+                Build = 3725,
+                FailReason = 80513,
+                ReplayRequest = 80527,
+                ReplayFlags = 80529,
+                ReplayReturnPosition = 80532,
+                MissionTable = 93192,
+                StatDefinitions = 65235,
+                ActiveStats = 77106,
+                ActiveStatCount = 77105,
+                MissionPassedFlag = 65004,
+                RampageRecords = 117263,
+                StoryCompletion = 124326,
+                StrangersCompletion = 133485,
+            },
+        };
+
+        public static GlobalsConfig[] Candidates(int build)
+        {
+            var list = new List<GlobalsConfig>(Profiles);
+            list.Sort((a, b) => (b.Build == build).CompareTo(a.Build == build));
+            return list.ToArray();
+        }
     }
 }

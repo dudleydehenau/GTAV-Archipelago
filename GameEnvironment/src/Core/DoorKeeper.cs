@@ -112,6 +112,7 @@ namespace GameEnvironment.Core
                 int state = _globals.GetBuildingState(building.Key);
                 if (state == building.Value) continue;
                 _globals.SetBuildingState(building.Key, building.Value);
+                FallGuard.Arm("building swap");
                 Log.Info($"Building {building.Key} set to state {building.Value} (was {state}, {area.Name}).");
             }
         }

@@ -403,7 +403,7 @@ Grand Theft Auto V:
   enabled_traps:
     # The traps that can be placed in your world. Use the names in the list below.
     # "Irresistible" can show nightclub dancers: remove it if you stream.
-    ['Clowns', 'PhantomWedge', 'Ragdoll', 'WalkingDead', 'TurboTraffic', 'Mariachi', 'Speed', 'GiantBalls', 'TimeMachine', 'HereWeGoAgain', 'FallingPlanes', 'FlashMob', 'Blizzard', 'Nightfall', 'Kamikaze', 'Paparazzi', 'FlatTires', 'ObjectRain', 'Ramp', 'Terminator', 'ForrestGump', 'Purge', 'Bowling', 'Disarmed', 'PhantomCar', 'MarioKart', 'BigSmoke', 'ViceCity', 'SecondComing', 'AnimalHunt', 'MadMax', 'Matrix', 'Clones', 'Irresistible', 'RedLight', 'Jaws', 'AlienAbduction', 'MoonGravity', 'TopDown', 'UpsideDown', 'LiftOff', 'BattleRoyale', 'FailedHeroes', 'FloatingCars', 'Drunk', 'MacheteGranny', 'LesterTax', 'InitialD', 'Kidnap', 'AnimalTransform', 'ScooterBrother', 'Wanted']
+    ['Clowns', 'PhantomWedge', 'Ragdoll', 'WalkingDead', 'Bouncy', 'TurboTraffic', 'Mariachi', 'Speed', 'GiantBalls', 'TimeMachine', 'HereWeGoAgain', 'FallingPlanes', 'FlashMob', 'Blizzard', 'Nightfall', 'Kamikaze', 'Paparazzi', 'FlatTires', 'ObjectRain', 'Ramp', 'Terminator', 'ForrestGump', 'Purge', 'Bowling', 'Disarmed', 'PhantomCar', 'MarioKart', 'BigSmoke', 'ViceCity', 'SecondComing', 'AnimalHunt', 'MadMax', 'Matrix', 'Clones', 'Irresistible', 'RedLight', 'Jaws', 'AlienAbduction', 'MoonGravity', 'TopDown', 'UpsideDown', 'LiftOff', 'BattleRoyale', 'FailedHeroes', 'FloatingCars', 'Drunk', 'MacheteGranny', 'LesterTax', 'InitialD', 'Kidnap', 'AnimalTransform', 'ScooterBrother', 'Wanted']
 
   money_weight:
     # Weight of money among the non-trap filler items.

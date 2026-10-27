@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.7.5
+
+- New trap item: Trap: Boing Boing (APWorld 1.8.0).
+- Each part of the client runs on its own: an error in one of them (markers, sync, death watch...) no longer stops
+  the messages from showing. Errors name the part that failed in the log and in the history.
+- When item messages have been waiting for 30 s, the log says why (loading screen, replay, character switch...).
+- With `VerboseLog`, every message shown is written to the log.
+- `TrapQueueLimit` is now 10: up to 10 traps can wait in line before new ones are skipped (was 5).
+
 ## 1.7.2
 
 - Father/Son is left out of new worlds: its scripted switch from Michael to Franklin fails in the sterile game (you

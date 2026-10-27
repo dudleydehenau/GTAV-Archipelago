@@ -70,6 +70,7 @@ namespace GameArchipelago.Core
             }
             if (Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE) || !GTA.UI.Screen.IsFadedIn) return;
             Entry entry = _queue.Dequeue();
+            Log.Debug("Notification: " + Clean(entry.Text));
             if (entry.Sender == null) Show(entry.Text);
             else ShowMessage(entry.Sender, entry.Subject, entry.Text);
             _nextAt = Game.GameTime + _delay;

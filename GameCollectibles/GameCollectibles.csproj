@@ -6,7 +6,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <AssemblyName>GameCollectibles</AssemblyName>
     <RootNamespace>GameCollectibles</RootNamespace>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Product>GameCollectibles</Product>
     <Description>Every GTA V story collectible replaced by one 3D object that can be picked up from the start, each pickup reported through a public API.</Description>
   </PropertyGroup>

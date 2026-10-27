@@ -2,8 +2,8 @@
 
 ## Required software
 
-- GTA V **Legacy** 1.0.3725 (Steam, Epic or Rockstar Games Launcher). GTA V Enhanced is not supported.
-- [ScriptHookV](http://www.dev-c.com/gtav/scripthookv/) for 1.0.3725.
+- GTA V **Legacy** 1.0.3889 (the latest version) or 1.0.3725 (Steam, Epic or Rockstar Games Launcher). GTA V Enhanced is not supported.
+- [ScriptHookV](http://www.dev-c.com/gtav/scripthookv/) for your game version.
 - The GTA V Archipelago Setup (`GTAVArchipelagoSetup.exe`), from the GTAVArchipelagoSetup releases.
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases) 0.6.4 or newer to generate games.
 

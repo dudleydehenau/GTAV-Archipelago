@@ -28,13 +28,13 @@ namespace GameEnvironment.Core
         private const int ConversationCount = 866;
         private const int QueuedChatCount = 910;
         private const int CharacterPriority = 919;
-        private readonly StoryGlobalsConfig _cfg;
+        private StoryGlobalsConfig _cfg;
         private int _repeatControllerHash;
         private int _prologueHash;
 
-        public StoryGlobals(StoryGlobalsConfig cfg)
+        public StoryGlobals()
         {
-            _cfg = cfg;
+            _cfg = StoryGlobalsConfig.Candidates(GameBuild.Number)[0];
         }
 
         public bool Available { get; private set; }
@@ -45,33 +45,41 @@ namespace GameEnvironment.Core
         public void Validate()
         {
             Available = false;
+            string first = null;
+            foreach (StoryGlobalsConfig candidate in StoryGlobalsConfig.Candidates(GameBuild.Number))
+            {
+                string error = TryProfile(candidate);
+                if (error == null) return;
+                first = first ?? error;
+            }
+            Status = $"game build {GameBuild.Describe()}: {first}";
+        }
+
+        private string TryProfile(StoryGlobalsConfig candidate)
+        {
             try
             {
-                int flags = Read(_cfg.FlowFlags);
-                int strands = Read(_cfg.Strands);
-                int characters = Read(_cfg.CharacterAvailable);
-                int completion = Read(_cfg.StoryCompletion);
-                if (flags != _cfg.FlowFlagCount || strands != _cfg.StrandCount || characters != 3 || completion != _cfg.StoryCompletionCount)
-                {
-                    Status = $"unexpected array sizes (flow flags={flags}/{_cfg.FlowFlagCount}, strands={strands}/{_cfg.StrandCount}, characters={characters}/3, completion={completion}/{_cfg.StoryCompletionCount}). Unsupported game build?";
-                    return;
-                }
-                int calls = Read(_cfg.Communications);
-                int priorities = Read(_cfg.Communications + CharacterPriority);
+                int flags = Read(candidate.FlowFlags);
+                int strands = Read(candidate.Strands);
+                int characters = Read(candidate.CharacterAvailable);
+                int completion = Read(candidate.StoryCompletion);
+                if (flags != candidate.FlowFlagCount || strands != candidate.StrandCount || characters != 3 || completion != candidate.StoryCompletionCount)
+                    return $"unexpected array sizes for build {candidate.Build} (flow flags={flags}/{candidate.FlowFlagCount}, strands={strands}/{candidate.StrandCount}, characters={characters}/3, completion={completion}/{candidate.StoryCompletionCount}). Unsupported game build?";
+                int calls = Read(candidate.Communications);
+                int priorities = Read(candidate.Communications + CharacterPriority);
                 if (calls != 9 || priorities != 3)
-                {
-                    Status = $"unexpected communication queue (calls={calls}/9, priorities={priorities}/3). Unsupported game build?";
-                    return;
-                }
+                    return $"unexpected communication queue for build {candidate.Build} (calls={calls}/9, priorities={priorities}/3). Unsupported game build?";
+                _cfg = candidate;
                 _repeatControllerHash = unchecked((int)StringHash.AtStringHash("mission_repeat_controller", 0u));
                 _prologueHash = unchecked((int)StringHash.AtStringHash("prologue1", 0u));
                 PrologueIndex = FindMissionByScript(_prologueHash);
                 Available = true;
-                Status = $"OK (prologue = mission index {PrologueIndex})";
+                Status = $"OK (game build {GameBuild.Describe()}, addresses {_cfg.Build}, prologue = mission index {PrologueIndex})";
+                return null;
             }
             catch (Exception ex)
             {
-                Status = "read error: " + ex.Message;
+                return "read error: " + ex.Message;
             }
         }
 
@@ -236,6 +244,20 @@ namespace GameEnvironment.Core
             _cfg.BuildingStates > 0 && _cfg.BuildingDirty > 0 &&
             Read(_cfg.BuildingStates) == _cfg.BuildingCount && Read(_cfg.BuildingDirty) == _cfg.BuildingCount &&
             (_cfg.BuildingDeferred <= 0 || Read(_cfg.BuildingDeferred) == _cfg.BuildingCount);
+
+        public bool ShopsSupported
+        {
+            get
+            {
+                if (_cfg.ShopFlags <= 0) return false;
+                int count = Read(_cfg.ShopFlags);
+                return count > 38 && count <= 200;
+            }
+        }
+
+        public int GetShopFlags(int shop) => Read(_cfg.ShopFlags + 1 + shop);
+
+        public void SetShopFlags(int shop, int flags) => Write(_cfg.ShopFlags + 1 + shop, flags);
 
         public int GetBuildingState(int building) => Read(_cfg.BuildingStates + 1 + building);
 

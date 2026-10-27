@@ -12,7 +12,7 @@ namespace GameEnvironment.Core
         public bool VerboseLog { get; set; }
         public bool ShowInactiveNotice { get; set; } = true;
         public bool NewGameSetup { get; set; } = true;
-        public string StartCharacter { get; set; } = "Random";
+        public string StartCharacter { get; set; } = "Michael";
         public bool CharacterLocking { get; set; } = true;
         public bool AllowRelock { get; set; }
         public int StartMoney { get; set; }
@@ -21,6 +21,8 @@ namespace GameEnvironment.Core
         public bool UnlockSpecialAbilities { get; set; } = true;
         public bool ReplayCharacterFix { get; set; } = true;
         public bool BlockCommunications { get; set; } = true;
+        public bool NoSaves { get; set; } = true;
+        public bool OpenGunShopsInMissions { get; set; } = true;
         public bool AutoSaveAfterSetup { get; set; } = true;
         public int AutoSaveMinutes { get; set; } = 10;
         public float VehicleStoreDistance { get; set; } = 300f;
@@ -29,7 +31,6 @@ namespace GameEnvironment.Core
         public List<SpawnPoint> Spawns { get; set; }
         public List<string> PrologueIpls { get; set; }
         public OpenDoorsConfig OpenDoors { get; set; } = new OpenDoorsConfig();
-        public StoryGlobalsConfig Globals { get; set; } = new StoryGlobalsConfig();
 
         public static EnvironmentConfig Load(string directory)
         {
@@ -69,11 +70,6 @@ namespace GameEnvironment.Core
 
         private void Normalize()
         {
-            if (Globals == null) Globals = new StoryGlobalsConfig();
-            if (Globals.CharacterIntroducedFlags == null || Globals.CharacterIntroducedFlags.Count != 3)
-                Globals.CharacterIntroducedFlags = new List<int> { 115, 116, 117 };
-            if (Globals.WheelDiagnostics == null) Globals.WheelDiagnostics = new List<int>();
-            if (Globals.MissionStateResets == null) Globals.MissionStateResets = new List<int>();
             if (RepairCosts == null) RepairCosts = DefaultRepairCosts();
             RepairCosts = new Dictionary<string, int>(RepairCosts, StringComparer.OrdinalIgnoreCase);
             if (Spawns == null || Spawns.Count == 0) Spawns = DefaultSpawns();
@@ -243,30 +239,91 @@ namespace GameEnvironment.Core
 
     internal sealed class StoryGlobalsConfig
     {
-        public int FlowState { get; set; } = 123996;
-        public int FlowFlags { get; set; } = 124153;
+        public int Build { get; set; }
+        public int FlowState { get; set; }
+        public int FlowFlags { get; set; }
         public int FlowFlagCount { get; set; } = 146;
-        public int Strands { get; set; } = 123998;
+        public int Strands { get; set; }
         public int StrandCount { get; set; } = 32;
         public int MainStrand { get; set; } = 27;
         public List<int> CharacterIntroducedFlags { get; set; } = new List<int> { 115, 116, 117 };
-        public int CharacterAvailable { get; set; } = 120161;
-        public int StoryCompletion { get; set; } = 124326;
+        public int CharacterAvailable { get; set; }
+        public int StoryCompletion { get; set; }
         public int StoryCompletionCount { get; set; } = 100;
-        public int MissionTable { get; set; } = 93192;
-        public int RepeatFlags { get; set; } = 80529;
-        public int RunningMission { get; set; } = 80543;
-        public int FlowBusy { get; set; } = 80552;
-        public int Communications { get; set; } = 122599;
-        public int MissionType { get; set; } = 44869;
-        public int SelectorDisabled { get; set; } = 24395;
-        public int MissionCandidate { get; set; } = 44831;
-        public List<int> MissionStateResets { get; set; } = new List<int> { 44830, 44832, 65007, 65008 };
-        public int SwitchBlocked { get; set; } = 80541;
-        public int BuildingStates { get; set; } = 122399;
-        public int BuildingDirty { get; set; } = 41608;
-        public int BuildingDeferred { get; set; } = 41409;
+        public int MissionTable { get; set; }
+        public int RepeatFlags { get; set; }
+        public int RunningMission { get; set; }
+        public int FlowBusy { get; set; }
+        public int Communications { get; set; }
+        public int MissionType { get; set; }
+        public int SelectorDisabled { get; set; }
+        public int MissionCandidate { get; set; }
+        public List<int> MissionStateResets { get; set; }
+        public int SwitchBlocked { get; set; }
+        public int BuildingStates { get; set; }
+        public int BuildingDirty { get; set; }
+        public int BuildingDeferred { get; set; }
         public int BuildingCount { get; set; } = 198;
-        public List<int> WheelDiagnostics { get; set; } = new List<int> { 80552, 80541, 99713, 99926, 113951, 77342, 65001 };
+        public int ShopFlags { get; set; }
+        public List<int> WheelDiagnostics { get; set; }
+
+        private static readonly StoryGlobalsConfig[] Profiles =
+        {
+            new StoryGlobalsConfig
+            {
+                Build = 3889,
+                ShopFlags = 115631,
+                FlowState = 124057,
+                FlowFlags = 124214,
+                Strands = 124059,
+                CharacterAvailable = 120220,
+                StoryCompletion = 124387,
+                MissionTable = 93249,
+                RepeatFlags = 80586,
+                RunningMission = 80600,
+                FlowBusy = 80609,
+                Communications = 122660,
+                MissionType = 44921,
+                SelectorDisabled = 24435,
+                MissionCandidate = 44883,
+                MissionStateResets = new List<int> { 44882, 44884, 65060, 65061 },
+                SwitchBlocked = 80598,
+                BuildingStates = 122460,
+                BuildingDirty = 41658,
+                BuildingDeferred = 41459,
+                WheelDiagnostics = new List<int> { 80609, 80598, 99770, 99983, 114010, 77397, 65054 },
+            },
+            new StoryGlobalsConfig
+            {
+                Build = 3725,
+                ShopFlags = 115572,
+                FlowState = 123996,
+                FlowFlags = 124153,
+                Strands = 123998,
+                CharacterAvailable = 120161,
+                StoryCompletion = 124326,
+                MissionTable = 93192,
+                RepeatFlags = 80529,
+                RunningMission = 80543,
+                FlowBusy = 80552,
+                Communications = 122599,
+                MissionType = 44869,
+                SelectorDisabled = 24395,
+                MissionCandidate = 44831,
+                MissionStateResets = new List<int> { 44830, 44832, 65007, 65008 },
+                SwitchBlocked = 80541,
+                BuildingStates = 122399,
+                BuildingDirty = 41608,
+                BuildingDeferred = 41409,
+                WheelDiagnostics = new List<int> { 80552, 80541, 99713, 99926, 113951, 77342, 65001 },
+            },
+        };
+
+        public static StoryGlobalsConfig[] Candidates(int build)
+        {
+            var list = new List<StoryGlobalsConfig>(Profiles);
+            list.Sort((a, b) => (b.Build == build).CompareTo(a.Build == build));
+            return list.ToArray();
+        }
     }
 }

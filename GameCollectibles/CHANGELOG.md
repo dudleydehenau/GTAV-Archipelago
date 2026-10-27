@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0
+
+- The collectibles are now a pile of diamonds (`ch_prop_casino_diamonds_01a`), size 0.8, easier to spot. A
+  `config.json` that still uses the old case is switched to the diamonds automatically.
+
 ## 1.1.0
 
 - API 3: `SetDisabledKinds` removes whole kinds from the world (used by the Archipelago client for the kinds that

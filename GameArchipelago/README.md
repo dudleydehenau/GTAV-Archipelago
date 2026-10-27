@@ -28,16 +28,16 @@ This folder holds the **Archipelago client** (`GameArchipelago`, a ScriptHookVDo
 |---|---|
 | [GameEnvironment](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GameEnvironment) | Sterile open world: new game without the story, locked characters, money, weapons, vehicles. |
 | [MissionLauncher](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/MissionLauncher) | Starts any mission with the game's replay system, mission markers, results and medals. |
-| [GameTraps](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GameTraps) | The 52 traps. |
+| [GameTraps](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GameTraps) | The 53 traps. |
 | [GameCollectibles](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GameCollectibles) | The 160 hidden collectibles, available from the start. |
 | **GameArchipelago** (this folder) | Connects to the multiworld, gives the items, sends the checks, in-game menu. |
 | [GTA V Archipelago Setup](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GTAVArchipelagoSetup) | Downloads and installs everything. |
 
 ## Requirements
 
-- **GTA V Legacy**, version 1.0.3725 (the Enhanced edition is not supported), on Steam, Epic or the Rockstar Games
+- **GTA V Legacy**, version 1.0.3889 (the latest) or 1.0.3725 (the Enhanced edition is not supported), on Steam, Epic or the Rockstar Games
   Launcher.
-- [ScriptHookV](http://www.dev-c.com/gtav/scripthookv/) for 1.0.3725 (cannot be redistributed: the setup helps you
+- [ScriptHookV](http://www.dev-c.com/gtav/scripthookv/) for your game version (cannot be redistributed: the setup helps you
   install it).
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases) 0.6.4 or newer to generate a game (or a room
   hosted by someone else).

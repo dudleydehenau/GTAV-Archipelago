@@ -8,24 +8,5 @@
   "Markers": "All",
   "MarkerAutoStart": true,
   "MarkerRadius": 1.5,
-  "VerboseLog": false,
-  "Globals": {
-    "FailReason": 80513,
-    "ReplayRequest": 80527,
-    "ReplayFlags": 80529,
-    "ReplayReturnPosition": 80532,
-    "MissionTable": 93192,
-    "StatDefinitions": 65235,
-    "StatDefinitionCount": 913,
-    "ActiveStats": 77106,
-    "ActiveStatCount": 77105,
-    "ActiveStatMax": 16,
-    "MissionPassedFlag": 65004,
-    "RampageRecords": 117263,
-    "RampageCount": 5,
-    "StoryCompletion": 124326,
-    "StoryCompletionCount": 100,
-    "StrangersCompletion": 133485,
-    "StrangersCompletionCount": 63
-  }
+  "VerboseLog": false
 }

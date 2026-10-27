@@ -8,7 +8,7 @@
   "ShowChat": true,
   "ShowHints": true,
   "NotificationDelay": 900,
-  "TrapQueueLimit": 5,
+  "TrapQueueLimit": 10,
   "TrapsAfterGoal": false,
   "LogSize": 80,
   "OnlineGuard": true

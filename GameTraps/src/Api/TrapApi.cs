@@ -59,6 +59,7 @@ namespace GameTraps
         public const string InitialD = "InitialD";
         public const string ForrestGump = "ForrestGump";
         public const string WalkingDead = "WalkingDead";
+        public const string Bouncy = "Bouncy";
     }
 
     public static class TrapApi

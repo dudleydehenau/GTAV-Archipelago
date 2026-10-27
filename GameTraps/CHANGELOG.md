@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0
+
+- New trap: **Boing Boing** (`Bouncy`). For 30 s, every car and every person around you bounces like a ball each
+  time they touch the ground, you included (53 traps).
+- Only the traps that move you (Alien Abduction, Second Coming, Time Machine, Initial D, Kidnap, Bowling) still run
+  alone. Every other trap can run with others, unless both change the same thing. `MaxActive` is now 4, so a big
+  wave of traps empties faster.
+- `DebugAllTraps` and `DebugKey` (F11): for testing, the key starts every enabled trap at once.
+
 ## 1.3.3
 
 - Animal Transformation can no longer start during a mission, whatever `MissionTraps` says: it changes the player

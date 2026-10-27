@@ -12,6 +12,8 @@ namespace GameEnvironment.Core
         private const int AutoSaveDelay = 4000;
 
         private readonly SterileSetup _setup;
+        private readonly GunShops _shops;
+        private readonly SaveCleaner _saves;
         private readonly InactiveNotice _notice = new InactiveNotice();
         private bool _disabled;
         private bool _wasBusy;
@@ -38,12 +40,14 @@ namespace GameEnvironment.Core
 
             Store = new StateStore(directory);
             Store.Load();
-            Globals = new StoryGlobals(Config.Globals);
+            Globals = new StoryGlobals();
             Roster = new CharacterService(Config, Globals, Store);
             Economy = new Economy(Store);
             Garage = new Garage(Config, Store, Economy);
             Doors = new DoorKeeper(Config.OpenDoors, Globals);
             _setup = new SterileSetup(Config, Globals, Store, Roster);
+            _shops = new GunShops(Globals);
+            _saves = Config.NoSaves ? new SaveCleaner() : null;
 
             Roster.Switched += character => Economy.ScheduleWeaponCheck(2000);
             Garage.Destroyed += record => EnvironmentApi.RaiseVehicleDestroyed(record);
@@ -108,6 +112,10 @@ namespace GameEnvironment.Core
 
                 if (busy)
                 {
+                    if (Mode == EnvironmentMode.Sterile)
+                    {
+                        if (Config.OpenGunShopsInMissions) _shops.Tick(true);
+                    }
                     Doors.Release("replay");
                     if (Config.ReplayCharacterFix) ReplayCast.Tick(Globals);
                     if (!_wasBusy)
@@ -122,8 +130,10 @@ namespace GameEnvironment.Core
                     _wasBusy = false;
                     _needsApply = true;
                     _nextClassify = 0;
+                    FallGuard.Arm("replay over");
                     Log.Info("Replay over, Environment resumed.");
                 }
+                FallGuard.Tick();
 
                 if (Mode == EnvironmentMode.Starting || Mode == EnvironmentMode.Waiting || Game.GameTime >= _nextClassify) Classify();
                 if (Mode != EnvironmentMode.Sterile)
@@ -133,13 +143,15 @@ namespace GameEnvironment.Core
                 }
 
                 if (_needsApply) Apply();
+                if (Config.OpenGunShopsInMissions) _shops.Tick(Function.Call<bool>(Hash.GET_MISSION_FLAG));
+                _saves?.Tick(true);
                 WatchPrologue();
                 Roster.Tick();
                 Economy.Tick();
                 Garage.Tick();
                 if (Function.Call<bool>(Hash.GET_MISSION_FLAG)) Doors.Release("mission");
                 else Doors.Tick();
-                if (_autoSaveAt < 0 && Config.AutoSaveMinutes > 0 && _lastSaveAt >= 0 && Game.GameTime - _lastSaveAt >= Config.AutoSaveMinutes * 60000)
+                if (!Config.NoSaves && _autoSaveAt < 0 && Config.AutoSaveMinutes > 0 && _lastSaveAt >= 0 && Game.GameTime - _lastSaveAt >= Config.AutoSaveMinutes * 60000)
                     _autoSaveAt = Game.GameTime;
                 if (_autoSaveAt >= 0 && Game.GameTime >= _autoSaveAt)
                 {
@@ -203,10 +215,11 @@ namespace GameEnvironment.Core
                         return;
                     }
                     Garage.DespawnAll();
-                    PlayableCharacter start = _setup.Run();
+                    bool keep = Config.NoSaves && Store.State.Sterile && !string.IsNullOrEmpty(Store.State.CreatedAt);
+                    PlayableCharacter start = _setup.Run(Config.NoSaves);
                     _prologueWatchUntil = System.Environment.TickCount + PrologueWatchDuration;
                     _autoSaveAt = Game.GameTime + AutoSaveDelay;
-                    _firstApply = false;
+                    _firstApply = keep;
                     _needsApply = true;
                     _lastKind = SaveKind.Sterile;
                     SetMode(EnvironmentMode.Sterile);
@@ -217,7 +230,7 @@ namespace GameEnvironment.Core
                     {
                         SetMode(EnvironmentMode.Sterile);
                         _needsApply = true;
-                        if (Config.AutoSaveMinutes > 0 && _autoSaveAt < 0) _autoSaveAt = Game.GameTime + LoadSaveDelay;
+                        if (!Config.NoSaves && Config.AutoSaveMinutes > 0 && _autoSaveAt < 0) _autoSaveAt = Game.GameTime + LoadSaveDelay;
                     }
                     if (Config.DisableRandomEvents) Function.Call(Hash.SET_RANDOM_EVENT_FLAG, false);
                     if (!_needsApply) ClearCommunications();
@@ -307,6 +320,7 @@ namespace GameEnvironment.Core
             try
             {
                 Store.Save();
+                if (_saves != null && Mode == EnvironmentMode.Sterile && !IsBusy) _saves.Remove("game closing");
                 if (Mode == EnvironmentMode.Sterile)
                 {
                     Garage.DespawnAll();
