@@ -15,8 +15,9 @@ A small Windows program that downloads and installs everything needed to play GT
 
 - Finds your **GTA V Legacy** folder (Rockstar Games Launcher, Steam or Epic), shows the game version and warns if it
   is not 1.0.3889 or 1.0.3725, or if it is the Enhanced edition.
-- Downloads the latest releases from GitHub and installs them:
-  - ScriptHookVDotNet 3.7 (nightly) next to `GTA5.exe`,
+- Downloads and installs (ScriptHookVDotNet and LemonUI are pinned to the versions tested with the mods, the mods
+  and the APWorld come from the latest release of this repository):
+  - ScriptHookVDotNet 3.7 nightly 195 next to `GTA5.exe`,
   - LemonUI, MissionLauncher, GameEnvironment, GameTraps, GameCollectibles and GameArchipelago into a new
     **`Archipelago`** folder next to `GTA5.exe`,
   - `gtav.apworld` into the `custom_worlds` folder of your Archipelago launcher (or `Archipelago/apworld`).

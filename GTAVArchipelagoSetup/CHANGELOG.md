@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.1
+
+- Fix: the game closed when loading story mode with ScriptHookVDotNet nightly 196 or newer. That version needs a new
+  file, `ScriptHookVDotNet.dll`, which the setup did not copy. Run the setup again and click Install / Update.
+- ScriptHookVDotNet and LemonUI are now pinned to the versions tested with the mods (ScriptHookVDotNet nightly 195,
+  LemonUI 2.2) instead of always taking the newest one, so a new release of either can no longer break the install.
+
 ## 1.3.0
 
 - GTA V Legacy 1.0.3889 (latest) is now supported, as well as 1.0.3725.

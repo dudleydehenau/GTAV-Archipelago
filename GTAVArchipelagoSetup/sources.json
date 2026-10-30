@@ -2,17 +2,19 @@
   "Components": [
     {
       "Name": "ScriptHookVDotNet",
-      "Description": "Runs the .NET scripts (nightly build, needed for game versions 1.0.3889 and 1.0.3725).",
+      "Description": "Runs the .NET scripts (nightly 195, tested with the mods, needed for game versions 1.0.3889 and 1.0.3725).",
       "Repo": "scripthookvdotnet/scripthookvdotnet-nightly",
+      "Url": "https://github.com/scripthookvdotnet/scripthookvdotnet-nightly/releases/download/v3.7.0-nightly.195/ScriptHookVDotNet-v3.7.0-nightly.195.zip",
       "Asset": "^ScriptHookVDotNet.*\\.zip$",
       "Prerelease": true,
       "Target": "Game",
-      "Files": [ "ScriptHookVDotNet.asi", "ScriptHookVDotNet2.dll", "ScriptHookVDotNet3.dll", "ScriptHookVDotNet.ini" ]
+      "Files": [ "ScriptHookVDotNet.asi", "ScriptHookVDotNet.dll", "ScriptHookVDotNet2.dll", "ScriptHookVDotNet3.dll", "ScriptHookVDotNet.ini" ]
     },
     {
       "Name": "LemonUI",
-      "Description": "Menu library used by every mod.",
+      "Description": "Menu library used by every mod (2.2, tested with the mods).",
       "Repo": "LemonUIbyLemon/LemonUI",
+      "Url": "https://github.com/LemonUIbyLemon/LemonUI/releases/download/v2.2/LemonUI.zip",
       "Asset": "^LemonUI.*\\.zip$",
       "Target": "Mods",
       "Files": [ "LemonUI.SHVDN3.dll" ]
