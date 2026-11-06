@@ -35,6 +35,9 @@ jobs:
           if [ -z "$version" ]; then version="${GITHUB_REF_NAME#v}"; fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
+      - name: Libraries
+        run: python3 tools/fetch_libs.py
+
       - name: Build
         run: dotnet build GTAV-Archipelago.sln -c Release -nologo -v minimal -p:EnableWindowsTargeting=true
 
