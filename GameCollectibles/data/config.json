@@ -18,5 +18,15 @@
   "SpaceshipParts": true,
   "LetterScraps": true,
   "NuclearWaste": true,
-  "SubmarineParts": true
+  "SubmarineParts": true,
+  "MonkeyMosaics": true,
+  "PeyotePlants": true,
+  "EpsilonTracts": true,
+  "StuntJumps": true,
+  "Bridges": true,
+  "Landmarks": true,
+  "LandmarkBlips": true,
+  "Skills": true,
+  "Escapes": true,
+  "Activities": true
 }

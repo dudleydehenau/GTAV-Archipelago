@@ -2,6 +2,8 @@
 
 ## 1.4.0
 
+- Fix: the game closed when Wild Side gave your character back while the animal was in a car. The animal can no
+  longer get into a vehicle, and it is taken out of one before the change.
 - New trap: **Boing Boing** (`Bouncy`). For 30 s, every car and every person around you bounces like a ball each
   time they touch the ground, you included (53 traps).
 - Only the traps that move you (Alien Abduction, Second Coming, Time Machine, Initial D, Kidnap, Bowling) still run

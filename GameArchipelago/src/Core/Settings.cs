@@ -16,6 +16,8 @@ namespace GameArchipelago.Core
         public bool ShowReceived { get; set; } = true;
         public bool ShowSent { get; set; } = true;
         public bool ShowChat { get; set; } = true;
+        public List<string> HiddenMapGroups { get; set; } = new List<string>();
+        public bool ShowDoneIcons { get; set; }
         public bool ShowHints { get; set; } = true;
         public int NotificationDelay { get; set; } = 900;
         public int LogSize { get; set; } = 80;
@@ -61,6 +63,7 @@ namespace GameArchipelago.Core
                 Log.Info("config.json not found, using defaults.");
             }
             config = config ?? new ClientConfig();
+            if (config.HiddenMapGroups == null) config.HiddenMapGroups = new List<string>();
             if (config.NotificationDelay < 200) config.NotificationDelay = 200;
             if (config.LogSize < 10) config.LogSize = 10;
             if (config.StarterWeapons == null || config.StarterWeapons.Count == 0) config.StarterWeapons = new List<string> { "WEAPON_PISTOL50" };

@@ -1,5 +1,46 @@
 # Changelog
 
+## 1.9.0
+
+- Ammu-Nation is replaced by a new shop (`CustomGunShop`): press E in any Ammu-Nation to browse. The camera turns to
+  your character, who holds each weapon as you scroll; upgrades are shown on the weapon before you buy them. 81
+  weapons, online ones included, in nine categories, plus ammo refills, upgrades and body armor. Weapons bought go to
+  the three characters, upgrades are kept and put back after a death or a new game.
+- API: `CanBuyWeapon`, `CanBuyUpgrades`, `WeaponNote`, `UpgradeNote`, `ShopPriceMultiplier`, `WeaponBought`,
+  `UpgradeBought`, `IsShopOpen` (used by the Archipelago client for the weapon unlocks and the shopsanity).
+- Game shops: barbers, clothes stores, tattoo parlors and Los Santos Customs report each purchase with its
+  category (API: `GameShopPurchase`), and each kind of shop can be kept closed (`SetGameShopLocked`).
+- Darts open for the three characters (the game only opened them after some story missions).
+- The hunting icon is gone: Cletus's hunting needs story scripts the empty world does not run.
+- The race icon next to the Yellow Jack Inn is gone: it belongs to a race cut from the game, it never starts.
+- Locked shops open during missions: Blitz Play needs the mask shop and a Michael mission needs Ponsonbys.
+- Bars, clubs and shops used by activities and missions are unlocked (Tequi-la-la, the Yellow Jack Inn, the golf club
+  gates, the shooting ranges, Epsilon). The log lists the doors still locked at start.
+- API: `FinishedActivityIcons` gives the map icons the game marked as done.
+- With `CustomGunShop` on, every Ammu-Nation is open from the start (the sterile story never opens them).
+- `OpenActivities` (on by default): golf, tennis, darts, yoga, the shooting ranges, Flight School, the stunt plane
+  trials, the off-road, street and sea races, the triathlons, parachuting, hunting and Trevor's jobs are opened from
+  the start, and every shop (clothes, barbers, tattoos, LS Customs...) is open.
+- The map icons of the activities and shops (golf, tennis, races, Flight School, Ammu-Nation, barbers...) are put
+  on the map: the sterile story never shows them.
+- Big planes are delivered at an airfield instead of the street: the nearest of Los Santos International Airport,
+  Sandy Shores Airfield and McKenzie Field (the airliner, the cargo plane and other very big ones always go to the
+  airport). A waypoint is set, and the plane waits there for 30 minutes before going back to the garage.
+- Planes and helicopters get their own map marker.
+- `StartPosition` (`Random` by default): the sterile game starts at a random place of the map (82 spots spread
+  from Paleto Bay to the docks), in the city (Legion Square) or at the character's house (`Home`). An older
+  `RandomStartPosition` setting is still read. API: `SetNextStartPosition`.
+- Activities can be started again: their launchers stopped right away because the game had not drawn their map
+  icon. The icons GameEnvironment draws are now handed to the game as its own.
+- The log lists the activity scripts running near you, to find why one does not start.
+- Off-road races, triathlons and street races are all open from the start: the game normally opens them one by one
+  (each win opens the next) or through Franklin's story.
+- Ammu-Nation: the game's own shop script is now kept off everywhere, not only inside the shop. It was restarting
+  when you walked out and kept blocking jumping, sprinting and the weapon wheel.
+- Ammu-Nation: the weapon shown no longer makes the menu flicker while it loads, and the restrictions the game puts
+  on you in a shop (no weapon switch, no weapon in hand) are lifted when you close the shop and when you leave.
+- API: `StoreNearestVehicle` puts the closest delivered vehicle back in the garage.
+
 ## 1.8.0
 
 - `StartCharacter` is now `Michael` by default (Trevor's trailer in Sandy Shores was a rough start).

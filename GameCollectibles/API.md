@@ -1,4 +1,4 @@
-# GameCollectibles API (ApiVersion 3)
+# GameCollectibles API (ApiVersion 4)
 
 Reference `GameCollectibles.dll` with **Copy Local = false** and use the static class `GameCollectibles.CollectiblesApi`.
 
@@ -23,7 +23,13 @@ CollectiblesApi.SetCollected(serverCheckedIds);
 | `MarkerMode` | Map markers: `"None"`, `"Nearby"` or `"All"` (saved in `config.json`). |
 | `Nearest()` | The closest collectible left, or `null`. Disabled kinds are skipped. |
 | `DisabledKinds`, `SetDisabledKinds(kinds)` | Kinds removed from the world (no object, no marker, cannot be picked up). |
-| `Collected` | Event raised with the id when the player picks one up. |
+| `Collected` | Event raised with the id when the player picks one up or does a feat. |
+| `Feats` | Every free-roam feat as `FeatInfo` (`Id`, `Kind`, `Name`, `Position`, `Done`). |
+| `DisabledFeats`, `SetDisabledFeats(kinds)` | Feat kinds that are not followed (no report, no marker). |
+| `SetLandmarkHints(ids)` | Only these landmarks get a purple marker (`null`: every landmark left). |
+| `GlobalsStatus` | Whether the saved globals used for the bridges were found for this game build. |
 
-`CollectibleKind`: `SpaceshipPart`, `LetterScrap`, `NuclearWaste`, `SubmarinePart`. Ids look like `SpaceshipPart_01`;
+`CollectibleKind`: `SpaceshipPart`, `LetterScrap`, `NuclearWaste`, `SubmarinePart`, `MonkeyMosaic`, `PeyotePlant`,
+`EpsilonTract`. `FeatKind`: `StuntJump`, `UnderBridge`, `KnifeFlight`, `Landmark`, `Skill`, `Escape`.
+`MarkCollected`, `Restore` and `IsCollected` work with feat ids too. Ids look like `SpaceshipPart_01`;
 `Number` is 1-based and follows the game's order.

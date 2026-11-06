@@ -76,6 +76,9 @@ money, completion `???`, characters (unlocked or locked) and vehicles (deliver, 
 | `StartCharacter` | `"Michael"` | `Michael`, `Franklin`, `Trevor` or `Random`. The Archipelago client overrides it with your slot's character. |
 | `CharacterLocking` | `true` | Only the start character is unlocked at first. `false` unlocks all three. |
 | `AllowRelock` | `false` | Lets the API lock a character again (`SetUnlockedCharacters` ignores it). |
+| `OpenActivities` | `true` | Opens every activity of the sterile game from the start: races (all of them, not one by one), triathlons, Flight School, the shooting range categories, golf, tennis, darts, yoga, parachuting and the shops. Street races stay Franklin's, yoga Michael's and hunting Trevor's. |
+| `CustomGunShop` | `true` | Replaces the Ammu-Nation shop with the mod's own (press E inside). |
+| `StartPosition` | `"Random"` | Where a new game puts you: `Home` (next to the character's house), `City` (Legion Square, downtown) or `Random` (82 spots across the map). The Archipelago client overrides it with your slot's `start_position`. |
 | `StartMoney` | `0` | Money of each character on a new game. |
 | `StartHour` | `10` | Hour on a new game. |
 | `DisableRandomEvents` | `true` | No random events. |

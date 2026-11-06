@@ -1,8 +1,10 @@
 # GameCollectibles
 
 Every hidden collectible of GTA V story mode (Legacy, builds 1.0.3889 and 1.0.3725) is replaced by one floating 3D object, placed at
-the official spot and available from the very start, whatever the story progress. Each pickup is reported through
-a public API, which makes every collectible a check for the [Archipelago](https://archipelago.gg) randomizer.
+the official spot and available from the very start, whatever the story progress. The mod also follows the free-roam
+feats: stunt jumps, flights under the bridges, knife flights, landmarks, skill levels and police escapes. Each pickup
+and each feat is reported through a public API, which makes them checks for the [Archipelago](https://archipelago.gg)
+randomizer.
 
 ## Requirements
 
@@ -26,14 +28,34 @@ folder of your game (the folder set as `ScriptsLocation` in `ScriptHookVDotNet.i
 | Letter scraps | 50 | `LetterScrap_01` to `LetterScrap_50` | On land |
 | Nuclear waste | 30 | `NuclearWaste_01` to `NuclearWaste_30` | Underwater |
 | Submarine parts | 30 | `SubmarinePart_01` to `SubmarinePart_30` | Underwater |
+| Monkey mosaics | 50 | `MonkeyMosaic_01` to `MonkeyMosaic_50` | On the ground in front of each mosaic |
+| Peyote plants | 27 | `PeyotePlant_01` to `PeyotePlant_27` | On land, the last six underwater |
+| Epsilon tracts | 10 | `EpsilonTract_01` to `EpsilonTract_10` | Summits, rooftops, one underwater |
 
-160 collectibles in all. The positions come from the game's own scripts (`spaceshipparts`, `letterscraps`,
-`ambient_sonar`, `ambient_diving`), in the same order as the game. The game's own versions are stopped
+247 collectibles in all. The positions come from the game's own scripts (`spaceshipparts`, `letterscraps`,
+`ambient_sonar`, `ambient_diving`, `photographymonkey`, `animal_controller`, `epsilontract`), in the same order as
+the game. Picking up a peyote plant does not turn you into an animal; the game's own mosaics, peyote plants and
+tracts are left alone. The game's own versions are stopped
 (`HideGameCollectibles`) so they never show up twice.
 
 The object (`Model`) floats, spins and glows. It appears when you get within `StreamDistance` m and is picked up
 within `PickupRadius` m on foot, `VehiclePickupRadius` m in a vehicle and `UnderwaterPickupRadius` m in the water
 or in a submarine. With Archipelago, nothing is required for the underwater ones: finding a way down is up to you.
+
+## Free-roam feats
+
+| Feat | Ids | Detection |
+|---|---|---|
+| Stunt jumps | `StuntJump_01` to `StuntJump_50` | A jump the game counts as successful, matched with the closest of the 50 jump starts. |
+| Under the bridge | `UnderBridge_00` to `UnderBridge_69` (50 real bridges) | The game's own bridge flags. |
+| Knife flights | `KnifeFlight_33` to `KnifeFlight_60` (15) | The game's own flags. |
+| Landmarks | `Landmark_MountChiliad`, `Landmark_VinewoodSign`... (44) | You get within the landmark's radius (and above its height for summits and rooftops). Purple markers show the ones left. |
+| Skills | `Skill_Michael_Stamina_10` to `Skill_Trevor_LungCapacity_100` | Each skill stat of each character, every 10 %. |
+| Activities | `Activity_112` to `Activity_309` (67) | The game's own 100 % completion flags (races, Flight School, shooting range, sports, shops...). |
+| Police escapes | `Escape_1` to `Escape_5` | The wanted level goes away after its stars flashed (being busted or wasted does not count). Escaping 4 stars also counts 1 to 3. |
+
+The bridge flags are read from the game's saved globals, for builds 3889 and 3725 (checked at startup, see the log).
+A feat is reported once; its id goes in `collected.json` with the collectibles.
 
 ## Menu (F10)
 
@@ -62,14 +84,16 @@ kind, map markers (`None`, `Nearby`, `All`) and a route to the nearest collectib
 | `BlipDistance` | `250` | Range of the `Nearby` markers. |
 | `HideGameCollectibles` | `true` | Stops the game's own collectible scripts. |
 | `Notify` | `false` | Notification with the count on each pickup (the Archipelago client shows its own, with the next check). |
-| `SpaceshipParts`, `LetterScraps`, `NuclearWaste`, `SubmarineParts` | `true` | One switch per kind. |
+| `SpaceshipParts`, `LetterScraps`, `NuclearWaste`, `SubmarineParts`, `MonkeyMosaics`, `PeyotePlants`, `EpsilonTracts` | `true` | One switch per kind. |
+| `StuntJumps`, `Bridges`, `Landmarks`, `Skills`, `Escapes` | `true` | One switch per feat (`Bridges` covers the knife flights). |
+| `LandmarkBlips` | `true` | Purple markers on the landmarks left. |
 
 ## Files
 
 | File | Content |
 |---|---|
 | `GameCollectibles/config.json` | Settings. |
-| `GameCollectibles/collected.json` | Collected ids (the Archipelago client replaces it with your save of the current game). |
+| `GameCollectibles/collected.json` | Collected and done ids (the Archipelago client replaces it with your save of the current game). |
 | `GameCollectibles/GameCollectibles.log` | Log. |
 
 ## Building

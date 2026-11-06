@@ -3,14 +3,14 @@
 Play **Grand Theft Auto V** story mode in an [Archipelago](https://archipelago.gg) multiworld randomizer.
 
 Los Santos starts empty: no story, one character, no money. Missions, Strangers and Freaks, gold medals, optional
-objectives and 160 hidden collectibles are checks. Michael, Franklin and Trevor, the mission unlocks, money, weapons,
+objectives, 247 hidden collectibles, stunt jumps, bridges, landmarks, skills and police escapes are checks. Michael, Franklin and Trevor, the mission unlocks, money, weapons,
 fun vehicles and more than fifty traps are items, shuffled with the other games of the multiworld.
 
 **[Download the latest release](https://github.com/dudleydehenau/GTAV-Archipelago/releases/latest)**: grab
 `GTAVArchipelagoSetup`, it installs everything else for you.
 
 > [!NOTE]
-> This is version 1.1. It can be played from start to finish, but expect some rough edges. More randomized
+> This is version 1.2. It can be played from start to finish, but expect some rough edges. More randomized
 > content and more options are in development. Feedback is very welcome, see
 > [Feedback and bug reports](#feedback-and-bug-reports).
 
@@ -50,7 +50,7 @@ The full guide (quick start, options, in-game menu, how checks work) is in
 - The mods never save the game, and any save the game writes by itself is deleted: every start is a new game that
   keeps your money, weapons, vehicles and characters. If you played an older version, move the `SGTA5...` files out
   of `Documents\Rockstar Games\GTA V\Profiles\<your profile>` once.
-- If the game still stays on the loading screen, move the newest savefile out of that folder
+- If the game still stays on the loading screen, move the newest `SGTA5...` file (and its `.bak`) out of that folder
   and start again. Your Archipelago progress is not affected.
 
 ## Feedback and bug reports
@@ -79,7 +79,7 @@ Tell me what you were doing when it happened, it helps a lot.
 | [`GameEnvironment`](GameEnvironment) | Sterile open world: a new game without the story, locked characters, money, weapons, vehicles. |
 | [`MissionLauncher`](MissionLauncher) | Starts any mission through the game's replay system: map markers, results, medals. |
 | [`GameTraps`](GameTraps) | The traps. |
-| [`GameCollectibles`](GameCollectibles) | The 160 collectibles. |
+| [`GameCollectibles`](GameCollectibles) | The 247 collectibles and the free-roam feats. |
 | [`GTAVArchipelagoSetup`](GTAVArchipelagoSetup) | The Windows installer. |
 
 Each mod also works on its own and has its own README and changelog.

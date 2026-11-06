@@ -74,14 +74,22 @@ namespace GameArchipelago.Core
             { "Scramjet", new VehicleGift { Name = "Declasse Scramjet", Model = "scramjet", Category = "Scramjet" } },
         };
 
-        public VehicleGift PickVehicle(string seed, int index) => Pick(_vehicles, v => v.Weight, seed, index, IsValidVehicle);
+        public VehicleGift PickVehicle(string seed, int index, ICollection<string> owned = null) =>
+            Pick(Unowned(_vehicles, owned), v => v.Weight, seed, index, IsValidVehicle);
 
-        public VehicleGift PickCategory(string category, string seed, int index)
+        private static List<VehicleGift> Unowned(List<VehicleGift> list, ICollection<string> owned)
         {
-            List<VehicleGift> matching = _vehicles.Where(v => string.Equals(v.Category ?? string.Empty, category, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (owned == null || owned.Count == 0) return list;
+            List<VehicleGift> left = list.Where(v => !owned.Contains(v.Model)).ToList();
+            return left.Count > 0 ? left : list;
+        }
+
+        public VehicleGift PickCategory(string category, string seed, int index, ICollection<string> owned = null)
+        {
+            List<VehicleGift> matching = Unowned(_vehicles.Where(v => string.Equals(v.Category ?? string.Empty, category, StringComparison.OrdinalIgnoreCase)).ToList(), owned);
             VehicleGift picked = matching.Count > 0 ? Pick(matching, v => v.Weight, seed, index, IsValidVehicle) : null;
             if (picked != null && IsValidVehicle(picked)) return picked;
-            return CategoryDefaults.TryGetValue(category, out VehicleGift fallback) ? fallback : PickVehicle(seed, index);
+            return CategoryDefaults.TryGetValue(category, out VehicleGift fallback) ? fallback : PickVehicle(seed, index, owned);
         }
 
         public WeaponGift PickWeapon(string seed, int index) => Pick(_weapons, w => w.Weight, seed, index, IsValidWeapon);

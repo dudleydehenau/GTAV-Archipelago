@@ -12,6 +12,16 @@ namespace GameEnvironment.Core
         private const int MonitorInterval = 500;
         private const int LookInterval = 2000;
         private const float NearbyDistance = 30f;
+        private const float AirfieldSize = 16f;
+        private const float AirportSize = 40f;
+        private const int RemoteWait = 30 * 60 * 1000;
+
+        private static readonly Airfield[] Airfields =
+        {
+            new Airfield("Los Santos International Airport", new Vector3(-1336f, -3044f, 13.9f), 330f, true),
+            new Airfield("Sandy Shores Airfield", new Vector3(1747f, 3273f, 41.1f), 105f, false),
+            new Airfield("McKenzie Field", new Vector3(2128f, 4806f, 41.2f), 115f, false),
+        };
         private readonly EnvironmentConfig _config;
         private readonly StateStore _store;
         private readonly Economy _economy;
@@ -160,6 +170,48 @@ namespace GameEnvironment.Core
             return false;
         }
 
+        public bool StoreNearest(out string error)
+        {
+            error = null;
+            Ped player = Game.Player.Character;
+            if (player == null || !player.Exists())
+            {
+                error = "The player must be alive.";
+                return false;
+            }
+            int best = -1;
+            float distance = 25f;
+            foreach (KeyValuePair<int, Deployment> pair in _deployed)
+            {
+                Vehicle vehicle = pair.Value.Vehicle;
+                if (vehicle == null || !vehicle.Exists() || vehicle.IsDead) continue;
+                float d = vehicle.Position.DistanceTo(player.Position);
+                if (d < distance)
+                {
+                    distance = d;
+                    best = pair.Key;
+                }
+            }
+            if (best < 0)
+            {
+                error = "None of your vehicles is near you (25 m).";
+                return false;
+            }
+            VehicleRecord record = _store.State.FindVehicle(best);
+            Vehicle target = _deployed[best].Vehicle;
+            if (player.IsInVehicle(target))
+            {
+                error = "Get out of the vehicle first.";
+                return false;
+            }
+            Despawn(best, true);
+            if (record != null) record.Status = VehicleStatus.Stored;
+            _store.Save();
+            Log.Info($"Vehicle #{best} stored from the menu.");
+            GTA.UI.Notification.PostTicker($"{(record != null ? DisplayName(record.Model) : "Vehicle")} stored in your garage.", false);
+            return true;
+        }
+
         public bool Remove(int id)
         {
             VehicleRecord record = _store.State.FindVehicle(id);
@@ -282,6 +334,43 @@ namespace GameEnvironment.Core
             return false;
         }
 
+        private static float LargestSide(Model model)
+        {
+            try
+            {
+                (Vector3 min, Vector3 max) = model.Dimensions;
+                Vector3 size = max - min;
+                return Math.Max(size.X, size.Y);
+            }
+            catch
+            {
+                return 0f;
+            }
+        }
+
+        private static bool FindAirfieldSpot(Ped player, bool airportOnly, out Vector3 spot, out float heading, out string place)
+        {
+            spot = Vector3.Zero;
+            heading = 0f;
+            place = null;
+            Vector3 from = player.Position;
+            foreach (Airfield airfield in Airfields.Where(a => a.Airport || !airportOnly).OrderBy(a => a.Position.DistanceToSquared2D(from)))
+            {
+                Vector3 forward = new Vector3((float)-Math.Sin(airfield.Heading * Math.PI / 180.0), (float)Math.Cos(airfield.Heading * Math.PI / 180.0), 0f);
+                foreach (float offset in new[] { 0f, 70f, -70f, 140f })
+                {
+                    Vector3 candidate = airfield.Position + forward * offset;
+                    Function.Call(Hash.REQUEST_COLLISION_AT_COORD, candidate.X, candidate.Y, candidate.Z);
+                    if (Function.Call<bool>(Hash.IS_ANY_VEHICLE_NEAR_POINT, candidate.X, candidate.Y, candidate.Z, 25f)) continue;
+                    spot = candidate + new Vector3(0f, 0f, 1f);
+                    heading = airfield.Heading;
+                    place = airfield.Name;
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private bool Spawn(VehicleRecord record, out string error)
         {
             error = null;
@@ -297,7 +386,21 @@ namespace GameEnvironment.Core
                 error = $"Could not load {DisplayName(record.Model)}.";
                 return false;
             }
-            if (!FindDeliverySpot(player, out Vector3 position, out float heading))
+            float size = LargestSide(model);
+            bool remote = model.IsPlane && size > AirfieldSize;
+            Vector3 position;
+            float heading;
+            string place = null;
+            if (remote)
+            {
+                if (!FindAirfieldSpot(player, size > AirportSize, out position, out heading, out place))
+                {
+                    model.MarkAsNoLongerNeeded();
+                    error = "The airfield is busy: try again in a moment.";
+                    return false;
+                }
+            }
+            else if (!FindDeliverySpot(player, out position, out heading))
             {
                 model.MarkAsNoLongerNeeded();
                 error = "No safe road nearby for the delivery: go to a street and ask again.";
@@ -328,17 +431,29 @@ namespace GameEnvironment.Core
             Function.Call(Hash.SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER, vehicle, true);
             Function.Call(Hash.SET_VEHICLE_IS_STOLEN, vehicle, false);
             Blip blip = vehicle.AddBlip();
-            blip.Sprite = vehicle.Model.IsBike || vehicle.Model.IsBicycle ? BlipSprite.PersonalVehicleBike : BlipSprite.PersonalVehicleCar;
+            blip.Sprite = vehicle.Model.IsPlane ? BlipSprite.Plane
+                : vehicle.Model.IsHelicopter ? BlipSprite.Helicopter
+                : vehicle.Model.IsBike || vehicle.Model.IsBicycle ? BlipSprite.PersonalVehicleBike : BlipSprite.PersonalVehicleCar;
             blip.Color = BlipColor.Blue;
             blip.Name = DisplayName(record.Model);
             var deployment = new Deployment(vehicle, blip);
+            if (remote) deployment.RemoteUntil = Game.GameTime + RemoteWait;
             _deployed[record.Id] = deployment;
             CaptureLook(record, deployment);
             record.Status = VehicleStatus.Delivered;
             record.DeliveryPending = false;
             _store.Save();
-            Log.Info($"Vehicle #{record.Id} {DisplayName(record.Model)} delivered.");
-            GTA.UI.Notification.PostTicker($"{DisplayName(record.Model)} delivered next to you.", false);
+            if (remote)
+            {
+                Function.Call(Hash.SET_NEW_WAYPOINT, position.X, position.Y);
+                Log.Info($"Vehicle #{record.Id} {DisplayName(record.Model)} delivered at {place}.");
+                GTA.UI.Notification.PostTicker($"{DisplayName(record.Model)} is too big for the street: it waits for you at {place} (waypoint set).", false);
+            }
+            else
+            {
+                Log.Info($"Vehicle #{record.Id} {DisplayName(record.Model)} delivered.");
+                GTA.UI.Notification.PostTicker($"{DisplayName(record.Model)} delivered next to you.", false);
+            }
             return true;
         }
 
@@ -365,6 +480,7 @@ namespace GameEnvironment.Core
                     continue;
                 }
                 bool inside = player != null && player.Exists() && player.IsInVehicle(vehicle);
+                if (inside) deployment.RemoteUntil = 0;
                 if (vehicle.IsDead || !vehicle.IsDriveable)
                 {
                     deployment.RemoveBlip();
@@ -378,7 +494,7 @@ namespace GameEnvironment.Core
                     Destroyed?.Invoke(record);
                     continue;
                 }
-                if (!inside && player != null && vehicle.Position.DistanceTo(player.Position) > _config.VehicleStoreDistance)
+                if (!inside && player != null && Game.GameTime >= deployment.RemoteUntil && vehicle.Position.DistanceTo(player.Position) > _config.VehicleStoreDistance)
                 {
                     Despawn(pair.Key, true);
                     record.Status = VehicleStatus.Stored;
@@ -421,6 +537,22 @@ namespace GameEnvironment.Core
                 15000, true, false);
         }
 
+        private sealed class Airfield
+        {
+            public Airfield(string name, Vector3 position, float heading, bool airport)
+            {
+                Name = name;
+                Position = position;
+                Heading = heading;
+                Airport = airport;
+            }
+
+            public string Name { get; }
+            public Vector3 Position { get; }
+            public float Heading { get; }
+            public bool Airport { get; }
+        }
+
         private sealed class Deployment
         {
             private bool _blipVisible = true;
@@ -433,6 +565,7 @@ namespace GameEnvironment.Core
 
             public Vehicle Vehicle { get; }
             public Blip Blip { get; private set; }
+            public int RemoteUntil { get; set; }
             public string LookSignature { get; set; }
 
             public void SetBlipVisible(bool visible)

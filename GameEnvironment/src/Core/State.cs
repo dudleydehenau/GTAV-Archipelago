@@ -14,6 +14,7 @@ namespace GameEnvironment.Core
         public string Owner { get; set; }
         public int StartCharacter { get; set; } = -1;
         public int PendingStartCharacter { get; set; } = -1;
+        public int PendingStartPosition { get; set; } = -1;
         public int LastCharacter { get; set; } = -1;
         public List<CharacterRecord> Characters { get; set; } = new List<CharacterRecord>();
         public List<VehicleRecord> Vehicles { get; set; } = new List<VehicleRecord>();
@@ -32,6 +33,11 @@ namespace GameEnvironment.Core
             foreach (CharacterRecord character in Characters)
             {
                 if (character.Weapons == null) character.Weapons = new List<WeaponRecord>();
+                foreach (WeaponRecord weapon in character.Weapons)
+                {
+                    if (weapon.Owned == null) weapon.Owned = new List<int>();
+                    if (weapon.Equipped == null) weapon.Equipped = new List<int>();
+                }
                 if (character.Money < 0) character.Money = 0;
             }
             if (Vehicles == null) Vehicles = new List<VehicleRecord>();
@@ -51,6 +57,8 @@ namespace GameEnvironment.Core
     {
         public int Hash { get; set; }
         public int Ammo { get; set; }
+        public List<int> Owned { get; set; } = new List<int>();
+        public List<int> Equipped { get; set; } = new List<int>();
     }
 
     internal sealed class VehicleRecord
@@ -117,6 +125,7 @@ namespace GameEnvironment.Core
         public void Reset()
         {
             int pending = State.PendingStartCharacter;
+            int place = State.PendingStartPosition;
             if (File.Exists(_path))
             {
                 try
@@ -130,7 +139,7 @@ namespace GameEnvironment.Core
                     Log.Error("Could not back up state.json.", ex);
                 }
             }
-            State = new EnvironmentState { PendingStartCharacter = pending };
+            State = new EnvironmentState { PendingStartCharacter = pending, PendingStartPosition = place };
             State.Normalize();
         }
     }

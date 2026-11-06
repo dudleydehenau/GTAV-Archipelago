@@ -11,7 +11,7 @@ namespace GameTraps.Traps
 {
     internal sealed class AnimalTransform : Trap
     {
-        private static readonly int[] WheelControls = { 19, 166, 167, 168, 169 };
+        private static readonly int[] WheelControls = { 19, 23, 75, 166, 167, 168, 169 };
         private static readonly Dictionary<string, string> Names = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             { "a_c_cat_01", "a cat" },
@@ -108,6 +108,11 @@ namespace GameTraps.Traps
                 return true;
             }
             if (_diedWhileAnimal) return !Function.Call<bool>(Hash.IS_SCREEN_FADED_IN);
+            if (player.IsInVehicle() || Function.Call<int>(Hash.GET_VEHICLE_PED_IS_TRYING_TO_ENTER, player) != 0)
+            {
+                Function.Call(Hash.CLEAR_PED_TASKS_IMMEDIATELY, player);
+                Spawner.WarpOutOfVehicle(player);
+            }
             if (Game.GameTime >= _until) return false;
             Protect(player, true);
             if (Game.GameTime >= _nextSubtitle)
@@ -158,6 +163,12 @@ namespace GameTraps.Traps
                 Log.Info("The player is no longer the animal, nothing to restore.");
                 DeleteState();
                 return;
+            }
+            if (player.IsInVehicle() || Function.Call<int>(Hash.GET_VEHICLE_PED_IS_TRYING_TO_ENTER, player) != 0)
+            {
+                Function.Call(Hash.CLEAR_PED_TASKS_IMMEDIATELY, player);
+                Spawner.WarpOutOfVehicle(player);
+                Script.Wait(250);
             }
             Spawner.Poof(player.Position);
             var model = new Model(state.Model);

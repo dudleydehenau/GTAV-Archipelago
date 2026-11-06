@@ -69,6 +69,13 @@ namespace GameCollectibles.Core
                 int done = core.Spots.Count(s => s.Kind == kind && core.Store.Contains(s.Id));
                 _menu.Add(new NativeItem(GameText.Kind(kind), string.Empty, $"{done}/{total}") { Enabled = false });
             }
+            foreach (FeatKind kind in Enum.GetValues(typeof(FeatKind)))
+            {
+                int total = core.Feats.All.Count(f => f.Kind == kind);
+                if (total == 0) continue;
+                int done = core.Feats.All.Count(f => f.Kind == kind && core.Store.Contains(f.Id));
+                _menu.Add(new NativeItem(GameText.Feat(kind), string.Empty, $"{done}/{total}") { Enabled = false });
+            }
 
             BlipMode[] modes = { BlipMode.None, BlipMode.Nearby, BlipMode.All };
             string[] names = { "None", "Nearby", "All" };

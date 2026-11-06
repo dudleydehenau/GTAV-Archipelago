@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.0.0
+
+- New collectibles: 50 monkey mosaics (on the ground in front of each mosaic), 27 peyote plants and 10 Epsilon tracts.
+- Free-roam feats, reported through the same `Collected` event: 50 stunt jumps, Under the Bridge, 15 knife flights,
+  44 landmarks with purple map markers, the skill levels of the three characters and police escapes.
+- Activities: the game's completion flags of 67 activities are followed (`Activities`).
+- `HiddenBlips`: collectible kinds whose map markers are hidden (set from F6 > Map); API `SetBlipHidden`,
+  `IsBlipHidden`, `LandmarkBlips`.
+- API 4: `Feats`, `SetDisabledFeats`, `SetLandmarkHints`, `GlobalsStatus`. `MarkCollected`, `Restore` and
+  `IsCollected` accept feat ids too.
+
 ## 1.2.0
 
 - The collectibles are now a pile of diamonds (`ch_prop_casino_diamonds_01a`), size 0.8, easier to spot. A

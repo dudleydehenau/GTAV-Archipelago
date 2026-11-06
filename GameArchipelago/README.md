@@ -3,7 +3,8 @@
 Play **Grand Theft Auto V** story mode in an [Archipelago](https://archipelago.gg) multiworld randomizer.
 
 Los Santos starts empty: no story, one character, no money. Every mission, Strangers and Freaks mission, gold medal,
-optional objective and hidden collectible is a check. Michael, Franklin and Trevor, the mission unlocks, money,
+optional objective and hidden collectible is a check, and so are the free-roam feats: stunt jumps, flights under the
+bridges, knife flights, landmarks to visit, skill levels and police escapes. Michael, Franklin and Trevor, the mission unlocks, money,
 random weapons (online ones included), random fun vehicles (Deluxo, Oppressor Mk II, Stromberg...) and more
 than fifty traps are items, shuffled with the other games of the multiworld.
 
@@ -29,7 +30,7 @@ This folder holds the **Archipelago client** (`GameArchipelago`, a ScriptHookVDo
 | [GameEnvironment](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GameEnvironment) | Sterile open world: new game without the story, locked characters, money, weapons, vehicles. |
 | [MissionLauncher](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/MissionLauncher) | Starts any mission with the game's replay system, mission markers, results and medals. |
 | [GameTraps](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GameTraps) | The 53 traps. |
-| [GameCollectibles](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GameCollectibles) | The 160 hidden collectibles, available from the start. |
+| [GameCollectibles](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GameCollectibles) | The 247 hidden collectibles, available from the start, and the free-roam feats (stunt jumps, bridges, landmarks, skills, police escapes). |
 | **GameArchipelago** (this folder) | Connects to the multiworld, gives the items, sends the checks, in-game menu. |
 | [GTA V Archipelago Setup](https://github.com/dudleydehenau/GTAV-Archipelago/tree/main/GTAVArchipelagoSetup) | Downloads and installs everything. |
 
@@ -80,6 +81,16 @@ The connection is remembered: next time, the client reconnects by itself (`AutoC
 - **Protagonists.** A mission is open only when you have its item, a character who can start it, and every character
   it is played with: a heist with Michael, Franklin and Trevor needs the three of them.
 - **Underwater collectibles** need the Underwater Vehicle item in logic (`guaranteed_vehicles`), placed early.
+- **Free roam.** Stunt jumps, Under the Bridge and knife flights work like the collectibles: a check every N of them,
+  whichever ones. The bridges and knife flights need the Helicopter item in logic (`guaranteed_vehicles`). Each
+  landmark is a check of its own, shown with a purple marker on the map until you go there (F6 > Free Roam > Route
+  to the nearest landmark). Skills send a check every 10 % (or 20 %, 50 %, 100 %, `skill_checks`) of each skill of each
+  character; a character's skills need that character in logic. Police escapes: lose a 1-star to a 5-star wanted
+  level (the stars must flash and go away by themselves).
+- **Ammu-Nation.** Press E in any Ammu-Nation: your character holds each weapon as you scroll (up and down), left
+  and right change the category, Enter buys. An owned weapon opens its upgrades and ammo. With `weapon_shop` on,
+  "Weapon: Pistol" lets you buy the pistol, and with `shopsanity` the first purchase is a check (marked in the shop).
+  Buying it again after losing it gives nothing more.
 - **Money and gifts.** Money goes to the character you play, weapons to the three characters. A *Weapon Gift* is a random weapon from `weapons.json`
   (online weapons included; a weapon you already have gets ammo). A *Vehicle Gift* is a random vehicle from
   `vehicles.json`: land vehicles and aircraft go to your garage (F6 > Vehicles) and are delivered on the nearest road when you ask; boats
@@ -102,7 +113,8 @@ The connection is remembered: next time, the client reconnects by itself (`AutoC
   notification only says who sent a trap, the banner says "Trap!" when it starts. F6 > Recent traps lists them
   precisely.
 - **Goal.** Pass a final mission, The Third Way, a share of your missions, one chosen (or surprise) mission, pick up
-  one random collectible (F6 > Collectibles > Route to your goal), or check one random location (`goal`). F6 >
+  one random collectible (F6 > Collectibles > Route to your goal), check one random location, check a share of all
+  your locations, or check a number of free-roam locations (`goal`). F6 >
   Progress shows which one. The goal is sent automatically, and the room's release setting does the rest.
 - **After the goal** (`post_goal_chaos`): passed missions come back on the map at random every 10 minutes, and the
   other players' checks can set off traps and gifts in your game.
@@ -132,6 +144,8 @@ the Archipelago menu is shown. Each can be turned back on with `"EnableMenu": tr
 | Vehicles | Repair the vehicle you are in (free), have one delivered next to you, or pay to repair a destroyed one (it is delivered at once). |
 | Boats | Boats and submarines from Vehicle Gifts: call one in the nearest deep water. |
 | Collectibles | Count per kind, map markers (none, nearby, all) and a route to the nearest one (needs the Collectible Radar with `collectible_radar: item`). |
+| Map | Show or hide each collectible kind, the landmarks and the game's icons for each activity and shop. Finished activities disappear; "Show finished places" keeps them with a tick. Saved in `config.json` (`HiddenMapGroups`, `ShowDoneIcons`). |
+| Free Roam | Stunt jumps, bridges and knife flights done, landmarks visited (with a route to the nearest one), skill and police escape checks. |
 | Settings | Stream safe and **Create a bug report**. The rest (DeathLink, traps in missions...) is set in your options file. |
 
 ## Items
@@ -158,17 +172,30 @@ the Archipelago menu is shown. Each can be turned back on with `"EnableMenu": tr
 | Objective N | `objective_checks` | Your Nth different optional objective passed. |
 | Spaceship Parts: at N collected, Letter Scraps: at N collected | up to 50 each | You have picked up N of them, whichever ones (the number is a count, not the number of one object). |
 | Nuclear Waste: at N collected, Submarine Parts: at N collected | up to 30 each | Same, underwater (Underwater Vehicle in logic). |
-| *Collectible milestone* (Bonus 1), (Bonus 2) | with `checks_per_collectible` 2 or 3 | Same time as the milestone. |
+| Monkey Mosaics: at N collected | up to 50 | The 50 street art mosaics: the object waits on the ground in front of each one. |
+| Peyote Plants: at N collected | up to 27 | The 27 peyote plants (six underwater: Underwater Vehicle in logic for the whole kind). Picking one up does not turn you into an animal. |
+| Epsilon Tracts: at N collected | up to 10 | The 10 Epsilon tracts, some on summits and rooftops, one underwater. |
+| Stunt Jumps: N completed | up to 50 | You have landed N different stunt jumps (any vehicle). |
+| Under the Bridge: N flown, Knife Flights: N flown | up to 50 and 15 | You have flown under N different bridges / between N pairs of buildings (plane or helicopter, Helicopter in logic). |
+| *Collectible or free-roam milestone* (Bonus 1), (Bonus 2) | with `checks_per_collectible` 2 or 3 | Same time as the milestone. |
+| Visit *landmark* | 44 with `landmarks` | You reach the place (Mount Chiliad Summit and the rooftops need you at the top). |
+| *Character*: *Skill* N% | up to 210 with `skill_checks` | That skill of that character reaches N %. |
+| Escape a N-star wanted level | 5 with `police_escapes` | You lose a wanted level of N stars or more. |
+| Activity: *name* | 52 with `activities` | The game counts the activity as done for 100 % (a race finished, a Flight School lesson passed, a round of golf...). |
+| Buy *weapon*, Buy *weapon*: *upgrade* | with `weapon_shop` / `weapon_upgrades` on `shopsanity` | First purchase at Ammu-Nation. |
 
 ## Options
 
 | Option | Default | Values | Description |
 |---|---|---|---|
-| `goal` | `finale` | `finale`, `the_third_way`, `mission_percentage`, `one_mission`, `one_collectible`, `one_check` | Pass a final mission; pass The Third Way; pass a share of your missions; pass the mission chosen in `goal_mission`; pick up one random collectible; check one random location of your world. |
+| `goal` | `finale` | `finale`, `the_third_way`, `mission_percentage`, `one_mission`, `one_collectible`, `one_check`, `check_percentage`, `free_roam` | Pass a final mission; pass The Third Way; pass a share of your missions; pass the mission chosen in `goal_mission`; pick up one random collectible; check one random location of your world; check a share of all your locations; check a number of free-roam locations. |
 | `goal_mission` | `surprise` | `surprise` or a mission name (`the_paleto_score`, `rampage_3`...) | The mission of the `one_mission` goal. `surprise` picks one that needs a character you do not start with. |
 | `mission_goal_percentage` | `70` | 10 to 100 | Percentage of missions for the `missions` goal. |
+| `goal_check_percentage` | `60` | 10 to 100 | Percentage of all your locations for the `check_percentage` goal. |
+| `goal_free_roam_checks` | `50` | 5 to 500 | Free-roam locations for the `free_roam` goal (capped at the ones in your world). |
 | `mission_count` | `30` | 10 to 111 | Missions in your world, picked at random (the goal missions are always kept). |
 | `starting_character` | `random` | `michael`, `franklin`, `trevor`, `random` | Your first character. |
+| `start_position` | `anywhere` | `home`, `city`, `anywhere` | Where a new game puts you: the character's house, Legion Square downtown, or anywhere on the map. |
 | `starting_missions` | `3` | 1 to 10 | Missions of your starting character unlocked from the start. |
 | `strangers_and_freaks` | `true` | `true`, `false` | Adds the 44 replayable Strangers and Freaks missions. |
 | `checks_per_mission` | `1` | 1 to 3 | Locations per mission (more room for items without more tasks). |
@@ -178,8 +205,25 @@ the Archipelago menu is shown. Each can be turned back on with `"EnableMenu": tr
 | `letter_scraps_per_check` | `1` | 0 to 50 | Same for letter scraps. |
 | `nuclear_waste_per_check` | `1` | 0 to 30 | Same for nuclear waste (underwater). |
 | `submarine_parts_per_check` | `1` | 0 to 30 | Same for submarine parts (underwater). |
-| `checks_per_collectible` | `2` | 1 to 3 | Locations each collectible milestone is worth. |
+| `monkey_mosaics_per_check` | `1` | 0 to 50 | Same for the monkey mosaics. |
+| `peyote_plants_per_check` | `1` | 0 to 27 | Same for the peyote plants (six underwater). |
+| `epsilon_tracts_per_check` | `1` | 0 to 10 | Same for the Epsilon tracts. |
+| `stunt_jumps_per_check` | `1` | 0 to 50 | Stunt jumps per check. |
+| `bridges_per_check` | `1` | 0 to 50 | Flights under a bridge per check. |
+| `knife_flights_per_check` | `1` | 0 to 15 | Knife flights per check. |
+| `landmarks` | `true` | `true`, `false` | The 44 landmarks to visit. |
+| `skill_checks` | `every_10` | `off`, `every_10`, `every_20`, `every_50`, `only_100` | Skill levels that are checks, for each skill of each character. |
+| `police_escapes` | `true` | `true`, `false` | The five police escape checks. |
+| `checks_per_collectible` | `2` | 1 to 3 | Locations each collectible, stunt jump, bridge and knife flight milestone is worth. |
+| `activities` | `true` | `true`, `false` | 58 activities as checks (races, triathlons, Flight School, shooting range, tennis, golf, darts, yoga, parachuting, a movie, the cable car, a haircut...), all opened from the start. |
+| `trevor_jobs` | `false` | `true`, `false` | Not available in this version, no effect: Trevor's bail bonds, trafficking runs and hunting need story scripts the empty world does not run. |
+| `weapon_shop` | `shopsanity` | `gifts`, `unlocks`, `shopsanity` | `gifts`: random Weapon Gifts, everything for sale. `unlocks`: each weapon is an item that lets you buy it at Ammu-Nation (the only way to get it). `shopsanity`: the same, and the first purchase of each weapon is a check. |
+| `weapon_upgrades` | `off` | `off`, `unlocks`, `shopsanity` | The same for the upgrades of each weapon (one "Upgrades" item per weapon, 267 upgrade checks with `shopsanity`). |
+| `weapon_price_multiplier` | `100` | 10 to 500 | Prices at Ammu-Nation, in percent. |
+| `game_shops` | `true` | `true`, `false` | Shopsanity for barbers, clothes stores, tattoo parlors and Los Santos Customs: the first purchase of each category is a check (29 in all). Each kind of shop stays closed until its item ("Shop: Los Santos Customs"...). |
 | `collectible_radar` | `item` | `start`, `item` | Whether the route to the nearest collectible is given at the start or is an item. |
+| `vehicle_unlocks` | `true` | `true`, `false` | Each of the 62 vehicles is its own item, received once (replaces Vehicle Gifts and the guaranteed vehicles; bridges need any aircraft, underwater checks any submarine). |
+| `early_vehicles` | `true` | `true`, `false` | With `vehicle_unlocks`: a small plane and a submarine are placed early in the run. |
 | `guaranteed_vehicles` | `true` | `true`, `false` | Adds the six guaranteed vehicles; the underwater collectibles then need the Underwater Vehicle. |
 | `starting_drive_by_weapon` | `true` | `true`, `false` | Start with a Micro SMG (600 rounds, all characters) that can be fired from a car. |
 | `mission_weapons` | `false` | `true`, `false` | Each mission starts with a basic weapon kit, taken back afterwards. Off by default: you play with the weapons you received. |
@@ -193,14 +237,15 @@ the Archipelago menu is shown. Each can be turned back on with `"EnableMenu": tr
 
 Presets (website: "Preset" list at the top of the player options page; launcher: "Generate Template Options" writes
 them to `Players/Templates/Presets`; also in the `presets` folder here): **Ten Hours** (finale, 80
-missions, about 10 hours to the goal), **Short** (20 missions, spaceship parts only, about 6 h 30), **One Mission** (50 missions
+missions, about 10 hours to the goal), **Short** (20 missions, spaceship parts and a few free-roam checks, about 3 hours to the goal), **One Mission** (50 missions
 and a surprise mission as the goal), **Everything** (every mission, two checks per mission, 40 gold medals, 120 objectives,
-every collectible, about 40 hours), **Stream Safe** (no `Irresistible`).
+every collectible and every free-roam check), **Free Roam** (20 missions, the goal is 120 free-roam checks),
+**Stream Safe** (no `Irresistible`).
 
-Length: count about 10 minutes per story mission (20 for a heist), 6 per Strangers and Freaks mission and 2 per
-collectible. F6 > Progress and the spoiler log show two estimates: the time to the goal (the missions it needs, plus
+Length: count about 10 minutes per story mission (20 for a heist), 6 per Strangers and Freaks mission, 2 per
+collectible, 3 per stunt jump, landmark or police escape and 1 per skill level. F6 > Progress and the spoiler log show two estimates: the time to the goal (the missions it needs, plus
 30 % for unlocks and driving) and the upper bound for every location. With the default options (finale, 30 missions) the goal
-takes about 4 hours and every location about 11 h 30; 30 % of 30 missions takes under 2 hours.
+takes about 4 hours and every location about 26 hours (the free-roam checks are most of it).
 
 Balancing tips: the host can make a slot lighter or heavier without touching the others. Collectibles "worth half
 a check" (2 pickups per check) or missions "worth two checks" (`checks_per_mission: 2`) both work. With few
@@ -213,6 +258,7 @@ Grand Theft Auto V:
   goal: finale
   mission_count: 30
   starting_character: random
+  start_position: anywhere
   starting_missions: 3
   strangers_and_freaks: true
   checks_per_mission: 1

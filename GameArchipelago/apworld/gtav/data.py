@@ -1,5 +1,10 @@
 from typing import NamedTuple
 
+try:
+    from .shop import UPGRADES, WEAPONS, Upgrade, Weapon
+except ImportError:
+    from shop import UPGRADES, WEAPONS, Upgrade, Weapon
+
 GAME = "Grand Theft Auto V"
 BASE_ID = 7_354_000
 
@@ -258,11 +263,168 @@ SCRAMJET = "Scramjet"
 GUARANTEED_VEHICLES = (SPORTS_CAR, MOTORCYCLE, HELICOPTER, UNDERWATER_VEHICLE, BOAT, SCRAMJET)
 
 
+class Vehicle(NamedTuple):
+    model: str
+    name: str
+    water: bool
+    kind: str
+
+
+VEHICLES = (
+    Vehicle("deluxo", "Imponte Deluxo", False, ""),
+    Vehicle("oppressor2", "Pegassi Oppressor Mk II", False, ""),
+    Vehicle("oppressor", "Pegassi Oppressor", False, ""),
+    Vehicle("ztype", "Grotti Z-Type", False, ""),
+    Vehicle("jb700", "Dewbauchee JB 700", False, ""),
+    Vehicle("stromberg", "Ocelot Stromberg", False, "sub"),
+    Vehicle("toreador", "Pegassi Toreador", False, "sub"),
+    Vehicle("shotaro", "Nagasaki Shotaro", False, ""),
+    Vehicle("vigilante", "Grotti Vigilante", False, ""),
+    Vehicle("scramjet", "Declasse Scramjet", False, ""),
+    Vehicle("ruiner2", "Imponte Ruiner 2000", False, ""),
+    Vehicle("voltic2", "Coil Rocket Voltic", False, ""),
+    Vehicle("dune4", "BF Ramp Buggy", False, ""),
+    Vehicle("blazer5", "Nagasaki Blazer Aqua", False, ""),
+    Vehicle("apc", "HVY APC", False, ""),
+    Vehicle("khanjali", "Khanjali", False, ""),
+    Vehicle("rhino", "Rhino Tank", False, ""),
+    Vehicle("thruster", "Mammoth Thruster", False, ""),
+    Vehicle("zentorno", "Pegassi Zentorno", False, ""),
+    Vehicle("adder", "Truffade Adder", False, ""),
+    Vehicle("t20", "Progen T20", False, ""),
+    Vehicle("pariah", "Ocelot Pariah", False, ""),
+    Vehicle("bati", "Pegassi Bati 801", False, ""),
+    Vehicle("hakuchou2", "Shitzu Hakuchou Drag", False, ""),
+    Vehicle("faggio2", "Western Faggio", False, ""),
+    Vehicle("monster", "Monster Truck", False, ""),
+    Vehicle("insurgent2", "HVY Insurgent", False, ""),
+    Vehicle("seasparrow", "Buckingham Sea Sparrow", False, "heli"),
+    Vehicle("akula", "Buckingham Akula", False, "heli"),
+    Vehicle("buzzard", "Buzzard Attack Chopper", False, "heli"),
+    Vehicle("maverick", "Buckingham Maverick", False, "heli"),
+    Vehicle("hydra", "Mammoth Hydra", False, "plane"),
+    Vehicle("dodo", "Mammoth Dodo", False, "plane"),
+    Vehicle("submersible2", "Kraken Submarine", True, "sub"),
+    Vehicle("submersible", "Submersible", True, "sub"),
+    Vehicle("seashark", "Speedophile Seashark", True, "boat"),
+    Vehicle("speeder", "Pegassi Speeder", True, "boat"),
+    Vehicle("longfin", "Shitzu Longfin", True, "boat"),
+    Vehicle("toro", "Lampadati Toro", True, "boat"),
+    Vehicle("stunt", "Mallard Stunt Plane", False, "plane"),
+    Vehicle("velum2", "JoBuilt Velum", False, "plane"),
+    Vehicle("mammatus", "JoBuilt Mammatus", False, "plane"),
+    Vehicle("duster", "Western Duster", False, "plane"),
+    Vehicle("cuban800", "Cuban 800", False, "plane"),
+    Vehicle("microlight", "Ultralight", False, "plane"),
+    Vehicle("seabreeze", "Western Seabreeze", False, "plane"),
+    Vehicle("howard", "Buckingham Howard NX-25", False, "plane"),
+    Vehicle("blimp", "Atomic Blimp", False, ""),
+    Vehicle("blimp2", "Xero Blimp", False, ""),
+    Vehicle("lazer", "Mammoth P-996 LAZER", False, "plane"),
+    Vehicle("pyro", "Buckingham Pyro", False, "plane"),
+    Vehicle("besra", "Mammoth Besra", False, "plane"),
+    Vehicle("luxor2", "Buckingham Luxor Deluxe (gold)", False, "plane"),
+    Vehicle("luxor", "Buckingham Luxor", False, "plane"),
+    Vehicle("shamal", "Buckingham Shamal", False, "plane"),
+    Vehicle("vestra", "Buckingham Vestra", False, "plane"),
+    Vehicle("miljet", "Buckingham Miljet", False, "plane"),
+    Vehicle("nimbus", "Buckingham Nimbus", False, "plane"),
+    Vehicle("alphaz1", "Buckingham Alpha-Z1", False, "plane"),
+    Vehicle("jet", "Jet (airliner)", False, "plane"),
+    Vehicle("cargoplane", "Cargo Plane", False, "plane"),
+    Vehicle("titan", "Eckhart Titan", False, "plane"),
+)
+AIRCRAFT = tuple(v for v in VEHICLES if v.kind in ("heli", "plane"))
+SUBMARINES = tuple(v for v in VEHICLES if v.kind == "sub")
+
+
+class Activity(NamedTuple):
+    entry: int
+    name: str
+    group: str
+    character: str
+
+
+ACTIVITIES = (
+    Activity(112, "Off-Road Race 1", "races", ""),
+    Activity(113, "Off-Road Race 2", "races", ""),
+    Activity(114, "Off-Road Race 3", "races", ""),
+    Activity(115, "Off-Road Race 4", "races", ""),
+    Activity(116, "Off-Road Race 5", "races", ""),
+    Activity(117, "Off-Road Race 6", "races", ""),
+    Activity(119, "Shooting Range: Handguns", "range", ""),
+    Activity(120, "Shooting Range: SMGs", "range", ""),
+    Activity(121, "Shooting Range: Rifles", "range", ""),
+    Activity(122, "Shooting Range: Machine Guns", "range", ""),
+    Activity(123, "Shooting Range: Heavy Weapons", "range", ""),
+    Activity(124, "Shooting Range: Shotguns", "range", ""),
+    Activity(125, "Stunt Plane Time Trials", "flight", ""),
+    Activity(126, "Tennis", "sports", ""),
+    Activity(127, "Golf", "sports", ""),
+    Activity(130, "Darts", "sports", ""),
+    Activity(300, "Yoga", "sports", "Michael"),
+    Activity(128, "Base Jumping", "parachute", ""),
+    Activity(129, "Skydiving", "parachute", ""),
+    Activity(141, "Triathlon 1", "races", ""),
+    Activity(142, "Triathlon 2", "races", ""),
+    Activity(143, "Triathlon 3", "races", ""),
+    Activity(132, "Sea Race 1", "races", ""),
+    Activity(133, "Sea Race 2", "races", ""),
+    Activity(134, "Sea Race 3", "races", ""),
+    Activity(135, "Sea Race 4", "races", ""),
+    Activity(136, "Street Race: City Circuit", "races", "Franklin"),
+    Activity(137, "Street Race: Airport", "races", "Franklin"),
+    Activity(138, "Street Race: Freeway", "races", "Franklin"),
+    Activity(139, "Street Race: Vespucci Canals", "races", "Franklin"),
+    Activity(140, "Street Race: South Los Santos", "races", "Franklin"),
+    Activity(181, "Flight School Lesson 1", "flight", ""),
+    Activity(182, "Flight School Lesson 2", "flight", ""),
+    Activity(183, "Flight School Lesson 3", "flight", ""),
+    Activity(184, "Flight School Lesson 4", "flight", ""),
+    Activity(185, "Flight School Lesson 5", "flight", ""),
+    Activity(186, "Flight School Lesson 6", "flight", ""),
+    Activity(187, "Flight School Lesson 7", "flight", ""),
+    Activity(188, "Flight School Lesson 8", "flight", ""),
+    Activity(189, "Flight School Lesson 9", "flight", ""),
+    Activity(190, "Flight School Lesson 10", "flight", ""),
+    Activity(191, "Flight School Lesson 11", "flight", ""),
+    Activity(192, "Flight School Lesson 12", "flight", ""),
+    Activity(288, "Watch a Movie", "leisure", ""),
+    Activity(301, "Ride the Cable Car", "leisure", ""),
+    Activity(302, "Car Wash", "leisure", ""),
+    Activity(304, "Buy Clothes", "leisure", ""),
+    Activity(305, "Modify a Car", "leisure", ""),
+    Activity(306, "Get a Haircut", "leisure", ""),
+    Activity(307, "Get a Tattoo", "leisure", ""),
+    Activity(309, "Watch TV", "leisure", ""),
+    Activity(297, "Hold Up a Store", "leisure", ""),
+    Activity(149, "Bail Bond 1", "trevor", "Trevor"),
+    Activity(150, "Bail Bond 2", "trevor", "Trevor"),
+    Activity(151, "Bail Bond 3", "trevor", "Trevor"),
+    Activity(152, "Bail Bond 4", "trevor", "Trevor"),
+    Activity(153, "Air Trafficking 1", "trevor", "Trevor"),
+    Activity(154, "Air Trafficking 2", "trevor", "Trevor"),
+    Activity(155, "Air Trafficking 3", "trevor", "Trevor"),
+    Activity(156, "Air Trafficking 4", "trevor", "Trevor"),
+    Activity(157, "Air Trafficking 5", "trevor", "Trevor"),
+    Activity(158, "Ground Trafficking 1", "trevor", "Trevor"),
+    Activity(159, "Ground Trafficking 2", "trevor", "Trevor"),
+    Activity(160, "Ground Trafficking 3", "trevor", "Trevor"),
+    Activity(161, "Ground Trafficking 4", "trevor", "Trevor"),
+    Activity(162, "Ground Trafficking 5", "trevor", "Trevor"),
+    Activity(180, "Hunting", "trevor", "Trevor"),
+)
+
+
 class Collectible(NamedTuple):
     key: str
     name: str
     total: int
     underwater: bool
+    label: str = "at {n} collected"
+    aircraft: bool = False
+    feat: bool = False
+    minutes: int = 2
 
 
 COLLECTIBLES = (
@@ -270,7 +432,77 @@ COLLECTIBLES = (
     Collectible("LetterScrap", "Letter Scraps", 50, False),
     Collectible("NuclearWaste", "Nuclear Waste", 30, True),
     Collectible("SubmarinePart", "Submarine Parts", 30, True),
+    Collectible("MonkeyMosaic", "Monkey Mosaics", 50, False),
+    Collectible("PeyotePlant", "Peyote Plants", 27, True),
+    Collectible("EpsilonTract", "Epsilon Tracts", 10, False, minutes=4),
+    Collectible("StuntJump", "Stunt Jumps", 50, False, "{n} completed", feat=True, minutes=3),
+    Collectible("UnderBridge", "Under the Bridge", 50, False, "{n} flown", True, True, 2),
+    Collectible("KnifeFlight", "Knife Flights", 15, False, "{n} flown", True, True, 3),
 )
+PICKUPS = tuple(c for c in COLLECTIBLES if not c.feat)
+
+LANDMARKS = (
+    ("MountChiliad", "Mount Chiliad Summit"),
+    ("MazeBankTower", "Maze Bank Tower Roof"),
+    ("FibBuilding", "FIB Building Roof"),
+    ("IaaBuilding", "IAA Building Roof"),
+    ("VinewoodSign", "Vinewood Sign"),
+    ("Observatory", "Galileo Observatory"),
+    ("LandActDam", "Land Act Dam"),
+    ("DelPerroPier", "Del Perro Pier"),
+    ("Airport", "Los Santos International Airport"),
+    ("SandyShoresAirfield", "Sandy Shores Airfield"),
+    ("Prison", "Bolingbroke Penitentiary"),
+    ("HumaneLabs", "Humane Labs"),
+    ("FortZancudo", "Fort Zancudo"),
+    ("PaletoSheriff", "Paleto Bay Sheriff's Office"),
+    ("Grapeseed", "Grapeseed"),
+    ("StabCity", "Stab City"),
+    ("TrevorsTrailer", "Trevor's Trailer"),
+    ("AltruistCamp", "Altruist Camp"),
+    ("KortzCenter", "Kortz Center"),
+    ("MichaelsHouse", "Michael's House"),
+    ("FranklinsHouse", "Franklin's House"),
+    ("GroveStreet", "Grove Street"),
+    ("LestersHouse", "Lester's House"),
+    ("FloydsApartment", "Floyd's Apartment"),
+    ("MazeBankArena", "Maze Bank Arena"),
+    ("PillboxMedical", "Pillbox Hill Medical Center"),
+    ("VespucciBeach", "Vespucci Beach"),
+    ("ChumashPier", "Chumash Pier"),
+    ("ElGordoLighthouse", "El Gordo Lighthouse"),
+    ("WindFarm", "RON Alternates Wind Farm"),
+    ("SatelliteArray", "Satellite Dishes"),
+    ("Sawmill", "Paleto Forest Sawmill"),
+    ("AlamoSea", "Alamo Sea"),
+    ("PacificStandard", "Pacific Standard Bank"),
+    ("GolfClub", "Los Santos Golf Club"),
+    ("BahamaMamas", "Bahama Mamas"),
+    ("TequiLaLa", "Tequi-la-la"),
+    ("CluckinBell", "Cluckin' Bell Farms"),
+    ("Hookies", "Hookies"),
+    ("MirrorPark", "Mirror Park"),
+    ("Port", "Port of Los Santos"),
+    ("PaletoBank", "Blaine County Savings Bank"),
+    ("LosSantosCustoms", "Los Santos Customs"),
+    ("MadrazoRanch", "Madrazo's Ranch"),
+)
+
+SKILLS = (
+    "Stamina",
+    "Shooting",
+    "Strength",
+    "Stealth",
+    "Flying",
+    "Driving",
+    "Lung Capacity",
+)
+SKILL_LEVELS = tuple(range(10, 101, 10))
+MAX_ESCAPE_STARS = 5
+LANDMARK_MINUTES = 3
+ACTIVITY_MINUTES = 8
+SKILL_MINUTES = 1
+ESCAPE_MINUTES = 3
 
 MAX_GOLD_MEDALS = 123
 MAX_OBJECTIVES = 250
@@ -301,11 +533,109 @@ def objective_location(index: int) -> str:
 
 
 def collectible_location(collectible: Collectible, count: int) -> str:
-    return f"{collectible.name}: at {count} collected"
+    return f"{collectible.name}: {collectible.label.format(n=count)}"
 
 
 def collectible_bonus_location(collectible: Collectible, count: int, index: int) -> str:
-    return f"{collectible.name}: at {count} collected (Bonus {index})"
+    return f"{collectible_location(collectible, count)} (Bonus {index})"
+
+
+def landmark_id(key: str) -> str:
+    return "Landmark_" + key
+
+
+def landmark_location(name: str) -> str:
+    return "Visit " + name
+
+
+def skill_key(skill: str) -> str:
+    return skill.replace(" ", "")
+
+
+def skill_id(character: str, skill: str, level: int) -> str:
+    return f"Skill_{character}_{skill_key(skill)}_{level}"
+
+
+def skill_location(character: str, skill: str, level: int) -> str:
+    return f"{character}: {skill} {level}%"
+
+
+def activity_id(activity: "Activity") -> str:
+    return f"Activity_{activity.entry}"
+
+
+def activity_location(activity: "Activity") -> str:
+    return "Activity: " + activity.name
+
+
+def escape_id(stars: int) -> str:
+    return f"Escape_{stars}"
+
+
+def escape_location(stars: int) -> str:
+    return f"Escape a {stars}-star wanted level"
+
+
+def vehicle_item(vehicle: Vehicle) -> str:
+    return "Vehicle: " + vehicle.name
+
+
+def weapon_item(weapon: Weapon) -> str:
+    return "Weapon: " + weapon.name
+
+
+def upgrades_item(weapon: Weapon) -> str:
+    return "Upgrades: " + weapon.name
+
+
+def weapon_location(weapon: Weapon) -> str:
+    return "Buy " + weapon.name
+
+
+def upgrade_location(weapon: Weapon, upgrade: Upgrade) -> str:
+    return f"Buy {weapon.name}: {upgrade.name}"
+
+
+UPGRADE_WEAPONS = tuple(w for w in WEAPONS if w.id in UPGRADES)
+
+
+class GameShop(NamedTuple):
+    key: str
+    label: str
+    categories: tuple
+
+
+GAME_SHOPS = (
+    GameShop("Barber", "Barber", ("Haircut", "Beard")),
+    GameShop("Clothes", "Clothes Store", ("Tops", "Pants", "Shoes", "Hats", "Glasses", "Outfits", "Masks")),
+    GameShop("Tattoo", "Tattoo Parlor", ("Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg")),
+    GameShop("Customs", "Los Santos Customs", (
+        "Engine", "Brakes", "Transmission", "Suspension", "Armor", "Turbo", "Horn", "Headlights",
+        "Wheels", "Tires", "Respray", "Windows", "Plate", "Body Kit",
+    )),
+)
+
+
+GAME_SHOP_PRICES = {
+    ("Customs", "Engine"): 2000,
+    ("Customs", "Brakes"): 2000,
+    ("Customs", "Transmission"): 3000,
+    ("Customs", "Suspension"): 2000,
+    ("Customs", "Armor"): 3000,
+    ("Customs", "Turbo"): 12500,
+    ("Customs", "Wheels"): 2000,
+    ("Customs", "Body Kit"): 2000,
+}
+
+FREE_MONEY = 2000
+
+
+def game_shop_item(shop: GameShop) -> str:
+    return "Shop: " + shop.label
+
+
+def game_shop_location(shop: GameShop, category: str) -> str:
+    return f"{shop.label}: {category}"
 
 
 def build_item_table() -> dict:
@@ -322,8 +652,17 @@ def build_item_table() -> dict:
         table[name] = BASE_ID + 90 + i
     for i, (_, title) in enumerate(TRAPS):
         table[trap_item(title)] = BASE_ID + 200 + i
+    for i, vehicle in enumerate(VEHICLES):
+        table[vehicle_item(vehicle)] = BASE_ID + 500 + i
+    for i, weapon in enumerate(WEAPONS):
+        table[weapon_item(weapon)] = BASE_ID + 300 + i
+    for i, weapon in enumerate(WEAPONS):
+        if weapon.id in UPGRADES:
+            table[upgrades_item(weapon)] = BASE_ID + 400 + i
     for i, mission in enumerate(MISSIONS):
         table[mission_item(mission)] = BASE_ID + 1000 + i
+    for i, shop in enumerate(GAME_SHOPS):
+        table[game_shop_item(shop)] = BASE_ID + 600 + i
     return table
 
 
@@ -342,7 +681,31 @@ def build_location_table() -> dict:
             table[collectible_location(collectible, n)] = BASE_ID + 6000 + k * 100 + n
             for b in range(1, MAX_COLLECTIBLE_BONUS + 1):
                 table[collectible_bonus_location(collectible, n, b)] = BASE_ID + 6000 + b * 1000 + k * 100 + n
+    for c, character in enumerate(CHARACTERS):
+        for s, skill in enumerate(SKILLS):
+            for level in SKILL_LEVELS:
+                table[skill_location(character, skill, level)] = BASE_ID + 9000 + c * 100 + s * 10 + level // 10
+    for i, (_, name) in enumerate(LANDMARKS):
+        table[landmark_location(name)] = BASE_ID + 9500 + i
+    for stars in range(1, MAX_ESCAPE_STARS + 1):
+        table[escape_location(stars)] = BASE_ID + 9700 + stars
+    for i, activity in enumerate(ACTIVITIES):
+        table[activity_location(activity)] = BASE_ID + 9600 + i
+    for i, weapon in enumerate(WEAPONS):
+        table[weapon_location(weapon)] = BASE_ID + 9800 + i
+        for j, upgrade in enumerate(UPGRADES.get(weapon.id, ())):
+            table[upgrade_location(weapon, upgrade)] = BASE_ID + 10000 + i * 20 + j
+    for k, shop in enumerate(GAME_SHOPS):
+        for c, category in enumerate(shop.categories):
+            table[game_shop_location(shop, category)] = BASE_ID + 9900 + k * 20 + c
     return table
+
+
+def skill_location_id(character: str, skill: str, level: int) -> int:
+    return BASE_ID + 9000 + CHARACTERS.index(character) * 100 + SKILLS.index(skill) * 10 + level // 10
+
+
+FREE_ROAM_KEYS = ("MonkeyMosaic", "PeyotePlant", "EpsilonTract", "StuntJump", "UnderBridge", "KnifeFlight")
 
 
 ITEM_NAME_TO_ID = build_item_table()

@@ -34,7 +34,7 @@ game: Grand Theft Auto V
 requires:
   version: 0.6.9 # Version of Archipelago required for this yaml to work as expected.
   game:
-    Grand Theft Auto V: 1.7.2 # Version of the world required for this yaml to work as expected.
+    Grand Theft Auto V: 1.9.0 # Version of the world required for this yaml to work as expected.
 
 Grand Theft Auto V:
   ################
@@ -86,12 +86,18 @@ Grand Theft Auto V:
     #   or a submarine part). The client tells you which one and can route you to it. It can be very short!
     # - **one_check**: one random location of your world (a mission, a medal counter, a collectible milestone...).
     #   The client tells you which one. Silly and random on purpose.
+    # - **check_percentage**: check a share of all the locations of your world, whatever they are (set the share with
+    #   Goal Check Percentage).
+    # - **free_roam**: check a number of free-roam locations (landmarks, stunt jumps, bridges, knife flights, skills,
+    #   police escapes, mosaics, peyote plants, Epsilon tracts), set with Goal Free-Roam Checks.
     finale: 50
     the_third_way: 0
     mission_percentage: 0
     one_mission: 0
     one_collectible: 0
     one_check: 0
+    check_percentage: 0
+    free_roam: 0
 
   goal_mission:
     # With the one_mission goal: the mission you need to pass. "surprise" picks one that needs a character you do not
@@ -102,6 +108,7 @@ Grand Theft Auto V:
     repossession: 0
     complications: 0
     chop: 0
+    father_son: 0
     marriage_counseling: 0
     daddy_s_little_girl: 0
     friend_request: 0
@@ -221,6 +228,31 @@ Grand Theft Auto V:
     random-low: 0 # random value weighted towards lower values
     random-high: 0 # random value weighted towards higher values
     random-range-10-100: 0 # random value between 10 and 100
+
+  goal_check_percentage:
+    # With the check_percentage goal, the share of all the locations of your world you need to check.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 10
+    # Maximum value is 100
+    60: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-10-100: 0 # random value between 10 and 100
+
+  goal_free_roam_checks:
+    # With the free_roam goal, how many free-roam locations you need to check. Capped at the number of free-roam
+    # locations in your world.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 5
+    # Maximum value is 500
+    50: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-5-500: 0 # random value between 5 and 500
 
   mission_count:
     # How many missions are in your world (67 story missions, plus 44 Strangers and Freaks if they are on; the
@@ -358,9 +390,49 @@ Grand Theft Auto V:
     random-high: 0 # random value weighted towards higher values
     random-range-0-30: 0 # random value between 0 and 30
 
+  monkey_mosaics_per_check:
+    # How many monkey mosaics (50 street art pieces on walls all over the map) you need to find for each check. The
+    # object is placed on the ground in front of the mosaic. 0 removes them from the locations.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 50
+    1: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-50: 0 # random value between 0 and 50
+
+  peyote_plants_per_check:
+    # How many peyote plants (27, six of them underwater) you need to pick up for each check. Picking one up does not
+    # turn you into an animal. 0 removes them from the locations. With Guaranteed Vehicles on, they need the
+    # Underwater Vehicle item in logic.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 27
+    1: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-27: 0 # random value between 0 and 27
+
+  epsilon_tracts_per_check:
+    # How many Epsilon tracts (10, some of them very high or underwater) you need to pick up for each check. 0
+    # removes them from the locations.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 10
+    1: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-10: 0 # random value between 0 and 10
+
   checks_per_collectible:
-    # How many locations each collectible check is worth. Finding things on such a big map is slow, so each find can
-    # count for more.
+    # How many locations each collectible, stunt jump, bridge and knife flight check is worth. Finding things on such a
+    # big map is slow, so each find can count for more.
     #
     # You can define additional values between the minimum and maximum values.
     # Minimum value is 1
@@ -370,6 +442,121 @@ Grand Theft Auto V:
     random-low: 0 # random value weighted towards lower values
     random-high: 0 # random value weighted towards higher values
     random-range-1-3: 0 # random value between 1 and 3
+
+  #############
+  # Free Roam #
+  #############
+  stunt_jumps_per_check:
+    # How many of the 50 unique stunt jumps you need to complete for each check. Any vehicle works. 0 removes them from
+    # the locations.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 50
+    1: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-50: 0 # random value between 0 and 50
+
+  bridges_per_check:
+    # How many of the 50 "Under the Bridge" flights you need for each check (fly a plane or a helicopter under a
+    # bridge). With Guaranteed Vehicles on, they need the Helicopter item in logic. 0 removes them from the locations.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 50
+    1: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-50: 0 # random value between 0 and 50
+
+  knife_flights_per_check:
+    # How many of the 15 knife flights (fly between two buildings on your side) you need for each check. With
+    # Guaranteed Vehicles on, they need the Helicopter item in logic. 0 removes them from the locations.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 0
+    # Maximum value is 15
+    1: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-0-15: 0 # random value between 0 and 15
+
+  landmarks:
+    # Adds 44 landmarks to visit (Mount Chiliad summit, the Maze Bank Tower roof, the Vinewood sign, Fort Zancudo,
+    # Humane Labs...). Each one is a check. The ones left are shown with a purple marker on the map.
+    'false': 0
+    'true': 50
+
+  skill_checks:
+    # The skills of the three characters (stamina, shooting, strength, stealth, flying, driving, lung capacity) as
+    # checks. every_10 makes a check at 10 %, 20 %... 100 % of each skill (210 checks), every_20 at 20 %, 40 %...,
+    # every_50 at 50 % and 100 %, only_100 at 100 % only. A character's skills need that character in logic.
+    'off': 0
+    every_10: 50
+    every_20: 0
+    every_50: 0
+    only_100: 0
+
+  police_escapes:
+    # Adds five checks for losing the police: escape a 1-star, 2-star... 5-star wanted level (the stars must flash
+    # and go away by themselves, being busted or wasted does not count).
+    'false': 0
+    'true': 50
+
+  activities:
+    # The activities of Los Santos as checks, each one when the game counts it as done for 100 %: the six off-road
+    # races, the street and sea races, the three triathlons, the twelve Flight School lessons, the stunt plane time
+    # trials, the six shooting range categories, tennis, golf, darts, yoga, base jumping and skydiving, and smaller
+    # things (a movie, the cable car, a car wash, clothes, a haircut, a tattoo, modifying a car, TV, holding up a
+    # store). Every activity is opened from the start.
+    'false': 0
+    'true': 50
+
+  trevor_jobs:
+    # With Activities on, also adds Trevor's jobs: the four bail bonds, the air and ground trafficking runs and
+    # hunting. They need Trevor in logic. Off by default: they depend more on the story than the others.
+    'false': 50
+    'true': 0
+
+  ###############
+  # Ammu-Nation #
+  ###############
+  weapon_shop:
+    # How you get your weapons.
+    # gifts: like before, Weapon Gifts give random weapons and Ammu-Nation sells everything.
+    # unlocks: each weapon is an item ("Weapon: Pistol") that lets you buy it at Ammu-Nation. Buying it is the only way
+    # to get it. No Weapon Gifts.
+    # shopsanity: the same, and buying each weapon for the first time is also a check ("Buy Pistol"). Buying it again
+    # after losing it gives nothing.
+    # Your starting weapon and the Drive-By SMG stay free gifts.
+    gifts: 0
+    unlocks: 0
+    shopsanity: 50
+
+  weapon_upgrades:
+    # The weapon upgrades sold at Ammu-Nation (extended clips, suppressors, scopes, grips, special rounds...).
+    # off: they can all be bought.
+    # unlocks: each weapon has an upgrade item ("Upgrades: Pistol") that lets you buy its upgrades.
+    # shopsanity: the same, and buying each upgrade is a check (267 checks).
+    'off': 50
+    unlocks: 0
+    shopsanity: 0
+
+  weapon_price_multiplier:
+    # Prices of weapons, upgrades and ammo at Ammu-Nation, in percent. Raise it to make money matter.
+    #
+    # You can define additional values between the minimum and maximum values.
+    # Minimum value is 10
+    # Maximum value is 500
+    100: 50
+    random: 0
+    random-low: 0 # random value weighted towards lower values
+    random-high: 0 # random value weighted towards higher values
+    random-range-10-500: 0 # random value between 10 and 500
 
   #########
   # Items #
@@ -381,10 +568,24 @@ Grand Theft Auto V:
     start: 0
     item: 50
 
+  vehicle_unlocks:
+    # Every vehicle of the list (62: Deluxo, Oppressor Mk II, Stromberg, tanks, helicopters, planes, the gold Luxor, the
+    # airliner, boats, submarines...) is its own item ("Vehicle: Imponte Deluxo"), received once and kept in your
+    # garage. This replaces the Vehicle Gifts and the six guaranteed vehicles: the bridges then need any plane or
+    # helicopter in logic, the underwater checks any submarine (one of each is placed early).
+    'false': 0
+    'true': 50
+
+  early_vehicles:
+    # With Vehicle Unlocks on, a small plane (Dodo, Mallard, Duster, Cuban 800, Mammatus, Velum or Howard, good for
+    # knife flights and bridges) and a submarine are placed early in the multiworld, so you get them soon in the run.
+    'false': 0
+    'true': 50
+
   guaranteed_vehicles:
     # Adds six vehicle items to the pool: a sports car, a motorcycle, a helicopter, an underwater vehicle, a boat and
     # the Scramjet. The helicopter and the underwater vehicle are placed early. With this on, the underwater
-    # collectibles need the underwater vehicle in logic.
+    # collectibles need the underwater vehicle in logic. Only used with Vehicle Unlocks off.
     'false': 0
     'true': 50
 
@@ -418,7 +619,7 @@ Grand Theft Auto V:
     random-range-0-10: 0 # random value between 0 and 10
 
   weapon_weight:
-    # Weight of Weapon Gifts among the non-trap filler items. Each one gives a random weapon (online weapons included)
+    # Weight of Weapon Gifts among the non-trap filler items (only with Weapon Shop: gifts). Each one gives a random weapon (online weapons included)
     # from the list in the client's weapons.json, with its ammo, to the three characters. Missions need weapons, so
     # this is the most common filler by default.
     #

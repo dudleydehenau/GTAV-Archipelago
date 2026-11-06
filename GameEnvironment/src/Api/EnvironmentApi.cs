@@ -90,6 +90,27 @@ namespace GameEnvironment
             Core.Store.Save();
         }
 
+        public static HashSet<int> FinishedActivityIcons()
+        {
+            var finished = new HashSet<int>();
+            StoryGlobals globals = Core?.Globals;
+            if (globals == null || !globals.Available || !globals.StaticBlipsSupported) return finished;
+            for (int i = 0; i < globals.StaticBlipCountValue; i++)
+            {
+                if (!globals.StaticBlipFinished(i)) continue;
+                int handle = globals.StaticBlipHandle(i);
+                if (handle != 0) finished.Add(handle);
+            }
+            return finished;
+        }
+
+        public static void SetNextStartPosition(StartLocation? place)
+        {
+            if (Core == null) return;
+            Core.Store.State.PendingStartPosition = place.HasValue ? (int)place.Value : -1;
+            Core.Store.Save();
+        }
+
         public static int GetMoney(PlayableCharacter character) => Core?.Economy.Money(character) ?? 0;
 
         public static bool GiveMoney(int amount, out string error)
@@ -214,11 +235,43 @@ namespace GameEnvironment
             return Core.Garage.RepairCurrent(out error);
         }
 
+        public static bool StoreNearestVehicle(out string error)
+        {
+            if (!CanEdit(out error)) return false;
+            return Core.Garage.StoreNearest(out error);
+        }
+
         public static bool RemoveVehicle(int vehicleId)
         {
             if (!CanEdit(out _)) return false;
             return Core.Garage.Remove(vehicleId);
         }
+
+        public static Func<string, bool> CanBuyWeapon { get; set; }
+
+        public static Func<string, bool> CanBuyUpgrades { get; set; }
+
+        public static Func<string, string> WeaponNote { get; set; }
+
+        public static Func<string, string, string> UpgradeNote { get; set; }
+
+        public static int ShopPriceMultiplier { get; set; } = 100;
+
+        public static bool IsShopOpen => GunShop.IsOpen;
+
+        public static event Action<ShopKind, string[]> GameShopPurchase;
+
+        internal static void RaiseGameShopPurchase(ShopKind kind, string[] categories) => SafeInvoke(GameShopPurchase, h => h(kind, categories));
+
+        public static void SetGameShopLocked(ShopKind kind, bool locked) => GameShopWatcher.SetLocked(kind, locked);
+
+        public static bool IsGameShopLocked(ShopKind kind) => GameShopWatcher.IsLocked(kind);
+
+        public static event Action<string> WeaponBought;
+        public static event Action<string, string> UpgradeBought;
+
+        internal static void RaiseWeaponBought(string weapon) => SafeInvoke(WeaponBought, h => h(weapon));
+        internal static void RaiseUpgradeBought(string weapon, string component) => SafeInvoke(UpgradeBought, h => h(weapon, component));
 
         public static event Action<PlayableCharacter> SterileGameCreated;
         public static event Action StateApplied;

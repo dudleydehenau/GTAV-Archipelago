@@ -7,7 +7,7 @@ namespace GameCollectibles
 {
     public static class CollectiblesApi
     {
-        public const int ApiVersion = 3;
+        public const int ApiVersion = 4;
 
         private static CollectibleRunner Core => CollectibleRunner.Instance;
 
@@ -29,7 +29,7 @@ namespace GameCollectibles
             return spot == null ? null : Info(spot);
         }
 
-        public static bool IsCollected(string id) => Core != null && Core.Find(id) != null && Core.Store.Contains(id);
+        public static bool IsCollected(string id) => Core != null && !string.IsNullOrEmpty(id) && Core.Store.Contains(id);
 
         public static bool MarkCollected(string id) => Core != null && Core.MarkCollected(id);
 
@@ -62,9 +62,49 @@ namespace GameCollectibles
             return spot == null ? null : Info(spot);
         }
 
+        public static IReadOnlyList<FeatInfo> Feats =>
+            Core == null ? (IReadOnlyList<FeatInfo>)Array.Empty<FeatInfo>() : Core.Feats.All.Select(FeatOf).ToList();
+
+        public static IReadOnlyCollection<FeatKind> DisabledFeats =>
+            Core == null ? (IReadOnlyCollection<FeatKind>)Array.Empty<FeatKind>() : Core.Feats.DisabledKinds;
+
+        public static void SetDisabledFeats(IEnumerable<FeatKind> kinds) => Core?.Feats.SetDisabled(kinds);
+
+        public static void SetLandmarkHints(IEnumerable<string> ids) => Core?.Feats.SetHints(ids);
+
+        public static bool IsBlipHidden(CollectibleKind kind) => Core != null && Core.Config.HiddenBlips.Contains(kind.ToString());
+
+        public static void SetBlipHidden(CollectibleKind kind, bool hidden)
+        {
+            if (Core == null) return;
+            string key = kind.ToString();
+            bool has = Core.Config.HiddenBlips.Contains(key);
+            if (hidden == has) return;
+            if (hidden) Core.Config.HiddenBlips.Add(key);
+            else Core.Config.HiddenBlips.Remove(key);
+            Core.RefreshBlips();
+            Core.Config.Save();
+        }
+
+        public static bool LandmarkBlips
+        {
+            get => Core != null && Core.Config.LandmarkBlips;
+            set
+            {
+                if (Core == null || Core.Config.LandmarkBlips == value) return;
+                Core.Config.LandmarkBlips = value;
+                Core.Feats.SetHints(Core.Feats.Hints);
+                Core.Config.Save();
+            }
+        }
+
+        public static string GlobalsStatus => Core?.Feats.GlobalsStatus ?? "not loaded";
+
         public static event Action<string> Collected;
 
         internal static void RaiseCollected(string id) => Collected?.Invoke(id);
+
+        private static FeatInfo FeatOf(FeatInfoSource feat) => new FeatInfo(feat.Id, feat.Kind, feat.Name, feat.Position, Core.Store.Contains(feat.Id));
 
         private static CollectibleInfo Info(Spot spot) => new CollectibleInfo(spot.Id, spot.Kind, spot.Number, spot.Position, Core.Store.Contains(spot.Id));
     }

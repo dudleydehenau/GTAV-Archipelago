@@ -46,12 +46,22 @@ namespace GameArchipelago.Core
         public string GoalCollectible { get; set; }
         public long GoalLocation { get; set; }
         public string StartCharacter { get; set; }
+        public string StartPosition { get; set; }
         public List<string> Missions { get; set; } = new List<string>();
         public int ChecksPerMission { get; set; } = 1;
         public int GoldChecks { get; set; }
         public int ObjectiveChecks { get; set; }
         public Dictionary<string, int> CollectibleSteps { get; set; } = new Dictionary<string, int>();
         public int ChecksPerCollectible { get; set; } = 1;
+        public List<string> Landmarks { get; set; } = new List<string>();
+        public List<string> Activities { get; set; } = new List<string>();
+        public int SkillStep { get; set; }
+        public bool PoliceEscapes { get; set; }
+        public int GoalCount { get; set; }
+        public int WeaponShop { get; set; }
+        public bool GameShops { get; set; }
+        public int WeaponUpgrades { get; set; }
+        public int WeaponPriceMultiplier { get; set; } = 100;
         public bool RadarFromStart { get; set; } = true;
         public bool GuaranteedVehicles { get; set; }
         public bool MissionTraps { get; set; }
@@ -108,6 +118,8 @@ namespace GameArchipelago.Core
             Gold = Gold ?? new List<string>();
             Objectives = Objectives ?? new List<string>();
             Collected = Collected ?? new List<string>();
+            Landmarks = Landmarks ?? new List<string>();
+            Activities = Activities ?? new List<string>();
             TrapLog = TrapLog ?? new List<TrapRecord>();
             Boats = Boats ?? new List<string>();
             ObjectiveTotals = new Dictionary<string, int>(ObjectiveTotals ?? new Dictionary<string, int>(), StringComparer.OrdinalIgnoreCase);

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using GTA;
 using GTA.Native;
 
@@ -77,6 +79,7 @@ namespace GameEnvironment.Core
                     if (!Function.Call<bool>(Hash.HAS_PED_GOT_WEAPON, ped, hash, false))
                     {
                         Arm(ped, (WeaponHash)hash, weapon.Ammo);
+                        ApplyParts(ped, weapon);
                         Log.Info($"Weapon {(WeaponHash)hash} was taken by the game, given back with {weapon.Ammo} rounds.");
                         continue;
                     }
@@ -230,13 +233,68 @@ namespace GameEnvironment.Core
                         Function.Call(Hash.SET_PED_AMMO, ped, hash, record.Ammo, false);
                         Log.Debug($"Ammo of {weapon} set back to {record.Ammo} for {current.Value}.");
                     }
+                    ApplyParts(ped, record);
                     continue;
                 }
                 Arm(ped, weapon, record.Ammo);
+                ApplyParts(ped, record);
                 Log.Debug($"Weapon {weapon} given back to {current.Value}.");
             }
             _ammoTracking = true;
             _ammoTrackFrom = Game.GameTime + 3000;
+        }
+
+        public static void ApplyParts(Ped ped, WeaponRecord record)
+        {
+            if (ped == null || !ped.Exists() || record.Equipped == null) return;
+            uint weapon = unchecked((uint)record.Hash);
+            foreach (int part in record.Equipped)
+            {
+                uint component = unchecked((uint)part);
+                if (!Function.Call<bool>(Hash.DOES_WEAPON_TAKE_WEAPON_COMPONENT, weapon, component)) continue;
+                if (Function.Call<bool>(Hash.HAS_PED_GOT_WEAPON_COMPONENT, ped, weapon, component)) continue;
+                Function.Call(Hash.GIVE_WEAPON_COMPONENT_TO_PED, ped, weapon, component);
+            }
+        }
+
+        public bool Owns(PlayableCharacter character, int weaponHash) =>
+            _store.State.For(character).Weapons.Exists(w => w.Hash == weaponHash);
+
+        public WeaponRecord Record(PlayableCharacter character, int weaponHash) =>
+            _store.State.For(character).Weapons.Find(w => w.Hash == weaponHash);
+
+        public void AddPart(int weaponHash, int partHash)
+        {
+            foreach (PlayableCharacter character in Characters.All)
+            {
+                WeaponRecord record = Record(character, weaponHash);
+                if (record == null) continue;
+                if (!record.Owned.Contains(partHash)) record.Owned.Add(partHash);
+                if (!record.Equipped.Contains(partHash)) record.Equipped.Add(partHash);
+            }
+            _store.Save();
+        }
+
+        public void SetEquipped(int weaponHash, IEnumerable<int> equipped)
+        {
+            var list = new List<int>(equipped);
+            foreach (PlayableCharacter character in Characters.All)
+            {
+                WeaponRecord record = Record(character, weaponHash);
+                if (record == null) continue;
+                record.Equipped = list.Where(p => record.Owned.Contains(p)).ToList();
+            }
+            _store.Save();
+        }
+
+        public void SetAmmo(int weaponHash, int ammo)
+        {
+            foreach (PlayableCharacter character in Characters.All)
+            {
+                WeaponRecord record = Record(character, weaponHash);
+                if (record != null) record.Ammo = Math.Max(record.Ammo, ammo);
+            }
+            _store.Save();
         }
 
         private static void Arm(Ped ped, WeaponHash weapon, int ammo)

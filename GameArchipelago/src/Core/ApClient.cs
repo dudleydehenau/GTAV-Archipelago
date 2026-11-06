@@ -97,6 +97,9 @@ namespace GameArchipelago.Core
                 {
                     Log.Error("Connection failed.", ex);
                     string error = ex.GetBaseException().Message;
+                    if (host.IndexOf("archipelago.gg", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                        error.IndexOf("timed out", StringComparison.OrdinalIgnoreCase) >= 0)
+                        error += " Open your room page on archipelago.gg to wake the room up, and check the port: it changes when the room restarts.";
                     _inbox.Enqueue(() => OnFailed(attempt, error));
                     TryDisconnect(session);
                 }

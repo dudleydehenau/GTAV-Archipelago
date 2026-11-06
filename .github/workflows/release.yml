@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version, for example 1.2.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: [self-hosted, linux]
+    env:
+      DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: "1"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Version
+        id: version
+        run: |
+          version="${{ github.event.inputs.version }}"
+          if [ -z "$version" ]; then version="${GITHUB_REF_NAME#v}"; fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: dotnet build GTAV-Archipelago.sln -c Release -nologo -v minimal -p:EnableWindowsTargeting=true
+
+      - name: Package
+        run: python3 tools/make_releases.py
+
+      - name: Notes
+        run: python3 .github/release_notes.py "${{ steps.version.outputs.version }}"
+
+      - name: Mods release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          files=$(ls releases/*.zip | grep -v "GTAVArchipelagoSetup-")
+          gh release create "v${version}_mods" $files --target "$GITHUB_SHA" --title "v${version}_mods" \
+            --notes-file releases/notes-mods.md --latest=false
+
+      - name: Setup release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep 5
+          version="${{ steps.version.outputs.version }}"
+          tag="v${version}"
+          if gh release view "$tag" >/dev/null 2>&1; then tag="v${version}_setup"; fi
+          cp GTAVArchipelagoSetup/bin/Release/net48/GTAVArchipelagoSetup.exe releases/
+          gh release create "$tag" releases/GTAVArchipelagoSetup.exe releases/gtav.apworld releases/GTAVArchipelagoSetup-*.zip \
+            --target "$GITHUB_SHA" --title "v${version}" \
+            --notes-file releases/notes-setup.md --latest
+
+      - name: Clean
+        if: always()
+        run: rm -rf releases

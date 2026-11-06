@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web.Script.Serialization;
 
@@ -37,6 +38,17 @@ namespace GameCollectibles.Core
         public bool LetterScraps { get; set; } = true;
         public bool NuclearWaste { get; set; } = true;
         public bool SubmarineParts { get; set; } = true;
+        public bool MonkeyMosaics { get; set; } = true;
+        public bool PeyotePlants { get; set; } = true;
+        public bool EpsilonTracts { get; set; } = true;
+        public bool StuntJumps { get; set; } = true;
+        public bool Bridges { get; set; } = true;
+        public bool Landmarks { get; set; } = true;
+        public bool LandmarkBlips { get; set; } = true;
+        public bool Skills { get; set; } = true;
+        public bool Escapes { get; set; } = true;
+        public bool Activities { get; set; } = true;
+        public List<string> HiddenBlips { get; set; } = new List<string>();
 
         internal BlipMode BlipMode
         {
@@ -75,6 +87,7 @@ namespace GameCollectibles.Core
             if (config.Size <= 0.05f || config.Size > 5f) config.Size = DefaultSize;
             if (config.StreamDistance < 30f) config.StreamDistance = 30f;
             if (config.PickupRadius <= 0f) config.PickupRadius = 1.6f;
+            if (config.HiddenBlips == null) config.HiddenBlips = new List<string>();
             config._path = path;
             return config;
         }

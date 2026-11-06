@@ -34,6 +34,8 @@ namespace GameArchipelago.Core
         private NativeMenu _boats;
         private NativeMenu _gold;
         private NativeMenu _collectibles;
+        private NativeMenu _freeRoam;
+        private NativeMenu _map;
         private Keys _key = Keys.None;
         private bool _initialized;
 
@@ -79,6 +81,8 @@ namespace GameArchipelago.Core
                 _boats = Create("Boats");
                 _gold = Create("Replay for gold");
                 _collectibles = Create("Collectibles");
+                _freeRoam = Create("Free Roam");
+                _map = Create("Map");
                 _connection.Opening += (s, a) => FillConnection();
                 _progress.Opening += (s, a) => FillProgress();
                 _missions.Opening += (s, a) => FillMissions();
@@ -94,6 +98,8 @@ namespace GameArchipelago.Core
                 _boats.Opening += (s, a) => FillBoats();
                 _gold.Opening += (s, a) => FillGold();
                 _collectibles.Opening += (s, a) => FillCollectibles();
+                _freeRoam.Opening += (s, a) => FillFreeRoam();
+                _map.Opening += (s, a) => FillMap();
                 FillCommands();
                 Log.Info($"Menu ready, key {_key}.");
             }
@@ -149,6 +155,8 @@ namespace GameArchipelago.Core
             if (Core.Save != null && Core.Save.Boats.Count > 0) _main.AddSubMenu(_boats, Core.Save.Boats.Count.ToString());
             List<CollectibleInfo> active = CollectiblesApi.All.Where(c => !CollectiblesApi.DisabledKinds.Contains(c.Kind)).ToList();
             _main.AddSubMenu(_collectibles, $"{active.Count(c => c.Collected)}/{active.Count}");
+            _main.AddSubMenu(_freeRoam);
+            _main.AddSubMenu(_map);
             _main.AddSubMenu(_settings);
         }
 
@@ -528,6 +536,13 @@ namespace GameArchipelago.Core
                 Notifier.Show(EnvironmentApi.RepairCurrentVehicle(out string error) ? "~g~Vehicle repaired." : "~y~" + error);
             };
             _vehicles.Add(fix);
+            var store = new NativeItem("Put your vehicle in the garage", "Stores the closest of your vehicles (25 m) right away. You can have it delivered again any time.");
+            store.Activated += (s, a) =>
+            {
+                Notifier.Show(EnvironmentApi.StoreNearestVehicle(out string error) ? "~g~Vehicle stored." : "~y~" + error);
+                FillVehicles();
+            };
+            _vehicles.Add(store);
             IReadOnlyList<OwnedVehicle> vehicles = EnvironmentApi.Vehicles;
             if (vehicles.Count == 0)
             {
@@ -738,7 +753,112 @@ namespace GameArchipelago.Core
                 case CollectibleKind.SpaceshipPart: return "Spaceship parts";
                 case CollectibleKind.LetterScrap: return "Letter scraps";
                 case CollectibleKind.NuclearWaste: return "Nuclear waste";
+                case CollectibleKind.MonkeyMosaic: return "Monkey mosaics";
+                case CollectibleKind.PeyotePlant: return "Peyote plants";
+                case CollectibleKind.EpsilonTract: return "Epsilon tracts";
                 default: return "Submarine parts";
+            }
+        }
+
+        private void FillMap()
+        {
+            _map.Clear();
+            string[] modes = { "None", "Nearby", "All" };
+            var markers = new NativeListItem<string>("Collectible markers", "None, the ones near you, or all of them.", modes);
+            markers.SelectedIndex = Math.Max(0, Array.FindIndex(modes, m => string.Equals(m, CollectiblesApi.MarkerMode, StringComparison.OrdinalIgnoreCase)));
+            markers.ItemChanged += (s, a) => CollectiblesApi.MarkerMode = markers.SelectedItem;
+            _map.Add(markers);
+            IReadOnlyCollection<CollectibleKind> disabled = CollectiblesApi.DisabledKinds;
+            foreach (CollectibleKind kind in Enum.GetValues(typeof(CollectibleKind)))
+            {
+                if (disabled.Contains(kind) || !CollectiblesApi.All.Any(c => c.Kind == kind)) continue;
+                CollectibleKind current = kind;
+                var item = new NativeCheckboxItem("   " + KindName(kind), "Show this kind on the map.", !CollectiblesApi.IsBlipHidden(kind));
+                item.CheckboxChanged += (s, a) => CollectiblesApi.SetBlipHidden(current, !item.Checked);
+                _map.Add(item);
+            }
+            var landmarks = new NativeCheckboxItem("Landmarks to visit", "The purple markers of the landmarks left.", CollectiblesApi.LandmarkBlips);
+            landmarks.CheckboxChanged += (s, a) => CollectiblesApi.LandmarkBlips = landmarks.Checked;
+            _map.Add(landmarks);
+            var done = new NativeCheckboxItem("Show finished places", "Off: the icons of what you have finished disappear. On: they stay, with a tick.", Core.Map.ShowDone);
+            done.CheckboxChanged += (s, a) => Core.Map.ShowDone = done.Checked;
+            _map.Add(done);
+            foreach (MapGroup group in MapFilter.Groups)
+            {
+                MapGroup current = group;
+                var item = new NativeCheckboxItem(group.Name + (Core.Map.IsDone(group) ? " ~g~(done)" : string.Empty), "Show the game's icons for this on the map and the minimap.", !Core.Map.IsHidden(group));
+                item.CheckboxChanged += (s, a) => Core.Map.SetHidden(current, !item.Checked);
+                _map.Add(item);
+            }
+        }
+
+        private void FillFreeRoam()
+        {
+            _freeRoam.Clear();
+            SlotSave save = Core.Save;
+            if (save == null)
+            {
+                _freeRoam.Add(new NativeItem("Connect first", "Free-roam checks depend on your Archipelago world.") { Enabled = false });
+                return;
+            }
+            foreach (CollectibleSet set in ApData.Collectibles)
+            {
+                if (!Enum.TryParse(set.Key, out FeatKind _)) continue;
+                if (!save.CollectibleSteps.TryGetValue(set.Key, out int step) || step <= 0) continue;
+                string help = set.Key == "StuntJump" ? "Land the 50 unique stunt jumps with any vehicle."
+                    : set.Key == "UnderBridge" ? "Fly a plane or a helicopter under the bridges."
+                    : "Fly between two buildings, on your side.";
+                _freeRoam.Add(new NativeItem(set.Name, help, $"{Core.CollectedCount(set)}/{set.Total}"));
+            }
+            List<FeatLocation> landmarks = ApData.Feats.Where(f => f.Group == FeatGroup.Landmark && Core.IsFeatInWorld(f)).ToList();
+            if (landmarks.Count > 0)
+            {
+                int visited = landmarks.Count(f => save.IsDone(f.Location));
+                _freeRoam.Add(new NativeItem("Landmarks", "Purple markers on the map.", $"{visited}/{landmarks.Count}"));
+                var route = new NativeItem("Route to the nearest landmark", "Sets a waypoint on the closest landmark left.");
+                route.Activated += (s, a) =>
+                {
+                    Ped ped = Game.Player.Character;
+                    FeatInfo best = CollectiblesApi.Feats
+                        .Where(f => f.Kind == FeatKind.Landmark && landmarks.Any(l => l.Id == f.Id && !save.IsDone(l.Location)))
+                        .OrderBy(f => f.Position.DistanceToSquared2D(ped.Position))
+                        .FirstOrDefault();
+                    if (best == null)
+                    {
+                        Notifier.Show("~g~Every landmark is visited!");
+                        return;
+                    }
+                    Function.Call(Hash.SET_NEW_WAYPOINT, best.Position.X, best.Position.Y);
+                    Notifier.Show("~p~Landmark:~s~ " + best.Name);
+                    CloseAll();
+                };
+                _freeRoam.Add(route);
+            }
+            List<FeatLocation> skills = ApData.Feats.Where(f => f.Group == FeatGroup.Skill && Core.IsFeatInWorld(f)).ToList();
+            if (skills.Count > 0)
+                _freeRoam.Add(new NativeItem("Skills", $"A check every {save.SkillStep} % of each skill, for the characters you own.",
+                    $"{skills.Count(f => save.IsDone(f.Location))}/{skills.Count}"));
+            List<FeatLocation> activities = ApData.Feats.Where(f => f.Group == FeatGroup.Activity && Core.IsFeatInWorld(f)).ToList();
+            if (activities.Count > 0)
+            {
+                _freeRoam.Add(new NativeItem("Activities", "Races, sports, Flight School, the shooting range and more.",
+                    $"{activities.Count(f => save.IsDone(f.Location))}/{activities.Count}"));
+                foreach (FeatLocation activity in activities.Where(f => !save.IsDone(f.Location)))
+                    _freeRoam.Add(new NativeItem("   " + activity.Name.Replace("Activity: ", string.Empty), "Not done yet.") { Enabled = false });
+            }
+            List<FeatLocation> escapes = ApData.Feats.Where(f => f.Group == FeatGroup.Escape && Core.IsFeatInWorld(f)).ToList();
+            if (escapes.Count > 0)
+                _freeRoam.Add(new NativeItem("Police escapes", "Lose the police: the stars must flash and go away.",
+                    $"{escapes.Count(f => save.IsDone(f.Location))}/{escapes.Count}"));
+            if (!save.GameShops) return;
+            foreach (GameShopInfo shop in ApData.GameShops)
+            {
+                bool open = Core.Owns(shop.Item);
+                _freeRoam.Add(new NativeItem(shop.Label, open ? "The first purchase of each category is a check." : "Closed until you find \"Shop: " + shop.Label + "\".",
+                    open ? $"{shop.Categories.Count(c => save.IsDone(c.Location))}/{shop.Categories.Length}" : "~r~Closed"));
+                if (!open) continue;
+                foreach (GameShopCategory category in shop.Categories.Where(c => !save.IsDone(c.Location)))
+                    _freeRoam.Add(new NativeItem("   " + category.Name, "Not bought yet.") { Enabled = false });
             }
         }
 

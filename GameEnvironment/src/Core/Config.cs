@@ -23,6 +23,10 @@ namespace GameEnvironment.Core
         public bool BlockCommunications { get; set; } = true;
         public bool NoSaves { get; set; } = true;
         public bool OpenGunShopsInMissions { get; set; } = true;
+        public bool CustomGunShop { get; set; } = true;
+        public bool OpenActivities { get; set; } = true;
+        public bool RandomStartPosition { get; set; } = true;
+        public string StartPosition { get; set; }
         public bool AutoSaveAfterSetup { get; set; } = true;
         public int AutoSaveMinutes { get; set; } = 10;
         public float VehicleStoreDistance { get; set; } = 300f;
@@ -57,6 +61,8 @@ namespace GameEnvironment.Core
             return config;
         }
 
+        public StartLocation StartLocation => Enum.TryParse(StartPosition, true, out StartLocation place) ? place : StartLocation.Random;
+
         public SpawnPoint SpawnFor(PlayableCharacter character)
         {
             SpawnPoint spawn = Spawns.Find(s => string.Equals(s.Character, character.ToString(), StringComparison.OrdinalIgnoreCase));
@@ -74,6 +80,8 @@ namespace GameEnvironment.Core
             RepairCosts = new Dictionary<string, int>(RepairCosts, StringComparer.OrdinalIgnoreCase);
             if (Spawns == null || Spawns.Count == 0) Spawns = DefaultSpawns();
             if (PrologueIpls == null || PrologueIpls.Count == 0) PrologueIpls = DefaultPrologueIpls();
+            if (!Enum.TryParse(StartPosition ?? string.Empty, true, out StartLocation place)) place = RandomStartPosition ? StartLocation.Random : StartLocation.Home;
+            StartPosition = place.ToString();
             if (StartHour < 0 || StartHour > 23) StartHour = 10;
             if (VehicleStoreDistance < 50f) VehicleStoreDistance = 50f;
             if (StartMoney < 0) StartMoney = 0;
@@ -181,6 +189,18 @@ namespace GameEnvironment.Core
                 Doors = new List<string> { "DOORHASH_SWEATSHOP_L", "DOORHASH_SWEATSHOP_R", "-874851305", "-1480820165", "949391213" },
                 Buildings = new Dictionary<string, int> { { "70", 1 }, { "71", 1 }, { "73", 1 } },
                 Interior = new InteriorSets { X = 717.2994f, Y = -974.4271f, Z = 23.9142f, Name = "v_sweat", Unlock = true },
+            },
+            new DoorGroup
+            {
+                Name = "Tequi-la-la", X = -560f, Y = 286f, Z = 82f,
+                Doors = new List<string>(),
+                Interior = new InteriorSets { X = -556.5f, Y = 286.3f, Z = 81.2f, Unlock = true },
+            },
+            new DoorGroup
+            {
+                Name = "Yellow Jack Inn", X = 1991f, Y = 3050f, Z = 47f,
+                Doors = new List<string>(),
+                Interior = new InteriorSets { X = 1993.5f, Y = 3049.8f, Z = 47.2f, Unlock = true },
             },
             new DoorGroup
             {

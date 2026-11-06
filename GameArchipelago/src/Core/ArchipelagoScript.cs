@@ -33,6 +33,7 @@ namespace GameArchipelago.Core
         private bool _wantOnline;
         private bool _missionsHooked;
         private bool _collectiblesHooked;
+        private bool _shopHooked;
         private bool _collectiblesSynced;
         private bool _wasDead;
         private bool _saveDirty;
@@ -77,6 +78,7 @@ namespace GameArchipelago.Core
             Notifier = new Notifier(Config.NotificationDelay, Config.LogSize);
             Gifts = new GiftCatalog();
             Gifts.Load(DataDirectory);
+            Map = new MapFilter(Config);
             Client.Connected += OnConnected;
             Client.Disconnected += OnDisconnected;
             Client.Message += OnMessage;
@@ -96,6 +98,7 @@ namespace GameArchipelago.Core
         internal ApClient Client { get; }
         internal Notifier Notifier { get; }
         internal GiftCatalog Gifts { get; }
+        internal MapFilter Map { get; }
         internal SlotSave Save { get; private set; }
         internal int UnlockedMask { get; private set; }
         internal bool IsReady { get; private set; }
@@ -178,6 +181,8 @@ namespace GameArchipelago.Core
                     Client.Connect(Connection.Server, Connection.Slot, Connection.Password);
                 }
                 Hook();
+                Step("shop", ApplyShopRules);
+                Step("map", Map.Tick);
                 if (Save != null)
                 {
                     if (Client.IsConnected) Step("items", PullItems);
@@ -299,6 +304,7 @@ namespace GameArchipelago.Core
             _ownedCount = -1;
             _markers.Clear();
             _collectiblesSynced = false;
+            _doneKey = -1;
             MissionApi.UseApiMarkers = true;
             _serverCheckedCount = -1;
             _chaosMissions.Clear();
@@ -307,8 +313,99 @@ namespace GameArchipelago.Core
             StartCharacterHint();
         }
 
+        private void ApplyShopRules()
+        {
+            if (!EnvironmentApi.IsReady) return;
+            if (!_shopHooked)
+            {
+                _shopHooked = true;
+                EnvironmentApi.WeaponBought += OnWeaponBought;
+                EnvironmentApi.UpgradeBought += OnUpgradeBought;
+                EnvironmentApi.GameShopPurchase += OnGameShopPurchase;
+                EnvironmentApi.CanBuyWeapon = id =>
+                {
+                    if (Save == null) return false;
+                    if (Save.WeaponShop == 0) return true;
+                    ShopWeapon weapon = ApData.ShopWeaponById(id);
+                    return weapon == null || Owns(weapon.Item);
+                };
+                EnvironmentApi.CanBuyUpgrades = id =>
+                {
+                    if (Save == null) return false;
+                    if (Save.WeaponUpgrades == 0) return true;
+                    ShopWeapon weapon = ApData.ShopWeaponById(id);
+                    return weapon == null || weapon.UpgradesItem == 0 || Owns(weapon.UpgradesItem);
+                };
+                EnvironmentApi.WeaponNote = id =>
+                {
+                    if (Save == null) return "~y~Connect to Archipelago first.";
+                    ShopWeapon weapon = ApData.ShopWeaponById(id);
+                    if (weapon == null || Save.WeaponShop != 2) return null;
+                    return Save.IsDone(weapon.Location) ? null : "~g~Buying it is a check.";
+                };
+                EnvironmentApi.UpgradeNote = (id, component) =>
+                {
+                    if (Save == null) return "~y~Connect to Archipelago first.";
+                    ShopUpgrade upgrade = ApData.ShopWeaponById(id)?.Upgrade(component);
+                    if (upgrade == null || Save.WeaponUpgrades != 2) return null;
+                    return Save.IsDone(upgrade.Location) ? null : "~g~Buying it is a check.";
+                };
+                Log.Info("Ammu-Nation linked.");
+            }
+            EnvironmentApi.ShopPriceMultiplier = Save?.WeaponPriceMultiplier ?? 100;
+            foreach (GameShopInfo shop in ApData.GameShops)
+            {
+                if (!Enum.TryParse(shop.Key, out ShopKind kind)) continue;
+                bool locked = Save != null && Save.GameShops && !Owns(shop.Item);
+                if (EnvironmentApi.IsGameShopLocked(kind) != locked) EnvironmentApi.SetGameShopLocked(kind, locked);
+            }
+        }
+
+        private static readonly ShopKind[] AnyPurchaseCounts = { ShopKind.Barber, ShopKind.Tattoo };
+
+        private void OnGameShopPurchase(ShopKind kind, string[] categories)
+        {
+            if (Save == null || !Save.GameShops) return;
+            GameShopInfo shop = ApData.GameShopByKey(kind.ToString());
+            if (shop == null) return;
+            GameShopCategory pick = null;
+            foreach (string name in categories ?? new string[0])
+            {
+                GameShopCategory category = shop.Categories.FirstOrDefault(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (category != null && !Save.IsDone(category.Location))
+                {
+                    pick = category;
+                    break;
+                }
+            }
+            if (pick == null && Array.IndexOf(AnyPurchaseCounts, kind) >= 0)
+                pick = shop.Categories.FirstOrDefault(c => !Save.IsDone(c.Location));
+            if (pick == null) return;
+            History.Write("BUY", "shop", shop.Key, "category", pick.Name);
+            Check(new[] { pick.Location });
+        }
+
+        private void OnWeaponBought(string id)
+        {
+            if (Save == null || Save.WeaponShop != 2) return;
+            ShopWeapon weapon = ApData.ShopWeaponById(id);
+            if (weapon == null) return;
+            History.Write("BUY", "weapon", id);
+            Check(new[] { weapon.Location });
+        }
+
+        private void OnUpgradeBought(string id, string component)
+        {
+            if (Save == null || Save.WeaponUpgrades != 2) return;
+            ShopUpgrade upgrade = ApData.ShopWeaponById(id)?.Upgrade(component);
+            if (upgrade == null) return;
+            History.Write("BUY", "weapon", id, "upgrade", component);
+            Check(new[] { upgrade.Location });
+        }
+
         private void ApplySlotOptions()
         {
+            ApplyShopRules();
             if (Save == null) return;
             if (TrapApi.IsReady) TrapApi.AllowInMissions = Save.MissionTraps;
             if (CollectiblesApi.IsReady)
@@ -322,7 +419,58 @@ namespace GameArchipelago.Core
                     if (Enum.TryParse(set.Key, out CollectibleKind kind)) disabled.Add(kind);
                 }
                 CollectiblesApi.SetDisabledKinds(disabled);
+                var feats = new List<FeatKind>();
+                foreach (CollectibleSet set in ApData.Collectibles)
+                {
+                    if (!Enum.TryParse(set.Key, out FeatKind feat)) continue;
+                    if (!Save.CollectibleSteps.TryGetValue(set.Key, out int step) || step <= 0) feats.Add(feat);
+                }
+                if (Save.Landmarks.Count == 0) feats.Add(FeatKind.Landmark);
+                if (Save.SkillStep <= 0) feats.Add(FeatKind.Skill);
+                if (!Save.PoliceEscapes) feats.Add(FeatKind.Escape);
+                if (Save.Activities.Count == 0) feats.Add(FeatKind.Activity);
+                CollectiblesApi.SetDisabledFeats(feats);
+                RefreshLandmarkHints();
             }
+        }
+
+        private void RefreshLandmarkHints()
+        {
+            if (Save == null || !CollectiblesApi.IsReady) return;
+            CollectiblesApi.SetLandmarkHints(Save.Landmarks.Where(id =>
+            {
+                FeatLocation feat = ApData.FeatById(id);
+                return feat != null && !Save.IsDone(feat.Location);
+            }).ToList());
+        }
+
+        internal bool IsFeatInWorld(FeatLocation feat)
+        {
+            if (Save == null || feat == null) return false;
+            switch (feat.Group)
+            {
+                case FeatGroup.Landmark:
+                    return Save.Landmarks.Contains(feat.Id, StringComparer.OrdinalIgnoreCase);
+                case FeatGroup.Skill:
+                    return Save.SkillStep > 0 && feat.Level % Save.SkillStep == 0;
+                case FeatGroup.Activity:
+                    return Save.Activities.Contains(feat.Id, StringComparer.OrdinalIgnoreCase);
+                default:
+                    return Save.PoliceEscapes;
+            }
+        }
+
+        private void SyncFeats()
+        {
+            if (Save == null) return;
+            var ids = new List<long>();
+            foreach (string id in Save.Collected)
+            {
+                FeatLocation feat = ApData.FeatById(id);
+                if (feat != null && IsFeatInWorld(feat) && !Save.Checked.Contains(feat.Location)) ids.Add(feat.Location);
+            }
+            if (ids.Count > 0) Check(ids);
+            RefreshLandmarkHints();
         }
 
         private void OnConnected()
@@ -383,6 +531,7 @@ namespace GameArchipelago.Core
             save.Goal = ReadInt(data, "goal", save.Goal);
             save.GoalMissions = ReadInt(data, "goal_missions", save.GoalMissions);
             save.StartCharacter = ReadString(data, "starting_character", save.StartCharacter);
+            save.StartPosition = ReadString(data, "start_position", save.StartPosition);
             save.ChecksPerMission = ReadInt(data, "checks_per_mission", save.ChecksPerMission);
             save.GoldChecks = ReadInt(data, "gold_medal_checks", save.GoldChecks);
             save.ObjectiveChecks = ReadInt(data, "objective_checks", save.ObjectiveChecks);
@@ -392,6 +541,17 @@ namespace GameArchipelago.Core
             save.GoalCollectible = ReadString(data, "goal_collectible", save.GoalCollectible);
             save.GoalLocation = ReadLong(data, "goal_location", save.GoalLocation);
             save.ChecksPerCollectible = ReadInt(data, "checks_per_collectible", save.ChecksPerCollectible);
+            save.SkillStep = ReadInt(data, "skill_step", save.SkillStep);
+            save.PoliceEscapes = ReadInt(data, "police_escapes", save.PoliceEscapes ? 1 : 0) != 0;
+            save.GoalCount = ReadInt(data, "goal_count", save.GoalCount);
+            save.WeaponShop = ReadInt(data, "weapon_shop", save.WeaponShop);
+            save.GameShops = ReadInt(data, "game_shops", save.GameShops ? 1 : 0) != 0;
+            save.WeaponUpgrades = ReadInt(data, "weapon_upgrades", save.WeaponUpgrades);
+            save.WeaponPriceMultiplier = ReadInt(data, "weapon_price_multiplier", save.WeaponPriceMultiplier);
+            if (data.TryGetValue("landmarks", out object landmarks) && landmarks is JArray landmarkList)
+                save.Landmarks = landmarkList.Select(t => t.ToString()).ToList();
+            if (data.TryGetValue("activities", out object activities) && activities is JArray activityList)
+                save.Activities = activityList.Select(t => t.ToString()).ToList();
             save.RadarFromStart = ReadString(data, "collectible_radar", save.RadarFromStart ? "start" : "item") != "item";
             save.GuaranteedVehicles = ReadInt(data, "guaranteed_vehicles", save.GuaranteedVehicles ? 1 : 0) != 0;
             save.MissionTraps = ReadInt(data, "mission_traps", save.MissionTraps ? 1 : 0) != 0;
@@ -550,6 +710,16 @@ namespace GameArchipelago.Core
             if (character >= 0) return $"~g~{ApData.CharacterNames[character]}~s~ is now playable.";
             if (record.Item == ApData.CollectibleRadarItem) return "~g~Collectible Radar:~s~ F6 > Collectibles > Route to the nearest one.";
             if (record.Item == ApData.DriveBySmgItem) return "~g~Drive-By SMG:~s~ a Micro SMG with 600 rounds for every character.";
+            ShopWeapon shopWeapon = ApData.ShopWeaponByItem(record.Item);
+            if (shopWeapon != null) return $"~g~{Notifier.Escape(shopWeapon.Name)}~s~ can now be bought at Ammu-Nation.";
+            shopWeapon = ApData.ShopUpgradesByItem(record.Item);
+            if (shopWeapon != null) return $"~g~{Notifier.Escape(shopWeapon.Name)} upgrades~s~ can now be bought at Ammu-Nation.";
+            GameShopInfo gameShop = ApData.GameShopByItem(record.Item);
+            if (gameShop != null) return $"~g~{Notifier.Escape(gameShop.Label)}~s~ shops are now open.";
+            if (ApData.VehicleUnlockByItem(record.Item) != null && ResolveGift(record))
+                return record.Gift.StartsWith("water:", StringComparison.Ordinal)
+                    ? $"~g~{Notifier.Escape(record.GiftName)}~s~ is yours: call it from F6 > Boats."
+                    : $"~g~{Notifier.Escape(record.GiftName)}~s~ is in your garage: F6 > Vehicles.";
             if (ResolveGift(record))
             {
                 precise += ": " + record.GiftName;
@@ -569,15 +739,28 @@ namespace GameArchipelago.Core
         private bool ResolveGift(ReceivedRecord record)
         {
             VehicleItem category = ApData.VehicleByItem(record.Item);
+            VehicleUnlock unlock = ApData.VehicleUnlockByItem(record.Item);
             bool vehicle = record.Item == ApData.VehicleGiftItem || category != null;
             bool weapon = record.Item == ApData.WeaponGiftItem;
-            if (!vehicle && !weapon) return false;
+            if (!vehicle && !weapon && unlock == null) return false;
             if (record.Gift != null) return true;
             int index = Save.Items.IndexOf(record);
             string seed = Save.Seed + "_" + Save.Slot;
-            if (vehicle)
+            if (unlock != null)
             {
-                VehicleGift gift = category != null ? Gifts.PickCategory(category.Category, seed, index) : Gifts.PickVehicle(seed, index);
+                record.Gift = (unlock.Water ? "water:" : string.Empty) + unlock.Model;
+                record.GiftName = unlock.Name;
+            }
+            else if (vehicle)
+            {
+                var owned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (ReceivedRecord other in Save.Items)
+                {
+                    if (other == record || other.Gift == null) continue;
+                    if (other.Gift.StartsWith("water:", StringComparison.Ordinal)) owned.Add(other.Gift.Substring(6));
+                    else if (!other.Gift.Contains(":")) owned.Add(other.Gift);
+                }
+                VehicleGift gift = category != null ? Gifts.PickCategory(category.Category, seed, index, owned) : Gifts.PickVehicle(seed, index, owned);
                 record.Gift = (gift.Water ? "water:" : string.Empty) + gift.Model;
                 record.GiftName = gift.Name;
             }
@@ -1070,6 +1253,11 @@ namespace GameArchipelago.Core
             if (!Save.Collected.Contains(id, StringComparer.OrdinalIgnoreCase)) Save.Collected.Add(id);
             History.Write("COLLECT", "id", id, "total", Save.Collected.Count);
             _saveDirty = true;
+            if (ApData.FeatById(id) != null)
+            {
+                SyncFeats();
+                return;
+            }
             CollectibleSet set = ApData.Collectibles.FirstOrDefault(c => id.StartsWith(c.Key + "_", StringComparison.OrdinalIgnoreCase));
             if (set != null)
             {
@@ -1115,6 +1303,7 @@ namespace GameArchipelago.Core
                 if (released && allDone && count < set.Total) MarkAllCollected(set);
             }
             if (ids.Count > 0) Check(ids);
+            SyncFeats();
         }
 
         private void MarkAllCollected(CollectibleSet set)
@@ -1187,6 +1376,8 @@ namespace GameArchipelago.Core
             if (Save == null || !EnvironmentApi.IsReady) return;
             int index = Array.FindIndex(ApData.CharacterNames, n => string.Equals(n, Save.StartCharacter, StringComparison.OrdinalIgnoreCase));
             if (index >= 0) EnvironmentApi.SetNextStartCharacter((PlayableCharacter)index);
+            string position = string.Equals(Save.StartPosition, "anywhere", StringComparison.OrdinalIgnoreCase) ? "Random" : Save.StartPosition;
+            if (Enum.TryParse(position ?? string.Empty, true, out StartLocation place)) EnvironmentApi.SetNextStartPosition(place);
         }
 
         private void SyncMarkers()
@@ -1223,6 +1414,46 @@ namespace GameArchipelago.Core
 
         internal int PassedCount => WorldMissions.Count(IsPassed);
 
+        private int _doneKey = -1;
+        private int _doneCount;
+        private int _freeRoamDoneCount;
+
+        internal int DoneCount
+        {
+            get
+            {
+                RefreshDoneCounts();
+                return _doneCount;
+            }
+        }
+
+        internal int FreeRoamDoneCount
+        {
+            get
+            {
+                RefreshDoneCounts();
+                return _freeRoamDoneCount;
+            }
+        }
+
+        private void RefreshDoneCounts()
+        {
+            if (Save == null)
+            {
+                _doneKey = -1;
+                _doneCount = 0;
+                _freeRoamDoneCount = 0;
+                return;
+            }
+            int key = Save.Checked.Count * 100003 + Save.ServerChecked.Count;
+            if (key == _doneKey) return;
+            _doneKey = key;
+            var done = new HashSet<long>(Save.Checked);
+            done.UnionWith(Save.ServerChecked);
+            _doneCount = done.Count;
+            _freeRoamDoneCount = done.Count(ApData.IsFreeRoam);
+        }
+
         private void CheckGoal()
         {
             if (Save.GoalDone) return;
@@ -1243,6 +1474,12 @@ namespace GameArchipelago.Core
                     break;
                 case 5:
                     reached = Save.GoalLocation > 0 && Save.Checked.Contains(Save.GoalLocation);
+                    break;
+                case 6:
+                    reached = Save.GoalCount > 0 && DoneCount >= Save.GoalCount;
+                    break;
+                case 7:
+                    reached = Save.GoalCount > 0 && FreeRoamDoneCount >= Save.GoalCount;
                     break;
                 default:
                     reached = Save.GoalMissions > 0 && PassedCount >= Save.GoalMissions;
@@ -1335,6 +1572,10 @@ namespace GameArchipelago.Core
                     return "Pick up " + GoalCollectibleName;
                 case 5:
                     return "Check " + (Save.GoalLocation > 0 ? ApData.LocationName(Save.GoalLocation) : "the goal location");
+                case 6:
+                    return $"Check {Save.GoalCount} locations";
+                case 7:
+                    return $"Check {Save.GoalCount} free-roam locations";
                 default:
                     return $"Pass {Save.GoalMissions} missions";
             }
@@ -1345,6 +1586,8 @@ namespace GameArchipelago.Core
             if (Save == null) return string.Empty;
             if (Save.GoalDone) return "Done";
             if (Save.Goal == 2) return $"{PassedCount}/{Save.GoalMissions}";
+            if (Save.Goal == 6) return $"{DoneCount}/{Save.GoalCount}";
+            if (Save.Goal == 7) return $"{FreeRoamDoneCount}/{Save.GoalCount}";
             return "In progress";
         }
 

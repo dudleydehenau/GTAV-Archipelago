@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GTA V Archipelago</title>
+<meta name="description" content="Play Grand Theft Auto V story mode in an Archipelago multiworld randomizer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a night map of Los Santos. Hero with a live item feed, then a map legend of everything that is shuffled, read like the pause-menu blip key. */
+:root {
+  --bg: #0e1215;
+  --surface: #161c21;
+  --line: #26303a;
+  --fg: #ebe6dd;
+  --muted: #9aa4ad;
+  --mission: #f2c230;
+  --collect: #5cc77d;
+  --activity: #54a8e0;
+  --shop: #e676ad;
+  --trap: #ea5a43;
+  --vehicle: #b394f0;
+  --ink-on-accent: #16130a;
+  --display: "Big Shoulders Display", "Arial Narrow", "Roboto Condensed", Impact, sans-serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #eef0eb; --surface: #ffffff; --line: #d3d8d0; --fg: #151a1f; --muted: #56606a;
+    --mission: #b98a00; --collect: #2e8f4e; --activity: #2378b3; --shop: #b8417c; --trap: #c23a24; --vehicle: #6d4fc2;
+    --ink-on-accent: #ffffff; color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #eef0eb; --surface: #ffffff; --line: #d3d8d0; --fg: #151a1f; --muted: #56606a;
+  --mission: #b98a00; --collect: #2e8f4e; --activity: #2378b3; --shop: #b8417c; --trap: #c23a24; --vehicle: #6d4fc2;
+  --ink-on-accent: #ffffff; color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 1rem/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+section { padding-block: clamp(48px, 8vw, 96px); border-top: 1px solid var(--line); }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: 0.01em; }
+h2 { font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; line-height: 0.95; text-transform: uppercase; }
+.eyebrow {
+  font: 600 0.75rem/1 var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+.lead { color: var(--muted); max-width: 60ch; margin: 0; font-size: 1.075rem; }
+.section-head { display: grid; gap: 14px; margin-bottom: 40px; }
+
+.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding-block: 20px;
+}
+.brand { font: 900 1.35rem/1 var(--display); text-transform: uppercase; letter-spacing: 0.04em; text-decoration: none; }
+.brand span { color: var(--mission); }
+.top nav { display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.92rem; color: var(--muted); }
+.top nav a { text-decoration: none; }
+.top nav a:hover { color: var(--fg); }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 64px); align-items: center; padding-block: clamp(32px, 6vw, 72px) clamp(56px, 8vw, 96px); }
+.hero h1 {
+  font-size: clamp(3.2rem, 8vw, 6rem);
+  font-weight: 900;
+  line-height: 0.86;
+  text-transform: uppercase;
+  margin-block: 18px 22px;
+}
+.hero h1 em { font-style: normal; color: var(--mission); display: block; }
+.cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 20px; border-radius: 4px; text-decoration: none;
+  font: 600 0.95rem/1 var(--body); border: 1px solid var(--line);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.btn:hover { transform: translateY(-1px); border-color: var(--muted); }
+.btn:focus-visible, a:focus-visible { outline: 2px solid var(--mission); outline-offset: 3px; }
+.btn.primary { background: var(--mission); border-color: var(--mission); color: var(--ink-on-accent); }
+.btn small { font: 400 0.72rem/1 var(--mono); opacity: 0.75; }
+.fineprint { margin-top: 18px; font: 400 0.8rem/1.5 var(--mono); color: var(--muted); }
+
+.feed {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+  font: 400 0.84rem/1.55 var(--mono); overflow: hidden; min-width: 0;
+}
+.feed-head { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.1em; }
+.feed-head b { color: var(--collect); font-weight: 600; }
+.feed ol { list-style: none; margin: 0; padding: 8px 0; display: grid; }
+.feed li { padding: 7px 16px; display: grid; grid-template-columns: 10px minmax(0, 1fr); gap: 12px; align-items: baseline; }
+.feed li .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--muted)); transform: translateY(-1px); }
+.feed li.new { animation: slide 0.5s ease both; }
+@keyframes slide { from { background: color-mix(in srgb, var(--c) 18%, transparent); } to { background: transparent; } }
+.feed .who { color: var(--fg); font-weight: 600; }
+.feed .what { color: var(--c); }
+.feed .msg { color: var(--muted); overflow-wrap: anywhere; }
+
+.legend { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.blip { background: var(--bg); padding: 26px 24px 28px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.blip .n { font: 800 clamp(2.6rem, 5vw, 3.6rem)/0.9 var(--display); color: var(--c); font-variant-numeric: tabular-nums; }
+.blip h3 { font-size: 1.35rem; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+.blip h3::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+.blip p { margin: 0; color: var(--muted); font-size: 0.93rem; }
+.kind { font: 600 0.68rem/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 64px); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 16px; padding-block: 20px; border-bottom: 1px solid var(--line); }
+.steps li::before { content: counter(s); font: 900 2.4rem/1 var(--display); color: var(--mission); }
+.steps h3 { font-size: 1.3rem; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; }
+.steps p { margin: 0; color: var(--muted); }
+kbd { font: 600 0.8rem/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px; padding: 2px 6px; color: var(--fg); }
+code { font: 400 0.85em/1 var(--mono); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; }
+
+.goals { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.goal { display: grid; grid-template-columns: minmax(0, 210px) minmax(0, 1fr); gap: 16px; padding-block: 14px; border-bottom: 1px solid var(--line); }
+.goal code { justify-self: start; align-self: start; }
+.goal span { color: var(--muted); font-size: 0.95rem; }
+
+.traps { display: flex; flex-wrap: wrap; gap: 8px; }
+.traps span {
+  font: 500 0.86rem/1 var(--body); padding: 9px 12px; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--trap) 45%, var(--line)); color: var(--fg);
+  background: color-mix(in srgb, var(--trap) 9%, transparent);
+}
+.traps span:nth-child(5n+2) { border-color: color-mix(in srgb, var(--vehicle) 45%, var(--line)); background: color-mix(in srgb, var(--vehicle) 9%, transparent); }
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; }
+table { width: 100%; border-collapse: collapse; min-width: 560px; font-size: 0.95rem; }
+th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 0.72rem/1 var(--mono); text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+td:nth-child(2) { color: var(--muted); }
+
+.notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.note { border-left: 3px solid var(--c); padding: 4px 0 4px 18px; min-width: 0; }
+.note h3 { font-size: 1.15rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; }
+.note p { margin: 0; color: var(--muted); font-size: 0.93rem; }
+
+footer { border-top: 1px solid var(--line); padding-block: 36px 48px; color: var(--muted); font-size: 0.88rem; }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+footer b { color: var(--fg); }
+
+@media (max-width: 860px) {
+  .hero, .split { grid-template-columns: minmax(0, 1fr); }
+  .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .notes { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .legend { grid-template-columns: minmax(0, 1fr); }
+  .goal { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .top nav { gap: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feed li.new { animation: none; }
+  .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="wrap top">
+  <a class="brand" href="#top">GTA V <span>Archipelago</span></a>
+  <nav aria-label="Sections">
+    <a href="#shuffled">What is shuffled</a>
+    <a href="#start">Get started</a>
+    <a href="#goals">Goals</a>
+    <a href="#mods">The mods</a>
+    <a href="https://github.com/dudleydehenau/GTAV-Archipelago">GitHub</a>
+  </nav>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <div class="eyebrow">Archipelago randomizer · GTA V story mode</div>
+      <h1>Los Santos, <em>shuffled.</em></h1>
+      <p class="lead">The city starts empty: no story, one character, no money. Every mission, collectible, stunt jump, race and shop purchase is a check. Michael, Franklin, Trevor, the missions, your weapons and your cars are items, scattered across every game in the multiworld.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/dudleydehenau/GTAV-Archipelago/releases/latest">Download the setup <small>Windows</small></a>
+        <a class="btn" href="https://github.com/dudleydehenau/GTAV-Archipelago">Source on GitHub</a>
+      </div>
+      <p class="fineprint">GTA V Legacy 1.0.3889 or 1.0.3725 · story mode only, BattlEye off · Archipelago 0.6.4+</p>
+    </div>
+
+    <div class="feed" aria-label="Example of an Archipelago session">
+      <div class="feed-head"><span>Room feed · example</span><b>● connected</b></div>
+      <ol id="feed">
+        <li style="--c: var(--mission)"><i class="dot"></i><span class="msg"><span class="who">Deesdee</span> found <span class="what">Mission: Blitz Play</span> in Ocarina of Time</span></li>
+        <li style="--c: var(--collect)"><i class="dot"></i><span class="msg"><span class="who">Deesdee</span> sent <span class="what">Progressive Sword</span> from Spaceship Parts: at 10 collected</span></li>
+        <li style="--c: var(--trap)"><i class="dot"></i><span class="msg"><span class="who">Hollow Knight</span> sent you <span class="what">Trap: Moon Gravity</span></span></li>
+        <li style="--c: var(--shop)"><i class="dot"></i><span class="msg"><span class="who">Deesdee</span> checked <span class="what">Los Santos Customs: Turbo</span></span></li>
+        <li style="--c: var(--vehicle)"><i class="dot"></i><span class="msg"><span class="who">Celeste</span> sent you <span class="what">Vehicle: Imponte Deluxo</span></span></li>
+      </ol>
+    </div>
+  </div>
+
+  <section id="shuffled">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Map legend</div>
+        <h2>What gets shuffled</h2>
+        <p class="lead">Turn each part on or off in your YAML. A full run with everything on goes past 1,400 locations; a short preset fits in an evening.</p>
+      </div>
+      <div class="legend">
+        <article class="blip" style="--c: var(--mission)">
+          <div class="kind">Checks and items</div>
+          <div class="n">123</div>
+          <h3>Missions</h3>
+          <p>Story missions and Strangers and Freaks. Each one is unlocked by its own item, needs the right characters, and can hold several checks plus gold medals and optional objectives.</p>
+        </article>
+        <article class="blip" style="--c: var(--collect)">
+          <div class="kind">Checks</div>
+          <div class="n">247</div>
+          <h3>Collectibles</h3>
+          <p>Spaceship parts, letter scraps, nuclear waste, submarine parts, monkey mosaics, peyote plants and Epsilon tracts, in milestones you choose.</p>
+        </article>
+        <article class="blip" style="--c: var(--activity)">
+          <div class="kind">Checks</div>
+          <div class="n">52</div>
+          <h3>Activities</h3>
+          <p>Off-road, street and sea races, triathlons, Flight School, stunt plane trials, the shooting range, golf, tennis, darts, yoga, parachuting, the cinema and the cable car. All open from the start.</p>
+        </article>
+        <article class="blip" style="--c: var(--collect)">
+          <div class="kind">Checks</div>
+          <div class="n">115</div>
+          <h3>Stunts</h3>
+          <p>50 stunt jumps, 50 bridges to fly under and 15 knife flights between buildings.</p>
+        </article>
+        <article class="blip" style="--c: var(--vehicle)">
+          <div class="kind">Checks</div>
+          <div class="n">44</div>
+          <h3>Landmarks</h3>
+          <p>Places to visit, from the Mount Chiliad summit to the Vinewood sign. The hints mark them in purple on your map.</p>
+        </article>
+        <article class="blip" style="--c: var(--activity)">
+          <div class="kind">Checks</div>
+          <div class="n">210</div>
+          <h3>Skills</h3>
+          <p>Stamina, shooting, strength, stealth, flying, driving and lung capacity for all three characters, one check every 10 % (adjustable).</p>
+        </article>
+        <article class="blip" style="--c: var(--shop)">
+          <div class="kind">Items and checks</div>
+          <div class="n">81</div>
+          <h3>Ammu-Nation</h3>
+          <p>A new gun shop: your character holds each weapon as you browse. Each weapon is an item that lets you buy it, and the first purchase is a check. 267 upgrades on top, if you want them.</p>
+        </article>
+        <article class="blip" style="--c: var(--shop)">
+          <div class="kind">Items and checks</div>
+          <div class="n">29</div>
+          <h3>Game shops</h3>
+          <p>Barbers, clothes stores, tattoo parlors and Los Santos Customs stay closed until you find their item. The first purchase of each category is a check.</p>
+        </article>
+        <article class="blip" style="--c: var(--vehicle)">
+          <div class="kind">Items</div>
+          <div class="n">62</div>
+          <h3>Vehicles</h3>
+          <p>Planes, jets, helicopters, submarines and the fun ones, each received once and kept in your garage. Call them from the menu, planes land at the nearest airfield.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="traps">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Items · 53 of them</div>
+        <h2>Traps your friends can send you</h2>
+        <p class="lead">Mixed into the pool with the money and the gifts. Pick which ones are allowed and how often they show up. Stream Safe removes the one that is not.</p>
+      </div>
+      <div class="traps" id="traps-list"></div>
+    </div>
+  </section>
+
+  <section id="start">
+    <div class="wrap split">
+      <div class="section-head">
+        <div class="eyebrow">About ten minutes</div>
+        <h2>Get started</h2>
+        <p class="lead">The setup downloads ScriptHookVDotNet, LemonUI, the five mods and the APWorld, and keeps them up to date. You only bring ScriptHookV, which its author does not allow anyone to redistribute.</p>
+      </div>
+      <ol class="steps">
+        <li><div><h3>Run the setup</h3><p>Download <code>GTAVArchipelagoSetup</code> from the latest release, pick your GTA V folder and click Install.</p></div></li>
+        <li><div><h3>Add ScriptHookV</h3><p>Download the zip for your game version from its page. The setup finds it in your Downloads folder.</p></div></li>
+        <li><div><h3>Generate a game</h3><p>Drop <code>gtav.apworld</code> into Archipelago and start from a preset: Short, Ten Hours, One Mission, Everything or Stream Safe.</p></div></li>
+        <li><div><h3>Connect in game</h3><p>Launch GTA V with BattlEye off, press <kbd>F6</kbd>, open Connection, enter the room and your slot, then start a New Game.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="goals">
+    <div class="wrap split">
+      <div class="section-head">
+        <div class="eyebrow">Goal option</div>
+        <h2>Choose how your run ends</h2>
+        <p class="lead">From a full story playthrough to a one-check sprint. When your goal is done, the server can release your remaining items to the others.</p>
+      </div>
+      <div class="goals">
+        <div class="goal"><code>finale</code><span>Pass one of the three final missions.</span></div>
+        <div class="goal"><code>the_third_way</code><span>Pass The Third Way, the ending where all three survive.</span></div>
+        <div class="goal"><code>mission_percentage</code><span>Pass a share of all the missions in your world, any of them.</span></div>
+        <div class="goal"><code>one_mission</code><span>Pass a single mission, chosen or random.</span></div>
+        <div class="goal"><code>one_collectible</code><span>Pick up one random collectible. The client routes you to it.</span></div>
+        <div class="goal"><code>one_check</code><span>One random location of your world. Silly on purpose.</span></div>
+        <div class="goal"><code>check_percentage</code><span>Check a share of every location, whatever they are.</span></div>
+        <div class="goal"><code>free_roam</code><span>A number of free-roam checks: landmarks, stunts, skills, escapes, collectibles.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mods">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Under the hood</div>
+        <h2>Five mods, one menu</h2>
+        <p class="lead">Each mod works on its own and has a public API, so other modders can build on them. The Archipelago client ties them together behind <kbd>F6</kbd>.</p>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Mod</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>GameArchipelago</td><td>The Archipelago client: connection, items, checks, hints, goals, the F6 menu, the map filters and the bug report.</td></tr>
+            <tr><td>MissionLauncher</td><td>Starts any story mission or Strangers and Freaks from a marker on the map, with the right character and setup.</td></tr>
+            <tr><td>GameEnvironment</td><td>The empty starting world, the three characters, money, the garage, the new Ammu-Nation and every activity opened.</td></tr>
+            <tr><td>GameCollectibles</td><td>Every collectible and free-roam feat, with radar blips, routes and completion tracking.</td></tr>
+            <tr><td>GameTraps</td><td>The 53 traps, from Moon Gravity to Grand Theft Auto 1997.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="notes">
+        <div class="note" style="--c: var(--trap)"><h3>Story mode only</h3><p>Never take the mods into GTA Online. Before going online, click Disable mods in the setup and turn BattlEye back on.</p></div>
+        <div class="note" style="--c: var(--shop)"><h3>Streaming?</h3><p>One trap can show nudity. Turn on F6 › Settings › Stream safe, or start from the Stream Safe preset.</p></div>
+        <div class="note" style="--c: var(--mission)"><h3>Found a bug?</h3><p>F6 › Settings › Create a bug report makes a zip with your save and the logs. Send it on Discord or open a GitHub issue.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Made by <b>Deesdee</b> · Discord: <b>Deesdee</b></span>
+    <span>A fan project, not affiliated with Rockstar Games or Take-Two Interactive.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var traps = ["Scooter Brothers","Ramp","Hunting Season","Wild Side","Mayday","Nitro for Everyone","Close Encounter","Irresistible","Second Coming","Wanted","Last Round","Flat Tires","Butterfingers","Lester's Cut","Paparazzi","Send in the Clowns","Moon Gravity","North Yankton Weather","Nightfall","Banana Peel","Lift-off","Phantom Car","Phantom Wedge","Red Light, Green Light","Speed","Back to the Future","The Purge","Terminator","The Matrix","Fury Road","Jaws","Florida Grannies","Here We Go Again","Let's Go Bowling","Welcome to the 80s","Big Smoke's Order","Battle Royale","Rainbow Road","Grand Theft Auto 1997","Upside Down","Attack of the Clones","Taxi","Cloudy with a Chance of Toilets","Indiana Jones","Failed Heroes","Mariachi","Flying Cars","Kamikaze Pedestrians","Flash Mob","Initial D","Run, Forrest, Run","The Walking Dead","Boing Boing"];
+  var list = document.getElementById("traps-list");
+  traps.forEach(function (t) { var s = document.createElement("span"); s.textContent = t; list.appendChild(s); });
+
+  var feed = document.getElementById("feed");
+  var events = [
+    ["mission", "Deesdee", "found", "Mission: The Paleto Score", "in A Link to the Past"],
+    ["shop", "Deesdee", "checked", "Buy Combat Pistol", ""],
+    ["trap", "Super Metroid", "sent you", "Trap: Florida Grannies", ""],
+    ["collect", "Deesdee", "checked", "Under the Bridge: 10 flown", ""],
+    ["activity", "Deesdee", "checked", "Activity: Flight School Lesson 1", ""],
+    ["vehicle", "Minecraft", "sent you", "Vehicle: Buckingham Luxor Deluxe (gold)", ""],
+    ["mission", "Factorio", "sent you", "Franklin", ""],
+    ["shop", "Stardew Valley", "sent you", "Shop: Los Santos Customs", ""],
+    ["trap", "Pokemon Emerald", "sent you", "Trap: Grand Theft Auto 1997", ""],
+    ["collect", "Deesdee", "checked", "Monkey Mosaics: at 25 collected", ""]
+  ];
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) return;
+  var i = 0;
+  setInterval(function () {
+    var e = events[i++ % events.length];
+    var li = document.createElement("li");
+    li.className = "new";
+    li.style.setProperty("--c", "var(--" + e[0] + ")");
+    var dot = document.createElement("i"); dot.className = "dot";
+    var msg = document.createElement("span"); msg.className = "msg";
+    var who = document.createElement("span"); who.className = "who"; who.textContent = e[1];
+    var what = document.createElement("span"); what.className = "what"; what.textContent = e[3];
+    msg.appendChild(who);
+    msg.appendChild(document.createTextNode(" " + e[2] + " "));
+    msg.appendChild(what);
+    if (e[4]) msg.appendChild(document.createTextNode(" " + e[4]));
+    li.appendChild(dot); li.appendChild(msg);
+    feed.insertBefore(li, feed.firstChild);
+    while (feed.children.length > 5) feed.removeChild(feed.lastChild);
+  }, 2800);
+})();
+</script>
+</body>
+</html>

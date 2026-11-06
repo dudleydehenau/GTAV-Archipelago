@@ -63,7 +63,7 @@ namespace GameEnvironment.Core
 
             Become(start);
             _characters.Apply();
-            PlaceAt(_config.SpawnFor(start));
+            PlaceAt(StartSpawn(start));
             RestorePlayer();
             foreach (PlayableCharacter character in Characters.All)
                 Economy.SetCash(character, keep ? state.For(character).Money : _config.StartMoney);
@@ -160,6 +160,114 @@ namespace GameEnvironment.Core
                 Script.Wait(0);
             }
             Game.Player.Character.Style.SetDefaultClothes();
+        }
+
+        private static readonly Vector3[] RandomSpots =
+        {
+            new Vector3(-34.1f, -1095.2f, 25.4f),
+            new Vector3(-1508.8f, -937.5f, 8.5f),
+            new Vector3(-700.2f, -918f, 18.2f),
+            new Vector3(213.8f, -853.9f, 29.4f),
+            new Vector3(-26.1f, -109.7f, 56.1f),
+            new Vector3(809.3f, -1076.2f, 27.6f),
+            new Vector3(117.5f, -400.6f, 40.3f),
+            new Vector3(1381.2f, -2065.8f, 51f),
+            new Vector3(409.7f, -975.2f, 28.4f),
+            new Vector3(-1085.7f, -428.7f, 35.6f),
+            new Vector3(-63.2f, -1457.6f, 31.1f),
+            new Vector3(1985.3f, 3053f, 46.2f),
+            new Vector3(-817.4f, 177.9f, 71.2f),
+            new Vector3(1973.8f, 3815f, 32.4f),
+            new Vector3(-1.9f, 532f, 174.3f),
+            new Vector3(1330.4f, -2553.7f, 45.8f),
+            new Vector3(2388.9f, 2607.2f, 45.6f),
+            new Vector3(1274.9f, -1710.6f, 53.8f),
+            new Vector3(-436.9f, 1059f, 326.7f),
+            new Vector3(58.9f, -752.7f, 43.2f),
+            new Vector3(133.2f, -2198.2f, 5.2f),
+            new Vector3(1244.3f, -339.3f, 68.1f),
+            new Vector3(-413.2f, -2182.1f, 9.3f),
+            new Vector3(1115.4f, -1235.8f, 19.9f),
+            new Vector3(-1335.3f, -1277.9f, 3.9f),
+            new Vector3(3830.4f, 4463.5f, 1.7f),
+            new Vector3(1381f, 1147.4f, 113.3f),
+            new Vector3(-2308.2f, 424.4f, 173.5f),
+            new Vector3(-717.7f, -157.4f, 36f),
+            new Vector3(-1148.8f, -1523.3f, 9.6f),
+            new Vector3(209f, -1647.3f, 28.8f),
+            new Vector3(707.6f, -964.9f, 29.4f),
+            new Vector3(1279f, -3033.8f, 24.4f),
+            new Vector3(-2145.5f, 3018.3f, 31.8f),
+            new Vector3(97f, -1290.8f, 28.3f),
+            new Vector3(372.6f, -1624.8f, 28.3f),
+            new Vector3(919.5f, -1546.9f, 29.8f),
+            new Vector3(-311.2f, -771.7f, 52.2f),
+            new Vector3(307.1f, -1084.8f, 28.4f),
+            new Vector3(2627.1f, 2933.5f, 39.4f),
+            new Vector3(139.6f, -3093f, 4.9f),
+            new Vector3(497.2f, -2023f, 25.9f),
+            new Vector3(1391.9f, 3602.6f, 37.9f),
+            new Vector3(-89.9f, 4302.1f, 45.6f),
+            new Vector3(-1604.7f, 5239.1f, 3f),
+            new Vector3(414f, -761f, 29f),
+            new Vector3(-468.9f, -1713.1f, 18.2f),
+            new Vector3(-1459f, 486f, 115.4f),
+            new Vector3(-1622.9f, 4204.9f, 83.3f),
+            new Vector3(242.7f, 362.7f, 104.7f),
+            new Vector3(1835.5f, 4705.9f, 38.1f),
+            new Vector3(637f, 119.7f, 89.5f),
+            new Vector3(-2892.9f, 3192.4f, 11.7f),
+            new Vector3(524.4f, 3079.8f, 39.5f),
+            new Vector3(-697.8f, 45.4f, 43f),
+            new Vector3(-188.2f, 1296.1f, 302.9f),
+            new Vector3(-954.2f, -2760.1f, 14.6f),
+            new Vector3(1731.4f, 97f, 170.4f),
+            new Vector3(-1877.8f, -440.6f, 45f),
+            new Vector3(809.7f, 1279.8f, 360.5f),
+            new Vector3(-915.6f, 6139.2f, 5.5f),
+            new Vector3(-72.3f, -1260.6f, 28.1f),
+            new Vector3(1804.3f, 3931.3f, 32.8f),
+            new Vector3(-684.2f, 5839.2f, 16.1f),
+            new Vector3(-1104.9f, 291.2f, 64.3f),
+            new Vector3(565.4f, -1772.9f, 29.8f),
+            new Vector3(2726.1f, 4145f, 44.3f),
+            new Vector3(327.9f, 3405.7f, 35.7f),
+            new Vector3(18f, 4527f, 105f),
+            new Vector3(-303.8f, 6211.3f, 31.1f),
+            new Vector3(-1097.2f, 790f, 164.5f),
+            new Vector3(-566f, 272.5f, 83f),
+            new Vector3(-1096.8f, 67.7f, 53f),
+            new Vector3(-1310.7f, -640.2f, 26.5f),
+            new Vector3(2468.5f, 3437.4f, 49.9f),
+            new Vector3(-149.8f, 285.8f, 93.7f),
+            new Vector3(305.5f, 157.2f, 102.9f),
+            new Vector3(1041f, -534.4f, 60.2f),
+            new Vector3(908f, 3643.7f, 32.2f),
+            new Vector3(-161f, -1669.7f, 33f),
+            new Vector3(-1298.2f, 2504.1f, 21.1f),
+            new Vector3(-1299f, 4640.2f, 105.7f),
+        };
+
+        private static readonly SpawnPoint CitySpawn = new SpawnPoint { X = 195.2f, Y = -933.8f, Z = 30.7f, Heading = 145f };
+
+        private SpawnPoint StartSpawn(PlayableCharacter start)
+        {
+            int pending = _store.State.PendingStartPosition;
+            StartLocation place = Enum.IsDefined(typeof(StartLocation), pending) ? (StartLocation)pending : _config.StartLocation;
+            Log.Info($"Start position: {place}.");
+            switch (place)
+            {
+                case StartLocation.City: return CitySpawn;
+                case StartLocation.Random: return RandomSpawn();
+                default: return _config.SpawnFor(start);
+            }
+        }
+
+        private SpawnPoint RandomSpawn()
+        {
+            Vector3 spot = RandomSpots[_random.Next(RandomSpots.Length)];
+            Log.Info($"Random start position: {spot}.");
+            return new SpawnPoint { X = spot.X, Y = spot.Y, Z = spot.Z, Heading = (float)_random.NextDouble() * 360f };
         }
 
         private static void PlaceAt(SpawnPoint spawn)

@@ -41,7 +41,8 @@ EnvironmentApi.SetUnlockedCharacters(new[] { PlayableCharacter.Michael, Playable
 
 `LockCharacter` is refused unless `AllowRelock` is `true`, for the current character, and for the last
 unlocked one. `SetNextStartCharacter` overrides `StartCharacter` for the next new game only (`null` clears it);
-it is saved in `state.json`, so it survives a reload. `SetUnlockedCharacters` sets the exact list of unlocked
+it is saved in `state.json`, so it survives a reload. `SetNextStartPosition(StartLocation.City)` does the same for
+`StartPosition` (`Home`, `City` or `Random`). `SetUnlockedCharacters` sets the exact list of unlocked
 characters, ignoring `AllowRelock` (it is what a randomizer client uses to mirror its items). It refuses an empty
 list. A locked current character stays playable until you switch away from it.
 
@@ -106,3 +107,19 @@ on disk.
   outside missions and replays, unlocked characters only).
 - ApiVersion 3: `SetUnlockedCharacters`, `GameId`.
 - ApiVersion 2: `OpenDoorsEnabled`, `AreDoorsOpen`.
+
+## Game shops
+
+```csharp
+EnvironmentApi.GameShopPurchase += (ShopKind kind, string[] categories) => { };
+EnvironmentApi.SetGameShopLocked(ShopKind.Customs, true);
+bool locked = EnvironmentApi.IsGameShopLocked(ShopKind.Customs);
+HashSet<int> done = EnvironmentApi.FinishedActivityIcons();
+```
+
+`ShopKind` is `Barber`, `Clothes`, `Tattoo` or `Customs`. `GameShopPurchase` fires a moment after the money of a purchase
+leaves your account, with what changed on your character or your vehicle: `Haircut`, `Beard`; `Tops`, `Pants`, `Shoes`,
+`Hats`, `Glasses`, `Outfits`, `Masks`; `Head`, `Torso`, `Left Arm`, `Right Arm`, `Left Leg`, `Right Leg`; `Engine`,
+`Brakes`, `Transmission`, `Suspension`, `Armor`, `Turbo`, `Horn`, `Headlights`, `Wheels`, `Tires`, `Respray`,
+`Windows`, `Plate`, `Body Kit`. The list can be empty (a repair, or nothing new). A locked kind of shop is closed by the
+game: no entry, no purchase. `FinishedActivityIcons` returns the handles of the activity icons with a tick.

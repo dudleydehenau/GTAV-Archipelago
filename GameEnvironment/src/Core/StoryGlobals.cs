@@ -115,6 +115,97 @@ namespace GameEnvironment.Core
 
         public bool FlowActive => Read(_cfg.FlowState) != 0;
 
+        private const int MinigameOffset = 99 + 219;
+
+        public bool MinigamesSupported
+        {
+            get
+            {
+                int count = Read(_cfg.FlowState + MinigameOffset);
+                return count >= 1 && count <= 64;
+            }
+        }
+
+        public int MinigameBits
+        {
+            get => Read(_cfg.FlowState + MinigameOffset + 1);
+            set => Write(_cfg.FlowState + MinigameOffset + 1, value);
+        }
+
+        private const int OffroadUnlocked = 9932;
+        private const int TriathlonUnlocked = 10934;
+        private const int StreetRaceUnlocked = 15895;
+
+        public bool OpenRaceProgress()
+        {
+            bool changed = false;
+            changed |= Raise(_cfg.FlowState + OffroadUnlocked, 5);
+            changed |= Raise(_cfg.FlowState + TriathlonUnlocked, 2);
+            int street = _cfg.FlowState + StreetRaceUnlocked;
+            int bits = Read(street);
+            if ((bits & ~0x1F) == 0 && bits != 0x1F)
+            {
+                Write(street, 0x1F);
+                changed = true;
+            }
+            return changed;
+        }
+
+        private bool Raise(int index, int max)
+        {
+            int value = Read(index);
+            if (value < -1 || value >= max) return false;
+            Write(index, max);
+            return true;
+        }
+
+        public int ShopCount => ShopsSupported ? Read(_cfg.ShopFlags) : 0;
+
+        private const int StaticBlipCount = 263;
+        private const int StaticBlipStride = 23;
+
+        private int StaticBlipBase => _cfg.Build == 3725 ? 34155 : 34195;
+
+        public bool StaticBlipsSupported
+        {
+            get
+            {
+                int root = StaticBlipBase;
+                return Read(root) == StaticBlipCount && Read(root + 1) == 3 && Read(root + 1 + 12) == 3;
+            }
+        }
+
+        public int StaticBlipSprite(int index) => Read(StaticBlipBase + 1 + index * StaticBlipStride + 13);
+
+        public bool StaticBlipFinished(int index) => (StaticBlipFlags(index) & (1 << 20)) != 0;
+
+        public int StaticBlipFlags(int index) => Read(StaticBlipBase + 1 + index * StaticBlipStride + 11);
+
+        public int StaticBlipCountValue => StaticBlipCount;
+
+        public GTA.Math.Vector3 StaticBlipPosition(int index)
+        {
+            int at = StaticBlipBase + 1 + index * StaticBlipStride;
+            for (int slot = 0; slot < 3; slot++)
+            {
+                int p = at + 1 + slot * 3;
+                var v = new GTA.Math.Vector3(GlobalVariable.Get(p).Read<float>(), GlobalVariable.Get(p + 1).Read<float>(), GlobalVariable.Get(p + 2).Read<float>());
+                if (v.X != 0f || v.Y != 0f) return v;
+            }
+            return GTA.Math.Vector3.Zero;
+        }
+
+        public int StaticBlipHandle(int index) => Read(StaticBlipBase + 1 + index * StaticBlipStride + 19);
+
+        public void SetStaticBlipHandle(int index, int handle) => Write(StaticBlipBase + 1 + index * StaticBlipStride + 19, handle);
+
+        public void ActivateStaticBlip(int index)
+        {
+            int at = StaticBlipBase + 1 + index * StaticBlipStride + 11;
+            Write(at, Read(at) | 1 | (1 << 3) | (1 << 15) | (1 << 18));
+            Write(StaticBlipBase - 3, 1);
+        }
+
         public bool FlowHalted
         {
             get => Read(_cfg.FlowState + 1) != 0;
@@ -259,6 +350,18 @@ namespace GameEnvironment.Core
 
         public void SetShopFlags(int shop, int flags) => Write(_cfg.ShopFlags + 1 + shop, flags);
 
+        private const int DoorCount = 228;
+
+        private int DoorStates => _cfg.Build == 3725 ? 122172 : 122231;
+
+        public bool DoorsSupported => Read(DoorStates) == DoorCount;
+
+        public int DoorCountValue => DoorCount;
+
+        public int GetDoorState(int door) => Read(DoorStates + 1 + door);
+
+        public void SetDoorState(int door, int state) => Write(DoorStates + 1 + door, state);
+
         public int GetBuildingState(int building) => Read(_cfg.BuildingStates + 1 + building);
 
         public void SetBuildingState(int building, int state)
@@ -266,6 +369,14 @@ namespace GameEnvironment.Core
             Write(_cfg.BuildingStates + 1 + building, state);
             if (_cfg.BuildingDeferred > 0) Write(_cfg.BuildingDeferred + 1 + building, 0);
             Write(_cfg.BuildingDirty + 1 + building, 1);
+        }
+
+        public bool RaiseFlowFlag(int flag)
+        {
+            int index = _cfg.FlowFlags + 1 + flag;
+            if (Read(index) != 0) return false;
+            Write(index, 1);
+            return true;
         }
 
         public static bool IsScriptRunning(int hash) =>

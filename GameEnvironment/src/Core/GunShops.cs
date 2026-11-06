@@ -55,7 +55,7 @@ namespace GameEnvironment.Core
                 _opened.Add(shop);
                 count++;
             }
-            if (count > 0) Log.Info($"Ammu-Nation opened for the mission ({count} shops).");
+            if (count > 0) Log.Info($"Ammu-Nation opened ({count} shops).");
         }
     }
 }

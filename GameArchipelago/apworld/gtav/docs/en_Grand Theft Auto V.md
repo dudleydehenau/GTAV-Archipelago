@@ -9,8 +9,10 @@ export a config file.
 
 GTA V story mode becomes a sterile open world: the story never moves forward on its own and you start with a single
 character, no money and no weapons. Missions are played through the game's own replay system, from markers that only
-appear once you have the mission's item and a character who can start it. The 160 hidden collectibles (spaceship
-parts, letter scraps, nuclear waste, submarine parts) are all available from the start as floating objects.
+appear once you have the mission's item and a character who can start it. The 247 hidden collectibles (spaceship
+parts, letter scraps, nuclear waste, submarine parts, monkey mosaics, peyote plants, Epsilon tracts) are all
+available from the start as floating objects, and the free roam is full of checks: stunt jumps, flights under the
+bridges, knife flights, 44 landmarks to visit (purple markers on the map), skill levels and police escapes.
 
 ## What items and locations get shuffled?
 
@@ -25,8 +27,11 @@ A mission is in logic when you have its item, a character who can start it, and 
 
 Locations: the replayable story missions (67; the free-roam preparations are left out because they break as replays) and Strangers and Freaks missions (44, optional), cut down to the
 Mission Count you choose, bonus checks per mission, "Gold Medal N" and "Objective N" counters, and collectible
-milestones ("Spaceship Parts: at 5 collected": a count of pickups, whichever ones), each worth up to three locations. The high milestones are paced by your mission
-progress in logic.
+milestones ("Spaceship Parts: at 5 collected": a count of pickups, whichever ones), each worth up to three locations,
+the same milestones for stunt jumps, bridges and knife flights ("Stunt Jumps: 5 completed"), one location per
+landmark ("Visit Mount Chiliad Summit"), skill levels ("Trevor: Flying 60%") and police escapes. The high milestones
+are paced by your mission progress in logic; the bridges and knife flights need the Helicopter, a character's skills
+need that character.
 
 ## Which items can be in another player's world?
 
@@ -56,6 +61,8 @@ Depending on the options:
   character you do not start with.
 - **one_collectible**: pick up one random collectible; the client tells you which one and can route you to it.
 - **one_check**: check one random location of your world; the client tells you which one.
+- **check_percentage**: check a share of all the locations of your world.
+- **free_roam**: check a number of free-roam locations (landmarks, stunt jumps, bridges, skills...).
 
 When the goal is done, the room's release setting decides whether your remaining items are sent to the others.
 
@@ -66,16 +73,18 @@ other players' checks can set off traps and gifts in your game.
 
 The spoiler log and F6 > Progress show two estimates: the time to reach the goal (the missions it needs, plus 30 %
 for unlocks and driving) and an upper bound for every location. Count about 10 minutes per story mission (20 for a
-heist and the big finales), 6 per Strangers and Freaks mission and 2 per collectible:
+heist and the big finales), 6 per Strangers and Freaks mission, 2 per collectible, 3 per stunt jump, landmark or
+police escape, and 1 per skill level. With the default options, the free-roam checks add about 11 hours to the upper
+bound:
 
 | Settings | To the goal | Every location (upper bound) |
 |---|---|---|
-| 30 missions, goal 30 % of them | about 1 h 50 | about 11 hours |
-| Default (finale, 30 missions, the 160 collectibles) | about 4 hours | about 11 h 30 |
-| "Short" preset (20 missions, spaceship parts only) | about 3 hours | about 6 hours |
-| "Ten Hours" preset (finale, 80 missions) | about 10 hours | about 21 hours |
-| "One Mission" preset (50 missions) | about 4 hours | about 14 h 40 |
-| "Everything" preset (111 missions, every check) | about 14 hours | about 31 hours |
+| Default (finale, 30 missions, every collectible and free-roam check) | about 4 hours | about 26 hours |
+| "Short" preset (20 missions, spaceship parts, a few free-roam checks) | about 3 hours | about 11 hours |
+| "Ten Hours" preset (finale, 80 missions) | about 10 hours | about 33 hours |
+| "One Mission" preset (50 missions) | about 4 h 30 | about 26 hours |
+| "Free Roam" preset (20 missions, goal: 120 free-roam checks) | about 4 hours | about 22 hours |
+| "Everything" preset (111 missions, every check) | about 14 hours | about 45 hours |
 
 Presets: on the website's player options page, pick one in the "Preset" list at the top. In the Archipelago
 launcher, "Generate Template Options" writes one YAML per preset in `Players/Templates/Presets` (the Options Creator

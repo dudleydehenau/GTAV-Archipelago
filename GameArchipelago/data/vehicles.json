@@ -271,5 +271,166 @@
     "Weight": 1,
     "Water": true,
     "Category": "Boat"
+  },
+  {
+    "Name": "Mallard Stunt Plane",
+    "Model": "stunt",
+    "Weight": 2,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "JoBuilt Velum",
+    "Model": "velum2",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "JoBuilt Mammatus",
+    "Model": "mammatus",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Western Duster",
+    "Model": "duster",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Cuban 800",
+    "Model": "cuban800",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Ultralight",
+    "Model": "microlight",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Western Seabreeze",
+    "Model": "seabreeze",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Howard NX-25",
+    "Model": "howard",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Atomic Blimp",
+    "Model": "blimp",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Xero Blimp",
+    "Model": "blimp2",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Mammoth P-996 LAZER",
+    "Model": "lazer",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Pyro",
+    "Model": "pyro",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Mammoth Besra",
+    "Model": "besra",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Luxor Deluxe (gold)",
+    "Model": "luxor2",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Luxor",
+    "Model": "luxor",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Shamal",
+    "Model": "shamal",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Vestra",
+    "Model": "vestra",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Miljet",
+    "Model": "miljet",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Nimbus",
+    "Model": "nimbus",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Buckingham Alpha-Z1",
+    "Model": "alphaz1",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Jet (airliner)",
+    "Model": "jet",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Cargo Plane",
+    "Model": "cargoplane",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
+  },
+  {
+    "Name": "Eckhart Titan",
+    "Model": "titan",
+    "Weight": 1,
+    "Water": false,
+    "Category": ""
   }
 ]

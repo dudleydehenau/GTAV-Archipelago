@@ -14,6 +14,8 @@ namespace GameEnvironment.Core
         private readonly SterileSetup _setup;
         private readonly GunShops _shops;
         private readonly SaveCleaner _saves;
+        private readonly Activities _activities;
+        private readonly GameShopWatcher _gameShops = new GameShopWatcher();
         private readonly InactiveNotice _notice = new InactiveNotice();
         private bool _disabled;
         private bool _wasBusy;
@@ -47,6 +49,7 @@ namespace GameEnvironment.Core
             Doors = new DoorKeeper(Config.OpenDoors, Globals);
             _setup = new SterileSetup(Config, Globals, Store, Roster);
             _shops = new GunShops(Globals);
+            _activities = new Activities(Globals);
             _saves = Config.NoSaves ? new SaveCleaner() : null;
 
             Roster.Switched += character => Economy.ScheduleWeaponCheck(2000);
@@ -114,7 +117,7 @@ namespace GameEnvironment.Core
                 {
                     if (Mode == EnvironmentMode.Sterile)
                     {
-                        if (Config.OpenGunShopsInMissions) _shops.Tick(true);
+                        if (Config.OpenGunShopsInMissions || Config.CustomGunShop) _shops.Tick(true);
                     }
                     Doors.Release("replay");
                     if (Config.ReplayCharacterFix) ReplayCast.Tick(Globals);
@@ -143,7 +146,10 @@ namespace GameEnvironment.Core
                 }
 
                 if (_needsApply) Apply();
-                if (Config.OpenGunShopsInMissions) _shops.Tick(Function.Call<bool>(Hash.GET_MISSION_FLAG));
+                if (Config.CustomGunShop) _shops.Tick(true);
+                if (Config.OpenActivities) _activities.Tick(Game.GameTime);
+                else if (Config.OpenGunShopsInMissions) _shops.Tick(Function.Call<bool>(Hash.GET_MISSION_FLAG));
+                if (!Function.Call<bool>(Hash.GET_MISSION_FLAG)) _gameShops.Tick();
                 _saves?.Tick(true);
                 WatchPrologue();
                 Roster.Tick();
@@ -317,6 +323,7 @@ namespace GameEnvironment.Core
 
         private void OnAborted(object sender, EventArgs e)
         {
+            _activities.Clear();
             try
             {
                 Store.Save();

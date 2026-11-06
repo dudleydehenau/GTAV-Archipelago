@@ -14,6 +14,8 @@ namespace GameCollectibles.Core
         public CollectibleKind Kind;
         public int Number;
         public Vector3 Position;
+        public bool Snap;
+        public int SnapTries;
         public Prop Prop;
         public Blip Blip;
     }
@@ -43,7 +45,11 @@ namespace GameCollectibles.Core
             if (Config.LetterScraps) Add(CollectibleKind.LetterScrap, "LetterScrap", Locations.LetterScraps);
             if (Config.NuclearWaste) Add(CollectibleKind.NuclearWaste, "NuclearWaste", Locations.NuclearWastes);
             if (Config.SubmarineParts) Add(CollectibleKind.SubmarinePart, "SubmarinePart", Locations.SubmarineParts);
-            Log.Info($"{_spots.Count} collectibles, {CollectedCount} already collected.");
+            if (Config.MonkeyMosaics) Add(CollectibleKind.MonkeyMosaic, "MonkeyMosaic", Locations.MonkeyMosaics, true);
+            if (Config.PeyotePlants) Add(CollectibleKind.PeyotePlant, "PeyotePlant", Locations.PeyotePlants);
+            if (Config.EpsilonTracts) Add(CollectibleKind.EpsilonTract, "EpsilonTract", Locations.EpsilonTracts);
+            Feats = new FeatTracker(this);
+            Log.Info($"{_spots.Count} collectibles, {CollectedCount} already collected, {Feats.All.Count} feats.");
             Tick += OnTick;
             Aborted += OnAborted;
         }
@@ -51,6 +57,7 @@ namespace GameCollectibles.Core
         internal static CollectibleRunner Instance { get; private set; }
         internal CollectiblesConfig Config { get; }
         internal Store Store { get; }
+        internal FeatTracker Feats { get; }
         internal bool IsReady { get; private set; }
         internal IReadOnlyList<Spot> Spots => _spots;
         internal int CollectedCount => _spots.Count(s => Store.Contains(s.Id));
@@ -77,22 +84,31 @@ namespace GameCollectibles.Core
 
         internal bool MarkCollected(string id)
         {
+            if (string.IsNullOrEmpty(id) || !Store.Add(id)) return false;
             Spot spot = Find(id);
-            if (spot == null || !Store.Add(spot.Id)) return false;
-            Despawn(spot);
+            if (spot != null)
+            {
+                Despawn(spot);
+                RemoveBlip(spot);
+            }
             return true;
         }
 
         internal bool Restore(string id)
         {
-            Spot spot = Find(id);
-            return spot != null && Store.Remove(spot.Id);
+            if (string.IsNullOrEmpty(id) || !Store.Remove(id)) return false;
+            _nextStream = 0;
+            return true;
         }
 
         internal void ReplaceCollected(IEnumerable<string> ids)
         {
             Store.Replace(ids);
-            foreach (Spot spot in _spots.Where(s => Store.Contains(s.Id))) Despawn(spot);
+            foreach (Spot spot in _spots.Where(s => Store.Contains(s.Id)))
+            {
+                Despawn(spot);
+                RemoveBlip(spot);
+            }
             _nextStream = 0;
         }
 
@@ -108,11 +124,11 @@ namespace GameCollectibles.Core
             _nextStream = 0;
         }
 
-        private void Add(CollectibleKind kind, string prefix, Vector3[] positions)
+        private void Add(CollectibleKind kind, string prefix, Vector3[] positions, bool snap = false)
         {
             for (int i = 0; i < positions.Length; i++)
             {
-                var spot = new Spot { Id = $"{prefix}_{i + 1:00}", Kind = kind, Number = i + 1, Position = positions[i] };
+                var spot = new Spot { Id = $"{prefix}_{i + 1:00}", Kind = kind, Number = i + 1, Position = positions[i], Snap = snap };
                 _spots.Add(spot);
                 _byId[spot.Id] = spot;
             }
@@ -136,6 +152,7 @@ namespace GameCollectibles.Core
                     Stream();
                 }
                 Animate(now);
+                Feats.Tick(now);
             }
             catch (Exception ex)
             {
@@ -156,6 +173,7 @@ namespace GameCollectibles.Core
                 RemoveBlip(spot);
             }
             if (_model.Hash != 0) _model.MarkAsNoLongerNeeded();
+            Feats.Clear();
         }
 
         private void HideGameScripts()
@@ -188,7 +206,8 @@ namespace GameCollectibles.Core
                 if (distance < stream && (spot.Prop == null || !spot.Prop.Exists())) Spawn(spot);
                 else if (distance > stream + 25f) Despawn(spot);
 
-                bool wantBlip = mode == BlipMode.All || (mode == BlipMode.Nearby && distance < Config.BlipDistance);
+                bool wantBlip = (mode == BlipMode.All || (mode == BlipMode.Nearby && distance < Config.BlipDistance))
+                    && !Config.HiddenBlips.Contains(spot.Kind.ToString());
                 bool hasBlip = spot.Blip != null && spot.Blip.Exists();
                 if (wantBlip && !hasBlip) AddBlip(spot, mode == BlipMode.Nearby);
                 else if (!wantBlip && spot.Blip != null) RemoveBlip(spot);
@@ -255,8 +274,32 @@ namespace GameCollectibles.Core
             Function.Call(Hash.START_PARTICLE_FX_NON_LOOPED_AT_COORD, "scr_clown_appears", at.X, at.Y, at.Z, 0f, 0f, 0f, 0.6f, false, false, false);
         }
 
+        private static void SnapToGround(Spot spot)
+        {
+            if (!spot.Snap) return;
+            Vector3 p = spot.Position;
+            Function.Call(Hash.REQUEST_COLLISION_AT_COORD, p.X, p.Y, p.Z);
+            var ground = new OutputArgument();
+            bool found = Function.Call<bool>(Hash.GET_GROUND_Z_FOR_3D_COORD, p.X, p.Y, p.Z + 1.5f, ground, false, false);
+            float z = found ? ground.GetResult<float>() : 0f;
+            if (found && z <= p.Z + 1.5f && p.Z - z < 12f)
+            {
+                spot.Position = new Vector3(p.X, p.Y, z);
+                spot.Snap = false;
+                Log.Debug($"{spot.Id} placed on the ground at {spot.Position}.");
+                return;
+            }
+            spot.SnapTries++;
+            if (spot.SnapTries < 20) return;
+            spot.Position = new Vector3(p.X, p.Y, p.Z - 1.5f);
+            spot.Snap = false;
+            Log.Debug($"{spot.Id}: no ground found, lowered to {spot.Position}.");
+        }
+
         private void Spawn(Spot spot)
         {
+            SnapToGround(spot);
+            if (spot.Snap) return;
             if (_model.Hash == 0)
             {
                 var model = new Model(Config.Model);

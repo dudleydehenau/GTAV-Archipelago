@@ -1,5 +1,55 @@
 # Changelog
 
+## 1.8.0
+
+- Free-roam checks (APWorld 1.9.0, GameCollectibles 2.0.0): stunt jumps, Under the Bridge, knife flights, 44 landmarks
+  with purple map markers, skill levels of the three characters and police escapes.
+- New collectibles: 50 monkey mosaics, 27 peyote plants and 10 Epsilon tracts.
+- Ammu-Nation (APWorld options `weapon_shop`, `weapon_upgrades`, `weapon_price_multiplier`): each weapon can be an
+  item that lets you buy it ("Weapon: Pistol"), and buying it the first time a check ("Buy Pistol"). The same for the
+  upgrades of each weapon ("Upgrades: Pistol", 267 upgrade checks, off by default). With the shop on, there are no
+  Weapon Gifts.
+- Game shops (APWorld option `game_shops`, on by default): 29 checks for the first purchase of each category.
+  Barber: haircut, beard. Clothes Store: tops, pants, shoes, hats, glasses, outfits, masks. Tattoo Parlor: head,
+  torso, each arm, each leg. Los Santos Customs: engine, brakes, transmission, suspension, armor, turbo, horn,
+  headlights, wheels, tires, respray, windows, plate, body kit. Each kind of shop is closed until its item
+  ("Shop: Barber", "Shop: Clothes Store", "Shop: Tattoo Parlor", "Shop: Los Santos Customs"). F6 > Free Roam lists
+  what is left.
+- Money in logic: a purchase that costs more than $2,000 (weapons, upgrades, Los Santos Customs, after the price
+  multiplier) needs at least its price in money items found. Enough money items are added to the pool to pay for every
+  purchase check, as far as the pool has room. "Get a Haircut", "Buy Clothes", "Get a Tattoo" and "Modify a Car" need
+  their shop item. Flying skill checks need an aircraft when Flight School is not in the world.
+- Finished activities get their own tick (each race, not only when the whole group is done).
+- Vehicles one by one (APWorld option `vehicle_unlocks`, on by default): each of the 62 vehicles is its own item
+  ("Vehicle: Imponte Deluxo"), received once and kept in the garage. Bridges then need any plane or helicopter in
+  logic, underwater checks any submarine. Vehicle Gifts (with `vehicle_unlocks` off) no longer give a vehicle you
+  already have until you own the whole list.
+- F6 > Vehicles > Put your vehicle in the garage: stores the closest of your vehicles right away.
+- Activities (APWorld option `activities`): 52 checks. The 6 off-road races, 5 street races (Franklin), 4 sea races,
+  3 triathlons, 12 Flight School lessons, the stunt plane time trials, 6 shooting range categories, tennis, golf,
+  darts, yoga (Michael), base jumping, skydiving, and small things (a movie, the cable car, the car wash, clothes, a
+  car mod, a haircut, a tattoo, TV, a store hold-up). All are opened from the start by GameEnvironment. F6 > Free
+  Roam lists the ones left. `trevor_jobs` has no effect in this version: Trevor's bail bonds, trafficking runs and
+  hunting need story scripts the empty world does not run.
+- `early_vehicles`: with `vehicle_unlocks`, a small plane and a submarine are placed early in the run.
+- Street races need Franklin and yoga needs Michael in logic: the game only lets them do these.
+- `start_position` (`home`, `city`, `anywhere`, default `anywhere`): where a new game puts you. `city` is Legion
+  Square, downtown Los Santos.
+- F6 > Map: show or hide each collectible kind, the landmarks to visit and the game's icons for each activity and
+  shop (golf, tennis, races, Flight School, barbers, LS Customs, Ammu-Nation...), on the map and the minimap.
+- Finished activities disappear from the map. F6 > Map > Show finished places keeps them, with a tick. Groups with
+  several checks (races, the shooting range, Flight School) disappear once all of them are done.
+- Ammu-Nation's rules are linked even before you connect: nothing can be bought while you are not connected, so no
+  check is ever lost.
+- New goals: `check_percentage` (a share of all your locations) and `free_roam` (a number of free-roam checks).
+- 23 planes added to the Vehicle Gifts (`vehicles.json`): the Mallard stunt plane, the Velum, the Duster, the Cuban
+  800, the Ultralight, the two blimps, the LAZER, the gold Luxor Deluxe, business jets, the airliner, the cargo plane,
+  the Titan...
+- F6 > Free Roam: progress of every free-roam check and a route to the nearest landmark.
+- Worlds made with an older APWorld keep working: the new checks are simply not in them.
+- A connection to archipelago.gg that times out now says to open the room page (it wakes the room up) and to check
+  the port, which changes when the room restarts.
+
 ## 1.7.5
 
 - New trap item: Trap: Boing Boing (APWorld 1.8.0).

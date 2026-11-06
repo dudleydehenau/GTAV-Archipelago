@@ -6,7 +6,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <AssemblyName>GameEnvironment</AssemblyName>
     <RootNamespace>GameEnvironment</RootNamespace>
-    <Version>1.8.0</Version>
+    <Version>1.9.0</Version>
     <Product>GameEnvironment</Product>
     <Description>Sterile free-roam start for GTA V: three characters, no story triggers, character locks, money, weapons and vehicles driven by a public API.</Description>
   </PropertyGroup>

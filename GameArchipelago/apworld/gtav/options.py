@@ -20,6 +20,10 @@ class Goal(Choice):
       or a submarine part). The client tells you which one and can route you to it. It can be very short!
     - **one_check**: one random location of your world (a mission, a medal counter, a collectible milestone...).
       The client tells you which one. Silly and random on purpose.
+    - **check_percentage**: check a share of all the locations of your world, whatever they are (set the share with
+      Goal Check Percentage).
+    - **free_roam**: check a number of free-roam locations (landmarks, stunt jumps, bridges, knife flights, skills,
+      police escapes, mosaics, peyote plants, Epsilon tracts), set with Goal Free-Roam Checks.
     """
     display_name = "Goal"
     option_finale = 0
@@ -28,6 +32,8 @@ class Goal(Choice):
     option_one_mission = 3
     option_one_collectible = 4
     option_one_check = 5
+    option_check_percentage = 6
+    option_free_roam = 7
     alias_missions = 2
     alias_random_mission = 3
     default = 0
@@ -79,6 +85,27 @@ class MissionGoalPercentage(Range):
     default = 70
 
 
+class GoalCheckPercentage(Range):
+    """
+    With the check_percentage goal, the share of all the locations of your world you need to check.
+    """
+    display_name = "Goal Check Percentage"
+    range_start = 10
+    range_end = 100
+    default = 60
+
+
+class GoalFreeRoamChecks(Range):
+    """
+    With the free_roam goal, how many free-roam locations you need to check. Capped at the number of free-roam
+    locations in your world.
+    """
+    display_name = "Goal Free-Roam Checks"
+    range_start = 5
+    range_end = 500
+    default = 50
+
+
 class StartingCharacter(Choice):
     """
     The character you start with. The two others are locked and are items in the multiworld.
@@ -89,6 +116,20 @@ class StartingCharacter(Choice):
     option_franklin = 1
     option_trevor = 2
     default = "random"
+
+
+class StartPosition(Choice):
+    """
+    Where a new game puts you.
+    home: the house of your starting character.
+    city: Legion Square, in the middle of downtown Los Santos.
+    anywhere: a random place anywhere on the map.
+    """
+    display_name = "Start Position"
+    option_home = 0
+    option_city = 1
+    option_anywhere = 2
+    default = 2
 
 
 class StartingMissions(Range):
@@ -186,10 +227,179 @@ class SubmarinePartsPerCheck(Range):
     default = 1
 
 
+class MonkeyMosaicsPerCheck(Range):
+    """
+    How many monkey mosaics (50 street art pieces on walls all over the map) you need to find for each check. The
+    object is placed on the ground in front of the mosaic. 0 removes them from the locations.
+    """
+    display_name = "Monkey Mosaics per Check"
+    range_start = 0
+    range_end = 50
+    default = 1
+
+
+class PeyotePlantsPerCheck(Range):
+    """
+    How many peyote plants (27, six of them underwater) you need to pick up for each check. Picking one up does not
+    turn you into an animal. 0 removes them from the locations. With Guaranteed Vehicles on, they need the
+    Underwater Vehicle item in logic.
+    """
+    display_name = "Peyote Plants per Check"
+    range_start = 0
+    range_end = 27
+    default = 1
+
+
+class EpsilonTractsPerCheck(Range):
+    """
+    How many Epsilon tracts (10, some of them very high or underwater) you need to pick up for each check. 0
+    removes them from the locations.
+    """
+    display_name = "Epsilon Tracts per Check"
+    range_start = 0
+    range_end = 10
+    default = 1
+
+
+class StuntJumpsPerCheck(Range):
+    """
+    How many of the 50 unique stunt jumps you need to complete for each check. Any vehicle works. 0 removes them from
+    the locations.
+    """
+    display_name = "Stunt Jumps per Check"
+    range_start = 0
+    range_end = 50
+    default = 1
+
+
+class BridgesPerCheck(Range):
+    """
+    How many of the 50 "Under the Bridge" flights you need for each check (fly a plane or a helicopter under a
+    bridge). With Guaranteed Vehicles on, they need the Helicopter item in logic. 0 removes them from the locations.
+    """
+    display_name = "Under the Bridge per Check"
+    range_start = 0
+    range_end = 50
+    default = 1
+
+
+class KnifeFlightsPerCheck(Range):
+    """
+    How many of the 15 knife flights (fly between two buildings on your side) you need for each check. With
+    Guaranteed Vehicles on, they need the Helicopter item in logic. 0 removes them from the locations.
+    """
+    display_name = "Knife Flights per Check"
+    range_start = 0
+    range_end = 15
+    default = 1
+
+
+class Landmarks(DefaultOnToggle):
+    """
+    Adds 44 landmarks to visit (Mount Chiliad summit, the Maze Bank Tower roof, the Vinewood sign, Fort Zancudo,
+    Humane Labs...). Each one is a check. The ones left are shown with a purple marker on the map.
+    """
+    display_name = "Landmarks"
+
+
+class SkillChecks(Choice):
+    """
+    The skills of the three characters (stamina, shooting, strength, stealth, flying, driving, lung capacity) as
+    checks. every_10 makes a check at 10 %, 20 %... 100 % of each skill (210 checks), every_20 at 20 %, 40 %...,
+    every_50 at 50 % and 100 %, only_100 at 100 % only. A character's skills need that character in logic.
+    """
+    display_name = "Skill Checks"
+    option_off = 0
+    option_every_10 = 10
+    option_every_20 = 20
+    option_every_50 = 50
+    option_only_100 = 100
+    default = 10
+
+
+class PoliceEscapes(DefaultOnToggle):
+    """
+    Adds five checks for losing the police: escape a 1-star, 2-star... 5-star wanted level (the stars must flash
+    and go away by themselves, being busted or wasted does not count).
+    """
+    display_name = "Police Escapes"
+
+
+class Activities(DefaultOnToggle):
+    """
+    The activities of Los Santos as checks, each one when the game counts it as done for 100 %: the six off-road
+    races, the street and sea races, the three triathlons, the twelve Flight School lessons, the stunt plane time
+    trials, the six shooting range categories, tennis, golf, darts, yoga, base jumping and skydiving, and smaller
+    things (a movie, the cable car, a car wash, clothes, a haircut, a tattoo, modifying a car, TV, holding up a
+    store). Every activity is opened from the start.
+    """
+    display_name = "Activities"
+
+
+class TrevorJobs(Toggle):
+    """
+    Not available in this version, it has no effect. Trevor's bail bonds, trafficking runs and hunting are started by
+    story scripts that the empty world does not run, so they would be checks you cannot do.
+    """
+    display_name = "Trevor's Jobs"
+
+
+class WeaponShop(Choice):
+    """
+    How you get your weapons.
+    gifts: like before, Weapon Gifts give random weapons and Ammu-Nation sells everything.
+    unlocks: each weapon is an item ("Weapon: Pistol") that lets you buy it at Ammu-Nation. Buying it is the only way
+    to get it. No Weapon Gifts.
+    shopsanity: the same, and buying each weapon for the first time is also a check ("Buy Pistol"). Buying it again
+    after losing it gives nothing.
+    Your starting weapon and the Drive-By SMG stay free gifts.
+    """
+    display_name = "Weapon Shop"
+    option_gifts = 0
+    option_unlocks = 1
+    option_shopsanity = 2
+    default = 2
+
+
+class WeaponUpgrades(Choice):
+    """
+    The weapon upgrades sold at Ammu-Nation (extended clips, suppressors, scopes, grips, special rounds...).
+    off: they can all be bought.
+    unlocks: each weapon has an upgrade item ("Upgrades: Pistol") that lets you buy its upgrades.
+    shopsanity: the same, and buying each upgrade is a check (267 checks).
+    """
+    display_name = "Weapon Upgrades"
+    option_off = 0
+    option_unlocks = 1
+    option_shopsanity = 2
+    default = 0
+
+
+class GameShops(Toggle):
+    """
+    Shopsanity for the game's own shops. The first purchase of each category is a check:
+    Barber (haircut, beard), Clothes Store (tops, pants, shoes, hats, glasses, outfits, masks),
+    Tattoo Parlor (one per body zone) and Los Santos Customs (engine, brakes, wheels, respray...).
+    Each kind of shop stays closed until you get its item (for example "Shop: Los Santos Customs").
+    """
+    display_name = "Game Shops"
+    default = 1
+
+
+class WeaponPriceMultiplier(Range):
+    """
+    Prices of weapons, upgrades and ammo at Ammu-Nation, in percent. Raise it to make money matter.
+    """
+    display_name = "Weapon Price Multiplier"
+    range_start = 10
+    range_end = 500
+    default = 100
+
+
 class ChecksPerCollectible(Range):
     """
-    How many locations each collectible check is worth. Finding things on such a big map is slow, so each find can
-    count for more.
+    How many locations each collectible, stunt jump, bridge and knife flight check is worth. Finding things on such a
+    big map is slow, so each find can count for more.
     """
     display_name = "Checks per Collectible"
     range_start = 1
@@ -213,9 +423,27 @@ class GuaranteedVehicles(DefaultOnToggle):
     """
     Adds six vehicle items to the pool: a sports car, a motorcycle, a helicopter, an underwater vehicle, a boat and
     the Scramjet. The helicopter and the underwater vehicle are placed early. With this on, the underwater
-    collectibles need the underwater vehicle in logic.
+    collectibles need the underwater vehicle in logic. Only used with Vehicle Unlocks off.
     """
     display_name = "Guaranteed Vehicles"
+
+
+class VehicleUnlocks(DefaultOnToggle):
+    """
+    Every vehicle of the list (62: Deluxo, Oppressor Mk II, Stromberg, tanks, helicopters, planes, the gold Luxor, the
+    airliner, boats, submarines...) is its own item ("Vehicle: Imponte Deluxo"), received once and kept in your
+    garage. This replaces the Vehicle Gifts and the six guaranteed vehicles: the bridges then need any plane or
+    helicopter in logic, the underwater checks any submarine (one of each is placed early).
+    """
+    display_name = "Vehicle Unlocks"
+
+
+class EarlyVehicles(DefaultOnToggle):
+    """
+    With Vehicle Unlocks on, a small plane (Dodo, Mallard, Duster, Cuban 800, Mammatus, Velum or Howard, good for
+    knife flights and bridges) and a submarine are placed early in the multiworld, so you get them soon in the run.
+    """
+    display_name = "Early Vehicles"
 
 
 class MissionTraps(DefaultOnToggle):
@@ -283,7 +511,7 @@ class MoneyWeight(Range):
 
 class WeaponWeight(Range):
     """
-    Weight of Weapon Gifts among the non-trap filler items. Each one gives a random weapon (online weapons included)
+    Weight of Weapon Gifts among the non-trap filler items (only with Weapon Shop: gifts). Each one gives a random weapon (online weapons included)
     from the list in the client's weapons.json, with its ammo, to the three characters. Missions need weapons, so
     this is the most common filler by default.
     """
@@ -320,8 +548,11 @@ class GTAVOptions(PerGameCommonOptions):
     goal: Goal
     goal_mission: GoalMission
     mission_goal_percentage: MissionGoalPercentage
+    goal_check_percentage: GoalCheckPercentage
+    goal_free_roam_checks: GoalFreeRoamChecks
     mission_count: MissionCount
     starting_character: StartingCharacter
+    start_position: StartPosition
     starting_missions: StartingMissions
     strangers_and_freaks: StrangersAndFreaks
     checks_per_mission: ChecksPerMission
@@ -331,9 +562,26 @@ class GTAVOptions(PerGameCommonOptions):
     letter_scraps_per_check: LetterScrapsPerCheck
     nuclear_waste_per_check: NuclearWastePerCheck
     submarine_parts_per_check: SubmarinePartsPerCheck
+    monkey_mosaics_per_check: MonkeyMosaicsPerCheck
+    peyote_plants_per_check: PeyotePlantsPerCheck
+    epsilon_tracts_per_check: EpsilonTractsPerCheck
+    stunt_jumps_per_check: StuntJumpsPerCheck
+    bridges_per_check: BridgesPerCheck
+    knife_flights_per_check: KnifeFlightsPerCheck
+    landmarks: Landmarks
+    skill_checks: SkillChecks
+    police_escapes: PoliceEscapes
+    activities: Activities
+    trevor_jobs: TrevorJobs
+    weapon_shop: WeaponShop
+    weapon_upgrades: WeaponUpgrades
+    weapon_price_multiplier: WeaponPriceMultiplier
+    game_shops: GameShops
     checks_per_collectible: ChecksPerCollectible
     collectible_radar: CollectibleRadar
     guaranteed_vehicles: GuaranteedVehicles
+    vehicle_unlocks: VehicleUnlocks
+    early_vehicles: EarlyVehicles
     mission_traps: MissionTraps
     mission_weapons: MissionWeapons
     starting_drive_by_weapon: StartingDriveByWeapon
@@ -348,11 +596,16 @@ class GTAVOptions(PerGameCommonOptions):
 
 
 option_groups = [
-    OptionGroup("Goal and Start", [Goal, GoalMission, MissionGoalPercentage, MissionCount, StartingCharacter, StartingMissions]),
+    OptionGroup("Goal and Start", [Goal, GoalMission, MissionGoalPercentage, GoalCheckPercentage, GoalFreeRoamChecks,
+                                   MissionCount, StartingCharacter, StartPosition, StartingMissions]),
     OptionGroup("Locations", [StrangersAndFreaks, ChecksPerMission, GoldMedalChecks, ObjectiveChecks,
                               SpaceshipPartsPerCheck, LetterScrapsPerCheck, NuclearWastePerCheck,
-                              SubmarinePartsPerCheck, ChecksPerCollectible]),
-    OptionGroup("Items", [CollectibleRadar, GuaranteedVehicles, TrapPercentage, EnabledTraps, MoneyWeight,
+                              SubmarinePartsPerCheck, MonkeyMosaicsPerCheck, PeyotePlantsPerCheck,
+                              EpsilonTractsPerCheck, ChecksPerCollectible]),
+    OptionGroup("Free Roam", [StuntJumpsPerCheck, BridgesPerCheck, KnifeFlightsPerCheck, Landmarks, SkillChecks,
+                              PoliceEscapes, Activities, TrevorJobs]),
+    OptionGroup("Shops", [WeaponShop, WeaponUpgrades, WeaponPriceMultiplier, GameShops]),
+    OptionGroup("Items", [CollectibleRadar, VehicleUnlocks, EarlyVehicles, GuaranteedVehicles, TrapPercentage, EnabledTraps, MoneyWeight,
                           WeaponWeight, VehicleWeight, MoneyMultiplier]),
     OptionGroup("Gameplay", [StartingDriveByWeapon, MissionWeapons, MissionTraps, PostGoalChaos]),
 ]
@@ -369,6 +622,15 @@ option_presets = {
         "letter_scraps_per_check": 0,
         "nuclear_waste_per_check": 0,
         "submarine_parts_per_check": 0,
+        "monkey_mosaics_per_check": 0,
+        "peyote_plants_per_check": 0,
+        "epsilon_tracts_per_check": 0,
+        "stunt_jumps_per_check": 10,
+        "bridges_per_check": 0,
+        "knife_flights_per_check": 0,
+        "landmarks": True,
+        "skill_checks": SkillChecks.option_only_100,
+        "police_escapes": True,
         "checks_per_collectible": 3,
     },
     "Ten Hours": {
@@ -381,6 +643,13 @@ option_presets = {
         "letter_scraps_per_check": 2,
         "nuclear_waste_per_check": 3,
         "submarine_parts_per_check": 3,
+        "monkey_mosaics_per_check": 2,
+        "peyote_plants_per_check": 3,
+        "epsilon_tracts_per_check": 2,
+        "stunt_jumps_per_check": 2,
+        "bridges_per_check": 2,
+        "knife_flights_per_check": 3,
+        "skill_checks": SkillChecks.option_every_20,
         "checks_per_collectible": 2,
     },
     "One Mission": {
@@ -392,6 +661,13 @@ option_presets = {
         "letter_scraps_per_check": 5,
         "nuclear_waste_per_check": 5,
         "submarine_parts_per_check": 5,
+        "monkey_mosaics_per_check": 5,
+        "peyote_plants_per_check": 9,
+        "epsilon_tracts_per_check": 5,
+        "stunt_jumps_per_check": 5,
+        "bridges_per_check": 5,
+        "knife_flights_per_check": 5,
+        "skill_checks": SkillChecks.option_every_50,
     },
     "Everything": {
         "mission_count": 111,
@@ -403,6 +679,32 @@ option_presets = {
         "letter_scraps_per_check": 1,
         "nuclear_waste_per_check": 1,
         "submarine_parts_per_check": 1,
+        "monkey_mosaics_per_check": 1,
+        "peyote_plants_per_check": 1,
+        "epsilon_tracts_per_check": 1,
+        "stunt_jumps_per_check": 1,
+        "bridges_per_check": 1,
+        "knife_flights_per_check": 1,
+        "landmarks": True,
+        "skill_checks": SkillChecks.option_every_10,
+        "police_escapes": True,
+        "weapon_shop": WeaponShop.option_shopsanity,
+        "weapon_upgrades": WeaponUpgrades.option_shopsanity,
+        "checks_per_collectible": 1,
+    },
+    "Free Roam": {
+        "goal": Goal.option_free_roam,
+        "goal_free_roam_checks": 120,
+        "mission_count": 20,
+        "strangers_and_freaks": False,
+        "gold_medal_checks": 0,
+        "objective_checks": 0,
+        "stunt_jumps_per_check": 1,
+        "bridges_per_check": 1,
+        "knife_flights_per_check": 1,
+        "landmarks": True,
+        "skill_checks": SkillChecks.option_every_20,
+        "police_escapes": True,
         "checks_per_collectible": 1,
     },
     "Stream Safe": {

@@ -2,6 +2,21 @@ using GTA;
 
 namespace GameEnvironment
 {
+    public enum ShopKind
+    {
+        Barber,
+        Clothes,
+        Tattoo,
+        Customs,
+    }
+
+    public enum StartLocation
+    {
+        Home,
+        City,
+        Random,
+    }
+
     public enum PlayableCharacter
     {
         Michael = 0,
