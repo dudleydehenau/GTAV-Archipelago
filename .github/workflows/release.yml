@@ -9,6 +9,10 @@ on:
       version:
         description: "Version, for example 1.2.0"
         required: true
+      setup_only:
+        description: "Only publish the setup (exe and APWorld), not the mods"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -21,6 +25,8 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-dotnet@v4
         env:
@@ -48,12 +54,26 @@ jobs:
         run: python3 .github/release_notes.py "${{ steps.version.outputs.version }}"
 
       - name: Mods release
+        if: github.event.inputs.setup_only != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           version="${{ steps.version.outputs.version }}"
           files=$(ls releases/*.zip | grep -v "GTAVArchipelagoSetup-")
-          gh release create "v${version}_mods" $files --target "$GITHUB_SHA" --title "v${version}_mods" \
+          last=$(gh release list --limit 100 --json tagName -q '.[].tagName' | grep '_mods$' | head -n 1 || true)
+          if [ -n "$last" ]; then
+            published=$(gh release view "$last" --json assets -q '.assets[].name')
+            missing=0
+            for f in $files; do
+              if ! echo "$published" | grep -qx "$(basename "$f")"; then missing=1; fi
+            done
+            if [ "$missing" = "0" ]; then
+              echo "Every mod version is already in $last: no new mods release."
+              exit 0
+            fi
+          fi
+          target=$(git rev-parse HEAD~1 2>/dev/null || echo "$GITHUB_SHA")
+          gh release create "v${version}_mods" $files --target "$target" --title "v${version}_mods" \
             --notes-file releases/notes-mods.md --latest=false
 
       - name: Setup release
