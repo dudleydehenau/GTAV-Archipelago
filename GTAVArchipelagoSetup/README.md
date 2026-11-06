@@ -11,6 +11,12 @@ A small Windows program that downloads and installs everything needed to play GT
 > **Streamers:** one trap can show nudity. Turn on stream safe mode in game (F6 > Settings > Stream safe) or remove
 > `Irresistible` from your Archipelago options.
 
+## How it works
+
+The setup walks you through four steps, one screen each: **Game** (find the GTA V folder), **ScriptHookV** (the one
+file you download yourself), **Mods** (one click to install or update) and **Play** (turn BattlEye off). Next only
+lights up when a step is ready, and running the setup again later is the way to update.
+
 ## What it does
 
 - Finds your **GTA V Legacy** folder (Rockstar Games Launcher, Steam or Epic), shows the game version and warns if it
@@ -25,14 +31,14 @@ A small Windows program that downloads and installs everything needed to play GT
   the ScriptHookVDotNet console (F4) and reload key off. `NativeTrainer.asi` is renamed
   `NativeTrainer.asi.disabled` so its F4 menu cannot be opened in game.
 - Moves older installs of these mods from `scripts` to `Archipelago`, with their settings and saves.
-- Keeps your `config.json` files on update (uncheck "Keep my settings" to reset them).
+- Keeps your `config.json` files on update (uncheck "Keep my settings" under "Choose what to install" to reset them).
 - Installs ScriptHookV from the zip you download from dev-c.com (it cannot be redistributed). The setup finds the
   newest `ScriptHookV*.zip` in your Downloads folder, you can also drag the zip onto the window, and it warns when
   the installed ScriptHookV is not made for your game version.
-- **Disable mods (GTA Online)** moves `dinput8.dll`, `ScriptHookV.dll` and `ScriptHookVDotNet.asi` aside;
-  **Enable mods (story mode)** puts them back.
+- **GTA Online mode** moves `dinput8.dll`, `ScriptHookV.dll` and `ScriptHookVDotNet.asi` aside; the same button
+  then turns the mods back on for story mode.
 - Shows how to turn BattlEye off on your platform, and on Steam starts the game with `-nobattleye`.
-- **Uninstall** removes what it installed, optionally keeping your settings and Archipelago saves, and sets
+- **Uninstall** (in the **More** menu) removes what it installed, optionally keeping your settings and Archipelago saves, and sets
   `ScriptsLocation` back to `scripts`, the console back on F4 and the Native Trainer back. ScriptHookV is left in place.
 
 The program asks for administrator rights because games are often installed under `Program Files`.

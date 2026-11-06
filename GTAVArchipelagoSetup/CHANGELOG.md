@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.4.0
+
+- New look, matching the project page: dark, yellow and condensed titles.
+- The setup is now a wizard with one step per screen: game folder, ScriptHookV, mods, then BattlEye and play. A rail at
+  the top shows where you are and what is done, and Back / Next take you through it.
+- Each step says in plain words what to do next, and Next only lights up when the step is ready.
+- ScriptHookV: three numbered actions, and the setup keeps watching your Downloads folder for the zip.
+- Installing the mods is one big button. Picking components and keeping settings moved under "Choose what to install".
+- GTA Online mode, the mods folder, the details, the guide and Uninstall are in the bottom bar and its "More" menu.
+- The details open in their own window, by themselves when an install fails.
+
 ## 1.3.1
 
 - Fix: the game closed when loading story mode with ScriptHookVDotNet nightly 196 or newer. That version needs a new

@@ -15,7 +15,7 @@ fun vehicles and more than fifty traps are items, shuffled with the other games 
 > [Feedback and bug reports](#feedback-and-bug-reports).
 
 > [!CAUTION]
-> Story mode only, with BattlEye turned off. Before playing GTA Online, click **Disable mods (GTA Online)** in the
+> Story mode only, with BattlEye turned off. Before playing GTA Online, click **GTA Online mode** in the
 > setup and turn BattlEye back on.
 
 > [!WARNING]

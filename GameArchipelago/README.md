@@ -20,7 +20,7 @@ This folder holds the **Archipelago client** (`GameArchipelago`, a ScriptHookVDo
 > [!CAUTION]
 > **GTA Online and BattlEye.** These mods are for story mode only. They need BattlEye turned off, and with BattlEye
 > off GTA Online refuses to start. The client also closes the game at once if an online session ever begins with
-> the mods loaded (`OnlineGuard`). To play GTA Online again, use **Disable mods** in the setup, then turn BattlEye
+> the mods loaded (`OnlineGuard`). To play GTA Online again, use **GTA Online mode** in the setup, then turn BattlEye
 > back on. Never load mods in GTA Online.
 
 ## The mods
