@@ -2,6 +2,9 @@
 
 ## 1.9.1
 
+- Darts: the Tequi-la-la icon is gone and its dartboard says to play at the Yellow Jack Inn. The game only starts
+  darts there with a friend from the story, so the "press E" prompt never came. The Yellow Jack counts for the same
+  check.
 - A closed barber, clothes store, tattoo parlor or Los Santos Customs (shopsanity) says at its door which item opens
   it ("Shop: Barber", ...).
 - Holding the character wheel while a character is still locked says who and that characters come from Archipelago.

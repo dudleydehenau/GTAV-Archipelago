@@ -69,7 +69,7 @@ namespace GameEnvironment.Core
                 int handle = _globals.StaticBlipHandle(i);
                 _icons.TryGetValue(i, out Blip mine);
                 bool hasMine = mine != null && mine.Exists();
-                if (System.Array.IndexOf(StreetRaces, i) >= 0 && !StreetRaceOpen())
+                if ((System.Array.IndexOf(StreetRaces, i) >= 0 && !StreetRaceOpen()) || ActivityHints.IsTequilaDarts(sprite, _globals.StaticBlipPosition(i)))
                 {
                     if (hasMine)
                     {

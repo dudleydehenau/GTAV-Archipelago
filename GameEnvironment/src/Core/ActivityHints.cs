@@ -11,6 +11,9 @@ namespace GameEnvironment.Core
         private const int Interval = 500;
         private static readonly int[] StreetRaces = { 86, 87, 88, 89, 90 };
         private static readonly Vector3 NightOffroad = new Vector3(2996.8f, 2774.1f, 43.3f);
+        private static readonly Vector3 TequilaDarts = new Vector3(-572.0f, 294.2f, 79.9f);
+
+        public static bool IsTequilaDarts(int sprite, Vector3 at) => sprite == (int)BlipSprite.Dart && at.DistanceTo(TequilaDarts) < 40f;
         private static readonly int[] Watched =
         {
             (int)BlipSprite.Golf, (int)BlipSprite.GolfFlag, (int)BlipSprite.Tennis, (int)BlipSprite.Yoga, (int)BlipSprite.Dart,
@@ -56,6 +59,8 @@ namespace GameEnvironment.Core
             Vector3 here = player.Position;
             ShopKind? shop = GameShopWatcher.LockedNear(here, ShopRange);
             if (shop.HasValue) return ShopHint(shop.Value);
+            if (here.DistanceTo(TequilaDarts) < 15f)
+                return "The dartboard at the Tequi-la-la is only used with a friend in the story. Play darts at the Yellow Jack Inn in Sandy Shores instead: it counts for the same check.";
             int best = -1;
             float bestDistance = Range;
             for (int i = 0; i < _globals.StaticBlipCountValue; i++)
