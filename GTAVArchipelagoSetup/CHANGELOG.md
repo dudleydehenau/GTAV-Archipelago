@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.1
+
+- The welcome screen and the Play step say to keep Rockstar cloud saves off: with them on, story mode can stay stuck
+  on the loading screen.
+- The Play step explains the start in three steps: choose Story Mode on the start screen, connect in the menu that
+  opens by itself, then New Game.
+- More > Collect logs for a bug report: one zip on your desktop with the ScriptHookV, ScriptHookVDotNet and mod logs,
+  the settings, your Archipelago save, the game version and the list of files and story saves. Your Archipelago
+  password is left out. It works even when the mods do not load in game.
+
 ## 1.4.0
 
 - New look, matching the project page: dark, yellow and condensed titles.

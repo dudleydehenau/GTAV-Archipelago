@@ -97,6 +97,17 @@ namespace GameEnvironment.Core
             }
         }
 
+        public static ShopKind? LockedNear(Vector3 here, float range)
+        {
+            lock (Locked)
+            {
+                if (Locked.Count == 0) return null;
+                foreach (GameShopSpot spot in Spots)
+                    if (Locked.Contains(spot.Kind) && spot.Position.DistanceTo(here) < range) return spot.Kind;
+            }
+            return null;
+        }
+
         public static ShopKind? KindOf(int shop)
         {
             foreach (GameShopSpot spot in Spots)

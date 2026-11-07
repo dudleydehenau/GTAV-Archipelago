@@ -13,6 +13,7 @@ namespace GameTraps.Traps
         private int _settleAt;
         private Ped _ped;
         private int _until;
+        private bool _flying;
 
         public Drunk(TrapsConfig config) : base(config)
         {
@@ -28,6 +29,7 @@ namespace GameTraps.Traps
         public override void Start()
         {
             _ped = Player;
+            _flying = false;
             DropBottle(_ped);
             Apply(_ped);
             Function.Call(Hash.SHAKE_GAMEPLAY_CAM, "DRUNK_SHAKE", 2f);
@@ -45,10 +47,17 @@ namespace GameTraps.Traps
                 _bottle = null;
             }
             Ped player = Player;
+            bool flying = player != null && player.Exists() && player.IsInFlyingVehicle;
+            if (flying != _flying)
+            {
+                _flying = flying;
+                if (flying) Function.Call(Hash.SET_PED_IS_DRUNK, player, false);
+                else Apply(player);
+            }
             if (player != _ped)
             {
                 _ped = player;
-                Apply(_ped);
+                if (!flying) Apply(_ped);
             }
             return true;
         }

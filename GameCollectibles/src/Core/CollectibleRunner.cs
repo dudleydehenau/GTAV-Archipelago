@@ -16,6 +16,8 @@ namespace GameCollectibles.Core
         public Vector3 Position;
         public bool Snap;
         public int SnapTries;
+        public bool Reach;
+        public int ReachTries;
         public Prop Prop;
         public Blip Blip;
     }
@@ -128,7 +130,7 @@ namespace GameCollectibles.Core
         {
             for (int i = 0; i < positions.Length; i++)
             {
-                var spot = new Spot { Id = $"{prefix}_{i + 1:00}", Kind = kind, Number = i + 1, Position = positions[i], Snap = snap };
+                var spot = new Spot { Id = $"{prefix}_{i + 1:00}", Kind = kind, Number = i + 1, Position = positions[i], Snap = snap, Reach = snap };
                 _spots.Add(spot);
                 _byId[spot.Id] = spot;
             }
@@ -203,6 +205,7 @@ namespace GameCollectibles.Core
                     RemoveBlip(spot);
                     continue;
                 }
+                if (spot.Reach && !spot.Snap && distance < ReachDistance) MakeReachable(spot);
                 if (distance < stream && (spot.Prop == null || !spot.Prop.Exists())) Spawn(spot);
                 else if (distance > stream + 25f) Despawn(spot);
 
@@ -294,6 +297,31 @@ namespace GameCollectibles.Core
             spot.Position = new Vector3(p.X, p.Y, p.Z - 1.5f);
             spot.Snap = false;
             Log.Debug($"{spot.Id}: no ground found, lowered to {spot.Position}.");
+        }
+
+        private const float ReachDistance = 90f;
+
+        private static void MakeReachable(Spot spot)
+        {
+            Vector3 p = spot.Position;
+            var safe = new OutputArgument();
+            if (Function.Call<bool>(Hash.GET_SAFE_COORD_FOR_PED, p.X, p.Y, p.Z + 1f, true, safe, 0))
+            {
+                Vector3 to = safe.GetResult<Vector3>();
+                float flat = new Vector2(to.X - p.X, to.Y - p.Y).Length();
+                if (flat <= 12f && Math.Abs(to.Z - p.Z) <= 4f)
+                {
+                    spot.Reach = false;
+                    if (flat < 0.5f) return;
+                    spot.Position = to;
+                    Despawn(spot);
+                    if (spot.Blip != null && spot.Blip.Exists()) spot.Blip.Position = to;
+                    Log.Debug($"{spot.Id} moved {flat:F1} m to a spot you can reach on foot: {to}.");
+                    return;
+                }
+            }
+            spot.ReachTries++;
+            if (spot.ReachTries >= 10) spot.Reach = false;
         }
 
         private void Spawn(Spot spot)

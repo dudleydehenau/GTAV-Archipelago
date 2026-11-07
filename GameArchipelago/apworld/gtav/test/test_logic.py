@@ -255,3 +255,15 @@ class TestFlyingNeedsAircraft(GTAVTestBase):
         self.assertFalse(self.can_reach_location(location))
         self.collect_by_name(vehicle_item(AIRCRAFT[0]))
         self.assertTrue(self.can_reach_location(location))
+
+
+class TestTennisNeedsMichaelOrTrevor(GTAVTestBase):
+    options = {
+        "starting_character": "franklin",
+        "activities": True,
+    }
+
+    def test_franklin_cannot_play_tennis(self) -> None:
+        self.assertFalse(self.can_reach_location("Activity: Tennis"))
+        self.collect_by_name("Trevor")
+        self.assertTrue(self.can_reach_location("Activity: Tennis"))

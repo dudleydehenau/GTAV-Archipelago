@@ -40,6 +40,7 @@ namespace GameEnvironment.Core
 
         public void Tick()
         {
+            WheelHint();
             if (Game.GameTime < _nextSync) return;
             _nextSync = Game.GameTime + SyncInterval;
             if (Game.GameTime >= _flowBusyCheckAt && !Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE) && Function.Call<bool>(Hash.IS_SCREEN_FADED_IN))
@@ -50,6 +51,18 @@ namespace GameEnvironment.Core
             Sync(false);
             TrackCurrent();
             AutoSwitch();
+        }
+
+        private void WheelHint()
+        {
+            if (!_config.CharacterLocking) return;
+            if (!Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, 19) && !Function.Call<bool>(Hash.IS_DISABLED_CONTROL_PRESSED, 0, 19)) return;
+            var locked = new System.Collections.Generic.List<string>();
+            foreach (PlayableCharacter character in new[] { PlayableCharacter.Michael, PlayableCharacter.Franklin, PlayableCharacter.Trevor })
+                if (!IsUnlocked(character)) locked.Add(character.ToString());
+            if (locked.Count == 0) return;
+            string who = string.Join(" and ", locked);
+            GTA.UI.Screen.ShowHelpTextThisFrame($"{who} {(locked.Count > 1 ? "are" : "is")} still locked: each character arrives as an item from Archipelago.", false);
         }
 
         private void AutoSwitch()

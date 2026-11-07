@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.9.1
+
+- A closed barber, clothes store, tattoo parlor or Los Santos Customs (shopsanity) says at its door which item opens
+  it ("Shop: Barber", ...).
+- Holding the character wheel while a character is still locked says who and that characters come from Archipelago.
+- When you reach an activity that cannot start right now, a help box says why and what to do: street races (Franklin
+  only, 20:00 to 05:00), the night off-road race east of Sandy Shores (20:00 to 03:00), golf (06:00 to 18:00), tennis
+  (Michael or Trevor, 06:00 to 19:00, not in the rain), yoga (Michael only), the car wash (drive in with a car) and any activity while
+  you are wanted. The conditions come from the game's own launcher scripts.
+- Street race icons follow the game: they only show at night (20:00 to 05:00) and when playing Franklin, the only
+  times a street race can start. Before, they stayed on the map all day and nothing happened there.
+
 ## 1.9.0
 
 - Ammu-Nation is replaced by a new shop (`CustomGunShop`): press E in any Ammu-Nation to browse. The camera turns to

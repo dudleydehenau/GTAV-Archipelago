@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.8.1
+
+- Fix: a finished triathlon kept its icon on the map, because the game does not mark triathlon icons as done. Each
+  triathlon icon now follows its own check. The game only counts a triathlon when you finish in the top 3.
+- APWorld: "Activity: Tennis" needs Michael or Trevor. The game never lets Franklin play tennis, so a game started
+  with Franklin could put an item there that he could not reach. Generate again to get the fix.
+- Connection screen at start: when the game has loaded and you are not connected yet, the Connection menu opens by
+  itself with a welcome message (or the reason the automatic connection failed), and says which key opens the menu
+  (F6 by default). Once a room is saved, the game connects by itself and the menu stays closed.
+- When a normal story save is loaded, a notification says that Archipelago stays off there and that New Game (pause
+  menu > Game) starts the Archipelago world. It comes back each time a story save is loaded.
+- The menu key also works in the pause menu: it closes the pause menu and opens the Archipelago menu, so you can
+  connect before starting a New Game.
+
 ## 1.8.0
 
 - Free-roam checks (APWorld 1.9.0, GameCollectibles 2.0.0): stunt jumps, Under the Bridge, knife flights, 44 landmarks

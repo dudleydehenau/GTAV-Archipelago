@@ -38,6 +38,9 @@ namespace GameArchipelago.Core
         private NativeMenu _map;
         private Keys _key = Keys.None;
         private bool _initialized;
+        private bool _openAfterPause;
+        private bool _greeted;
+        private bool _storyWarned;
 
         public ApMenu()
         {
@@ -103,7 +106,28 @@ namespace GameArchipelago.Core
                 FillCommands();
                 Log.Info($"Menu ready, key {_key}.");
             }
-            if (_main != null) _pool.Process();
+            if (_main == null) return;
+            bool paused = Function.Call<bool>(Hash.IS_PAUSE_MENU_ACTIVE);
+            if (_openAfterPause && !paused)
+            {
+                _openAfterPause = false;
+                Open();
+            }
+            bool ready = !paused && !Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE) && Game.Player.CanControlCharacter
+                && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE);
+            if (!_greeted && ready)
+            {
+                _greeted = true;
+                Greet();
+            }
+            bool story = EnvironmentApi.Mode == EnvironmentMode.StorySave;
+            if (!story) _storyWarned = false;
+            else if (!_storyWarned && ready)
+            {
+                _storyWarned = true;
+                Core.Notifier.Post("~y~Story save loaded.~s~ Archipelago stays off here and this save is never changed. To play, open the pause menu > ~b~Game~s~ > ~b~New Game~s~.", true);
+            }
+            _pool.Process();
         }
 
         private NativeMenu Create(string name)
@@ -117,11 +141,36 @@ namespace GameArchipelago.Core
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (_main == null || _key == Keys.None || e.KeyCode != _key) return;
+            if (Function.Call<bool>(Hash.IS_PAUSE_MENU_ACTIVE))
+            {
+                Function.Call(Hash.SET_FRONTEND_ACTIVE, false);
+                _openAfterPause = true;
+                return;
+            }
             if (_menus.Any(m => m.Visible))
             {
                 foreach (NativeMenu menu in _menus) menu.Visible = false;
                 return;
             }
+            Open();
+        }
+
+        private void Greet()
+        {
+            LinkState state = Core.Client.State;
+            if (state == LinkState.Connected || state == LinkState.Connecting) return;
+            if (_menus.Any(m => m.Visible)) return;
+            string error = Core.Client.LastError;
+            if (!string.IsNullOrEmpty(error))
+                Core.Notifier.Post($"~r~Could not connect:~s~ {Notifier.Escape(error)}~n~Check the room address, then Connect.", true);
+            else
+                Core.Notifier.Post($"~y~Welcome to GTA V Archipelago!~s~ Enter your room and Connect. ~b~{_key}~s~ opens this menu any time.", true);
+            FillConnection();
+            _connection.Visible = true;
+        }
+
+        private void Open()
+        {
             FillMain();
             _main.Visible = true;
         }

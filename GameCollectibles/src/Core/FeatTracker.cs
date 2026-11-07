@@ -9,6 +9,11 @@ namespace GameCollectibles.Core
 {
     internal sealed class FeatTracker
     {
+        private const int BaseJumpEntry = 128;
+        private const int SkydiveEntry = 129;
+        private const int BaseJumpBits = 0x1178;
+        private const int SkydiveBits = 0x0E87;
+
         private const int BridgeInterval = 1000;
         private const int LandmarkInterval = 500;
         private const int SkillInterval = 3000;
@@ -229,9 +234,17 @@ namespace GameCollectibles.Core
         private void TrackActivities()
         {
             if (!_globals.EnsureValid()) return;
+            int jumps = _globals.JumpBits();
             foreach (KeyValuePair<int, string> activity in FeatData.Activities)
-                if (_globals.IsCompleted(activity.Key))
+                if (_globals.IsCompleted(activity.Key) || JumpDone(activity.Key, jumps))
                     Complete($"Activity_{activity.Key}", FeatKind.Activity, activity.Value);
+        }
+
+        private static bool JumpDone(int entry, int jumps)
+        {
+            if (entry == BaseJumpEntry) return (jumps & BaseJumpBits) != 0;
+            if (entry == SkydiveEntry) return (jumps & SkydiveBits) != 0;
+            return false;
         }
 
         private void TrackSkills()

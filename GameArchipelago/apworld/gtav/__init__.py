@@ -493,9 +493,13 @@ class GTAVWorld(World):
                 self.get_location(activity_location(activity)).access_rule = lambda state, i=item: state.has(i, player)
                 self.needs[activity_location(activity)] = (0, item, (), ())
             elif activity.character:
+                characters = tuple(activity.character.split("|"))
                 self.get_location(activity_location(activity)).access_rule = \
-                    lambda state, c=activity.character: state.has(c, player)
-                self.needs[activity_location(activity)] = (0, activity.character, (), ())
+                    lambda state, c=characters: state.has_any(c, player)
+                if len(characters) == 1:
+                    self.needs[activity_location(activity)] = (0, characters[0], (), ())
+                else:
+                    self.needs[activity_location(activity)] = (0, None, (), characters)
         goal = self.options.goal.value
         if goal == Goal.option_the_third_way:
             self.multiworld.completion_condition[self.player] = self.mission_rule(MISSION_BY_CODE["FINC1"])

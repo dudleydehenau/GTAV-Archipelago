@@ -31,11 +31,14 @@ namespace GameEnvironment.Core
         };
         private static readonly string[] RangeWeapons = { "microsmg", "asltrifle", "pump", "mg" };
         private static readonly int[] Unused = { 65, 69 };
+        private static readonly int[] StreetRaces = { 86, 87, 88, 89, 90 };
+        private readonly ActivityHints _hints;
         private static readonly int[] Sprites = { 109, 122, 103, 197, 119, 110, 313, 314, 315, 316, 376, 127, 126, 94, 377, 141, 135, 36, 100, 71, 73, 75, 72, 52, 90 };
 
         public Activities(StoryGlobals globals)
         {
             _globals = globals;
+            _hints = new ActivityHints(globals);
         }
 
         private void OpenBlips()
@@ -66,6 +69,16 @@ namespace GameEnvironment.Core
                 int handle = _globals.StaticBlipHandle(i);
                 _icons.TryGetValue(i, out Blip mine);
                 bool hasMine = mine != null && mine.Exists();
+                if (System.Array.IndexOf(StreetRaces, i) >= 0 && !StreetRaceOpen())
+                {
+                    if (hasMine)
+                    {
+                        if (handle == mine.Handle) _globals.SetStaticBlipHandle(i, 0);
+                        mine.Delete();
+                    }
+                    _icons.Remove(i);
+                    continue;
+                }
                 bool gameBlip = handle != 0 && (!hasMine || handle != mine.Handle) && Function.Call<bool>(Hash.DOES_BLIP_EXIST, handle);
                 if (gameBlip)
                 {
@@ -93,6 +106,13 @@ namespace GameEnvironment.Core
                 _iconsLogged = own;
                 Log.Info($"{own} activity and shop icons drawn by GameEnvironment (the game did not draw them).");
             }
+        }
+
+        private static bool StreetRaceOpen()
+        {
+            int hour = Function.Call<int>(Hash.GET_CLOCK_HOURS);
+            bool night = hour >= 20 || hour < 5;
+            return night && (PedHash)Game.Player.Character.Model.Hash == PedHash.Franklin;
         }
 
         private void OpenRange()
@@ -172,10 +192,12 @@ namespace GameEnvironment.Core
                 icon.Value.Delete();
             }
             _icons.Clear();
+            _hints.Clear();
         }
 
         public void Tick(int now)
         {
+            if (_globals.Available) _hints.Tick(now);
             if (now >= _nextScan)
             {
                 _nextScan = now + 1000;

@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.1
+
+- Monkey mosaics are moved to the nearest spot you can walk to when they would sit behind a wall or an invisible
+  barrier (for example under the bridge in Strawberry), up to 12 m away.
+- Fix: "Base Jumping" and "Skydiving" only counted once every jump of that kind was done, because the game marks
+  them in its completion list after the last one. The first base jump (from a cliff, a building or on a bike) and the
+  first skydive (from a helicopter) now count.
+
 ## 2.0.0
 
 - New collectibles: 50 monkey mosaics (on the ground in front of each mosaic), 27 peyote plants and 10 Epsilon tracts.

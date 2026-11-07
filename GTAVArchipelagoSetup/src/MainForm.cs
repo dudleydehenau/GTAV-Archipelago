@@ -187,6 +187,7 @@ namespace GTAVArchipelagoSetup
             _moreMenu.Font = Theme.Regular(9.5f);
             _moreMenu.Items.Add("Open the mods folder", null, (s, e) => OpenModsFolder());
             _moreMenu.Items.Add("Install ScriptHookV again", null, (s, e) => GoTo(HookPage));
+            _moreMenu.Items.Add("Collect logs for a bug report", null, (s, e) => CollectLogs());
             _moreMenu.Items.Add("Show the details", null, (s, e) => ShowLog());
             _moreMenu.Items.Add("Read the guide", null, (s, e) => Open(GuidePage));
             _moreMenu.Items.Add("Report a problem", null, (s, e) => Open(HelpPage));
@@ -197,7 +198,7 @@ namespace GTAVArchipelagoSetup
                 bool installed = ModsInstalled;
                 _moreMenu.Items[0].Enabled = installed;
                 _moreMenu.Items[1].Enabled = GameValid;
-                _moreMenu.Items[6].Enabled = installed && !_busy;
+                _moreMenu.Items[7].Enabled = installed && !_busy;
             };
 
             _host.Dock = DockStyle.Fill;
@@ -237,6 +238,7 @@ namespace GTAVArchipelagoSetup
             page.Controls.Add(Bullet(Theme.Accent, "GTA V Legacy 1.0.3889 or 1.0.3725, on Steam, Epic or the Rockstar Games Launcher."));
             page.Controls.Add(Bullet(Theme.Info, "An internet connection: the mods come from GitHub (about 10 MB)."));
             page.Controls.Add(Bullet(Theme.Error, "Story mode only. Before GTA Online, come back here and click \"GTA Online mode\"."));
+            page.Controls.Add(Bullet(Theme.Warning, "Keep Rockstar cloud saves off. If the game asks, click \"Not now\": with them on, story mode can stay stuck loading."));
             page.Controls.Add(Spacer(10));
             page.Controls.Add(_welcomeState);
             return page;
@@ -365,8 +367,12 @@ namespace GTAVArchipelagoSetup
             row.Controls.Add(_copyArgument);
             page.Controls.Add(row);
             page.Controls.Add(Spacer(6));
+            page.Controls.Add(Subtitle("Cloud saves off"));
+            page.Controls.Add(Theme.Label("If the game asks about cloud saves (\"Sauvegarde sur le cloud\" or \"Cloud Saves\"), click \"Not now\". With cloud saves on, story mode can stay stuck on the loading screen. In the Rockstar Games Launcher: Settings > Grand Theft Auto V Legacy > uncheck cloud save sync.", Theme.Text));
             page.Controls.Add(Subtitle("In the game"));
-            page.Controls.Add(Theme.Label("Press F6, open Connection, type the room address, your slot name and the password, then start a New Game from the pause menu. That is it.", Theme.Text));
+            page.Controls.Add(Numbered(1, "On the GTA V start screen, choose Story Mode. The mods only start once story mode has loaded, so nothing happens before that."));
+            page.Controls.Add(Numbered(2, "The Connection menu opens by itself: type the room address, your slot name and the password, then Connect. F6 opens it again any time (Fn + F6 on many laptops)."));
+            page.Controls.Add(Numbered(3, "Start a New Game from the pause menu. That is it."));
             page.Controls.Add(_playStatus);
             return page;
         }
@@ -791,6 +797,28 @@ namespace GTAVArchipelagoSetup
         {
             string path = Path.Combine(GameFolder, Installer.ModsFolder);
             if (Directory.Exists(path)) Process.Start("explorer.exe", "\"" + path + "\"");
+        }
+
+        private void CollectLogs()
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                string zip = LogCollector.Collect(GameFolder, _history.ToString());
+                Log("Logs collected in " + zip + ".");
+                Process.Start("explorer.exe", "/select,\"" + zip + "\"");
+                MessageBox.Show(this, "The logs are in " + Path.GetFileName(zip) + " on your desktop.\n\nSend this file on Discord or attach it to a GitHub issue, with a few words about what happened. Your Archipelago password is not in it.",
+                    Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                Log("ERROR: could not collect the logs: " + ex.Message);
+                ShowLog();
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
         }
 
         private void ShowLog()

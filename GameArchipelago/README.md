@@ -58,7 +58,9 @@ This folder holds the **Archipelago client** (`GameArchipelago`, a ScriptHookVDo
    finds the launcher, or double-click the file), write your options file (see [Options](#options)) and generate,
    or join a room someone else generated.
 5. **Start GTA V**, load any save, open the Archipelago menu with **F6** > Connection, type the server
-   (`archipelago.gg:12345`), your slot name and the password, and **Connect**.
+   (`archipelago.gg:12345`), your slot name and the password, and **Connect**. The Connection menu opens by itself
+   once story mode has loaded, as long as you are not connected; it cannot exist on the title screen. It also opens from the pause menu. On many laptops
+   the key is **Fn + F6**, and `MenuKey` in `config.json` changes it.
 6. **Start a New Game** from the pause menu (Game > New Game). GameEnvironment builds the sterile world with the
    character of your slot. Save it in its own slot.
 7. Play. Walk into the mission markers on the map, pick up the glowing collectibles, and press **F6** whenever you
@@ -352,6 +354,9 @@ save and the state files back in place and replay the history.
   `ScriptHookV.dll`, `dinput8.dll` and `ScriptHookVDotNet.asi` are next to `GTA5.exe`, and that
   `ScriptHookVDotNet.ini` contains `ScriptsLocation="Archipelago"`. The setup turns the ScriptHookVDotNet console
   off (`ConsoleKeyBinding=None`); for debugging only, set it back to `F4` by hand.
+- **Story mode stays on the loading screen forever** (the pictures keep changing). Turn Rockstar cloud saves off:
+  answer "Not now" when the game asks, or uncheck cloud save sync in the Rockstar Games Launcher settings for GTA V
+  Legacy. Then move the `SGTA5*` files out of `Documents\Rockstar Games\GTA V\Profiles\<id>` once and start again.
 - **"Connect to Archipelago first".** Missions and collectibles only count once a game is loaded: connect once.
 - **Missions do not show on the map.** You need the mission item *and* one of its characters, and a sterile game
   (New Game with GameEnvironment). F6 > Missions tells you what is missing.

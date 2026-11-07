@@ -26,6 +26,13 @@ namespace GameArchipelago.Core
     internal sealed class MapFilter
     {
         private const int Interval = 1000;
+        private const float SpotRadius = 60f;
+        private static readonly KeyValuePair<string, GTA.Math.Vector3>[] Spots =
+        {
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_141", new GTA.Math.Vector3(-1230.6f, -2050f, 12.9f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_142", new GTA.Math.Vector3(2434.4f, 4284.3f, 35.5f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_143", new GTA.Math.Vector3(1591.7f, 3813.4f, 33.3f)),
+        };
 
         public static readonly MapGroup[] Groups =
         {
@@ -100,12 +107,35 @@ namespace GameArchipelago.Core
             return inWorld > 0;
         }
 
+        private static List<GTA.Math.Vector3> DoneSpots()
+        {
+            var spots = new List<GTA.Math.Vector3>();
+            SlotSave save = ArchipelagoScript.Instance?.Save;
+            if (save == null) return spots;
+            foreach (KeyValuePair<string, GTA.Math.Vector3> spot in Spots)
+            {
+                FeatLocation feat = ApData.FeatById(spot.Key);
+                if (feat != null && save.IsDone(feat.Location)) spots.Add(spot.Value);
+            }
+            return spots;
+        }
+
+        private static bool NearDoneSpot(int blip, List<GTA.Math.Vector3> spots)
+        {
+            if (spots.Count == 0) return false;
+            GTA.Math.Vector3 at = Function.Call<GTA.Math.Vector3>(Hash.GET_BLIP_INFO_ID_COORD, blip);
+            foreach (GTA.Math.Vector3 spot in spots)
+                if (new GTA.Math.Vector2(at.X - spot.X, at.Y - spot.Y).Length() < SpotRadius) return true;
+            return false;
+        }
+
         public void Tick()
         {
             if (Game.GameTime < _next) return;
             _next = Game.GameTime + Interval;
             var hiddenNow = new HashSet<int>();
             HashSet<int> finished = EnvironmentApi.FinishedActivityIcons();
+            List<GTA.Math.Vector3> doneSpots = DoneSpots();
             foreach (MapGroup group in Groups)
             {
                 bool groupDone = IsDone(group);
@@ -116,7 +146,7 @@ namespace GameArchipelago.Core
                     int guard = 0;
                     while (blip != 0 && Function.Call<bool>(Hash.DOES_BLIP_EXIST, blip) && guard++ < 200)
                     {
-                        bool done = groupDone || finished.Contains(blip);
+                        bool done = groupDone || finished.Contains(blip) || NearDoneSpot(blip, doneSpots);
                         bool hide = off || (done && !_config.ShowDoneIcons);
                         if (hide)
                         {

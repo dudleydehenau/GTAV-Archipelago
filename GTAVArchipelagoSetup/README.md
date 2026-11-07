@@ -38,6 +38,9 @@ lights up when a step is ready, and running the setup again later is the way to 
 - **GTA Online mode** moves `dinput8.dll`, `ScriptHookV.dll` and `ScriptHookVDotNet.asi` aside; the same button
   then turns the mods back on for story mode.
 - Shows how to turn BattlEye off on your platform, and on Steam starts the game with `-nobattleye`.
+- **Collect logs for a bug report** (in the **More** menu) puts the ScriptHookV, ScriptHookVDotNet and mod logs, the
+  settings, the Archipelago save and a summary (game version, files, story saves) in one zip on your desktop, without
+  your Archipelago password.
 - **Uninstall** (in the **More** menu) removes what it installed, optionally keeping your settings and Archipelago saves, and sets
   `ScriptsLocation` back to `scripts`, the console back on F4 and the Native Trainer back. ScriptHookV is left in place.
 

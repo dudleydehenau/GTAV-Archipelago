@@ -359,7 +359,7 @@ ACTIVITIES = (
     Activity(123, "Shooting Range: Heavy Weapons", "range", ""),
     Activity(124, "Shooting Range: Shotguns", "range", ""),
     Activity(125, "Stunt Plane Time Trials", "flight", ""),
-    Activity(126, "Tennis", "sports", ""),
+    Activity(126, "Tennis", "sports", "Michael|Trevor"),
     Activity(127, "Golf", "sports", ""),
     Activity(130, "Darts", "sports", ""),
     Activity(300, "Yoga", "sports", "Michael"),

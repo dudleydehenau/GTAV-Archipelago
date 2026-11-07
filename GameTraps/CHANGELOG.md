@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.1
+
+- Last round (Drunk): the drunk state is lifted while you fly a plane or a helicopter and comes back when you land.
+  A crash happened while flying drunk, and the game's drunk driving was never made for aircraft.
+
 ## 1.4.0
 
 - Fix: the game closed when Wild Side gave your character back while the animal was in a car. The animal can no
