@@ -51,6 +51,7 @@ namespace GameEnvironment.Core
         public bool Unlocked { get; set; }
         public int Money { get; set; }
         public List<WeaponRecord> Weapons { get; set; } = new List<WeaponRecord>();
+        public Dictionary<string, int> SkillStart { get; set; }
     }
 
     internal sealed class WeaponRecord

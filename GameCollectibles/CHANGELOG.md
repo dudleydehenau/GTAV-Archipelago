@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.0.3
+
+- Skill checks count the progress made since the start of the Archipelago game, given by GameEnvironment 1.9.3: the
+  game always puts the story skill values back, so the raw values sent checks at spawn. "Franklin: Stamina 10%" now
+  means 10 % of the way from Franklin's starting stamina to 100 %.
+
+## 2.0.2
+
+- Skills only count once GameEnvironment has set this game's own skill values, so the story defaults (Michael's
+  shooting, Trevor's flying...) no longer send dozens of skill checks at the start.
+
 ## 2.0.1
 
 - Monkey mosaics are moved to the nearest spot you can walk to when they would sit behind a wall or an invisible

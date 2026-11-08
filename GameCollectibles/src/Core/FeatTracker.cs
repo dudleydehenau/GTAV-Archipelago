@@ -247,17 +247,60 @@ namespace GameCollectibles.Core
             return false;
         }
 
+        private static System.Reflection.PropertyInfo _skillsReady;
+        private static System.Reflection.MethodInfo _skillProgress;
+        private static int _skillsLookups;
+
+        private static bool SkillsAllowed()
+        {
+            if (_skillsReady == null && _skillsLookups < 20)
+            {
+                _skillsLookups++;
+                foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    Type api = assembly.GetType("GameEnvironment.EnvironmentApi", false);
+                    if (api == null) continue;
+                    _skillsReady = api.GetProperty("SkillsReady");
+                    _skillProgress = api.GetMethod("SkillProgress", new[] { typeof(int), typeof(string) });
+                    break;
+                }
+            }
+            if (_skillsReady == null) return _skillsLookups >= 20;
+            try
+            {
+                return (bool)_skillsReady.GetValue(null);
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
         private void TrackSkills()
         {
+            if (!SkillsAllowed()) return;
             for (int c = 0; c < FeatData.Characters.Length; c++)
             {
                 foreach (Skill skill in FeatData.Skills)
                 {
-                    int value = ReadStat($"SP{c}_{skill.Stat}");
+                    int value = SkillValue(c, skill.Stat);
                     if (value < 10 || value > 100) continue;
                     for (int level = 10; level <= value; level += 10)
                         Complete($"Skill_{FeatData.Characters[c]}_{skill.Key}_{level}", FeatKind.Skill, $"{FeatData.Characters[c]}: {skill.Name} {level}%");
                 }
+            }
+        }
+
+        private int SkillValue(int character, string stat)
+        {
+            if (_skillProgress == null) return ReadStat($"SP{character}_{stat}");
+            try
+            {
+                return (int)_skillProgress.Invoke(null, new object[] { character, stat });
+            }
+            catch
+            {
+                return -1;
             }
         }
 

@@ -137,6 +137,7 @@ namespace GameEnvironment.Core
                 foreach (string door in fallback.Doors)
                     if (!group.Doors.Exists(d => string.Equals(d?.Trim(), door, StringComparison.OrdinalIgnoreCase))) group.Doors.Add(door);
                 if (group.Interior == null && fallback.Interior != null) group.Interior = fallback.Interior;
+                if (fallback.InMissions) group.InMissions = true;
                 if (fallback.Buildings == null) continue;
                 if (group.Buildings == null) group.Buildings = new Dictionary<string, int>();
                 foreach (KeyValuePair<string, int> building in fallback.Buildings)
@@ -179,13 +180,13 @@ namespace GameEnvironment.Core
             },
             new DoorGroup
             {
-                Name = "Lester's house", X = 1274f, Y = -1720f, Z = 55f,
+                Name = "Lester's house", X = 1274f, Y = -1720f, Z = 55f, InMissions = true,
                 Doors = new List<string> { "DOORHASH_LESTER_F", "1646172266", "204467342" },
                 Ipls = new List<string> { "v_lesters" },
             },
             new DoorGroup
             {
-                Name = "Lester's factory", X = 717f, Y = -975f, Z = 25f,
+                Name = "Lester's factory", X = 717f, Y = -975f, Z = 25f, InMissions = true,
                 Doors = new List<string> { "DOORHASH_SWEATSHOP_L", "DOORHASH_SWEATSHOP_R", "-874851305", "-1480820165", "949391213" },
                 Buildings = new Dictionary<string, int> { { "70", 1 }, { "71", 1 }, { "73", 1 } },
                 Interior = new InteriorSets { X = 717.2994f, Y = -974.4271f, Z = 23.9142f, Name = "v_sweat", Unlock = true },
@@ -235,6 +236,7 @@ namespace GameEnvironment.Core
         public List<string> Ipls { get; set; }
         public InteriorSets Interior { get; set; }
         public Dictionary<string, int> Buildings { get; set; }
+        public bool InMissions { get; set; }
     }
 
     internal sealed class InteriorSets

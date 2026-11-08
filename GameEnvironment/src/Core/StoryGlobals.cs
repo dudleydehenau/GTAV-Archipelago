@@ -371,6 +371,35 @@ namespace GameEnvironment.Core
             Write(_cfg.BuildingDirty + 1 + building, 1);
         }
 
+        public bool ContactsSupported => _cfg.Build == 3725 || _cfg.Build == 3889;
+
+        private int CharSheet => _cfg.Build == 3725 ? 2339 : 2349;
+
+        private int SavedCharSheet => _cfg.Build == 3725 ? 114904 + 28058 : 114963 + 28060;
+
+        public int AddContacts(int[] contacts)
+        {
+            const int stride = 29;
+            int added = 0;
+            foreach (int contact in contacts)
+                for (int player = 0; player < 3; player++)
+                {
+                    if (contact == player) continue;
+                    int known = CharSheet + 1 + contact * stride + 13 + player;
+                    int named = CharSheet + 1 + contact * stride + 25 + player;
+                    if (Read(known) == 1 && Read(named) == 1) continue;
+                    Write(known, 1);
+                    Write(named, 1);
+                    if (contact < 162)
+                    {
+                        Write(SavedCharSheet + 1 + contact * stride + 13 + player, 1);
+                        Write(SavedCharSheet + 1 + contact * stride + 25 + player, 1);
+                    }
+                    added++;
+                }
+            return added;
+        }
+
         public bool RaiseFlowFlag(int flag)
         {
             int index = _cfg.FlowFlags + 1 + flag;

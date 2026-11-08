@@ -33,6 +33,82 @@ Write-Host "Game folder: $Game"
 $process = Get-Process GTA5 -ErrorAction SilentlyContinue
 if ($process) { throw "Close GTA V first: the mods cannot be replaced while the game runs." }
 
+$libs = @{
+    "ScriptHookVDotNet3.dll" = "https://github.com/scripthookvdotnet/scripthookvdotnet-nightly/releases/download/v3.7.0-nightly.195/ScriptHookVDotNet-v3.7.0-nightly.195.zip"
+    "LemonUI.SHVDN3.dll" = "https://github.com/LemonUIbyLemon/LemonUI/releases/download/v2.2/LemonUI.zip"
+}
+$libMods = "MissionLauncher", "GameEnvironment", "GameTraps", "GameCollectibles", "GameArchipelago"
+foreach ($lib in $libs.Keys) {
+    $missing = $libMods | Where-Object { -not (Test-Path (Join-Path $root "$_\lib\$lib")) }
+    if (-not $missing) { continue }
+    $local = @((Join-Path $Game $lib), (Join-Path $target $lib)) | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if ($local) {
+        Write-Host "Using $lib from $local"
+        foreach ($mod in $libMods) {
+            $dir = Join-Path $root "$mod\lib"
+            New-Item -ItemType Directory -Force -Path $dir | Out-Null
+            Copy-Item $local (Join-Path $dir $lib) -Force
+        }
+        continue
+    }
+    $prefix = if ($lib -like "ScriptHookVDotNet*") { "ScriptHookVDotNet" } else { "LemonUI" }
+    $downloaded = Get-ChildItem (Join-Path $env:USERPROFILE "Downloads") -Filter "$prefix*.zip" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    $keep = $false
+    if ($downloaded) {
+        Write-Host "Using $lib from $($downloaded.FullName)"
+        $zip = $downloaded.FullName
+        $keep = $true
+    }
+    else {
+        Write-Host "Downloading $lib ..."
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        $zip = Join-Path ([IO.Path]::GetTempPath()) ([IO.Path]::GetRandomFileName() + ".zip")
+        for ($try = 1; ; $try++) {
+            try {
+                if ($try % 2 -eq 0) {
+                    Write-Host "  trying through the GitHub API..."
+                    $m = [regex]::Match($libs[$lib], 'github\.com/([^/]+/[^/]+)/releases/download/([^/]+)/([^/?#]+)')
+                    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$($m.Groups[1].Value)/releases/tags/$($m.Groups[2].Value)" -UseBasicParsing
+                    $asset = $release.assets | Where-Object { $_.name -eq $m.Groups[3].Value } | Select-Object -First 1
+                    if (-not $asset) { throw "$($m.Groups[3].Value) is not in the release" }
+                    Invoke-WebRequest -Uri $asset.url -Headers @{ Accept = "application/octet-stream" } -OutFile $zip -UseBasicParsing
+                }
+                elseif ($try -eq 1) {
+                    Invoke-WebRequest -Uri $libs[$lib] -OutFile $zip -UseBasicParsing
+                }
+                else {
+                    Write-Host "  trying a direct connection (without the Windows proxy settings)..."
+                    $client = New-Object Net.WebClient
+                    $client.Proxy = $null
+                    $client.Headers.Add("User-Agent", "GTAVArchipelago-Deploy")
+                    $client.DownloadFile($libs[$lib], $zip)
+                }
+                break
+            }
+            catch {
+                if ($try -ge 4) { throw "Could not download $lib ($($_.Exception.Message)). Download $($libs[$lib]) in your browser (it stays in Downloads) and run Deploy again." }
+                Write-Host "  GitHub did not answer ($($_.Exception.Message)), trying another way..."
+                if ($try -ge 2) { Start-Sleep -Seconds (3 * $try) }
+            }
+        }
+    }
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [IO.Compression.ZipFile]::OpenRead($zip)
+    try {
+        $entry = $archive.Entries | Where-Object { $_.Name -ieq $lib } | Sort-Object { $_.FullName.Length } | Select-Object -First 1
+        if (-not $entry) { throw "$lib not found in $($libs[$lib])" }
+        foreach ($mod in $libMods) {
+            $dir = Join-Path $root "$mod\lib"
+            New-Item -ItemType Directory -Force -Path $dir | Out-Null
+            [IO.Compression.ZipFileExtensions]::ExtractToFile($entry, (Join-Path $dir $lib), $true)
+        }
+    }
+    finally {
+        $archive.Dispose()
+        if (-not $keep) { Remove-Item $zip -ErrorAction SilentlyContinue }
+    }
+}
+
 $solution = Join-Path $root "GTAV-Archipelago.sln"
 $dotnet = Get-Command dotnet -ErrorAction SilentlyContinue
 if ($dotnet) {

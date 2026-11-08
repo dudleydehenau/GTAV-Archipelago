@@ -50,7 +50,7 @@ or in a submarine. With Archipelago, nothing is required for the underwater ones
 | Under the bridge | `UnderBridge_00` to `UnderBridge_69` (50 real bridges) | The game's own bridge flags. |
 | Knife flights | `KnifeFlight_33` to `KnifeFlight_60` (15) | The game's own flags. |
 | Landmarks | `Landmark_MountChiliad`, `Landmark_VinewoodSign`... (44) | You get within the landmark's radius (and above its height for summits and rooftops). Purple markers show the ones left. |
-| Skills | `Skill_Michael_Stamina_10` to `Skill_Trevor_LungCapacity_100` | Each skill stat of each character, every 10 %. |
+| Skills | `Skill_Michael_Stamina_10` to `Skill_Trevor_LungCapacity_100` | Each skill stat of each character, every 10 % of progress from its value at the start of the game (with GameEnvironment). |
 | Activities | `Activity_112` to `Activity_309` (67) | The game's own 100 % completion flags (races, Flight School, shooting range, sports, shops...). |
 | Police escapes | `Escape_1` to `Escape_5` | The wanted level goes away after its stars flashed (being busted or wasted does not count). Escaping 4 stars also counts 1 to 3. |
 

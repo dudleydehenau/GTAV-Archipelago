@@ -11,6 +11,20 @@ using System.Web.Script.Serialization;
 
 namespace GTAVArchipelagoSetup
 {
+    internal sealed class DownloadsBlockedException : Exception
+    {
+        public DownloadsBlockedException(IReadOnlyList<string> names, IReadOnlyList<string> links)
+            : base("GitHub did not answer for " + string.Join(", ", names) + ".")
+        {
+            Names = names;
+            Links = links;
+        }
+
+        public IReadOnlyList<string> Names { get; }
+
+        public IReadOnlyList<string> Links { get; }
+    }
+
     internal sealed class InstallManifest
     {
         public string Version { get; set; } = "1";
@@ -36,17 +50,20 @@ namespace GTAVArchipelagoSetup
             _log = log;
         }
 
-        private static HttpClient Http
+        private static HttpClient _directHttp;
+        private static bool _preferDirect;
+
+        private static HttpClient Http => _sharedHttp ?? (_sharedHttp = CreateClient(true));
+
+        private static HttpClient Direct => _directHttp ?? (_directHttp = CreateClient(false));
+
+        private static HttpClient CreateClient(bool systemProxy)
         {
-            get
-            {
-                if (_sharedHttp != null) return _sharedHttp;
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
-                var client = new HttpClient { Timeout = TimeSpan.FromMinutes(5) };
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("GTAVArchipelagoSetup/1.0");
-                _sharedHttp = client;
-                return client;
-            }
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+            var handler = new HttpClientHandler { UseProxy = systemProxy, AllowAutoRedirect = true };
+            var client = new HttpClient(handler) { Timeout = TimeSpan.FromMinutes(systemProxy ? 5 : 2) };
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("GTAVArchipelagoSetup/1.0");
+            return client;
         }
 
         public string ModsPath => Path.Combine(_game, ModsFolder);
@@ -63,6 +80,8 @@ namespace GTAVArchipelagoSetup
             MigrateScriptsFolder();
             string temp = Path.Combine(Path.GetTempPath(), "GTAVArchipelagoSetup-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(temp);
+            var failedNames = new List<string>();
+            var failedLinks = new List<string>();
             try
             {
                 for (int i = 0; i < components.Count; i++)
@@ -74,19 +93,17 @@ namespace GTAVArchipelagoSetup
                         _log($"{component.Name}: no download link set in sources.json, skipped.");
                         continue;
                     }
-                    _log($"{component.Name}: looking for the latest release...");
-                    Tuple<string, string> asset = await Resolve(component);
-                    _log($"{component.Name}: downloading {asset.Item1}...");
-                    string file = Path.Combine(temp, asset.Item1);
-                    using (HttpResponseMessage response = await Http.GetAsync(asset.Item2))
-                    {
-                        response.EnsureSuccessStatusCode();
-                        using (FileStream output = File.Create(file))
-                            await response.Content.CopyToAsync(output);
-                    }
-                    int count = Deploy(component, file, keepSettings, manifest);
-                    manifest.Installed[component.Name] = asset.Item1;
+                    Tuple<string, string> file = await Fetch(component, temp, failedNames, failedLinks);
+                    if (file == null) continue;
+                    int count = Deploy(component, file.Item2, keepSettings, manifest);
+                    manifest.Installed[component.Name] = file.Item1;
                     _log($"{component.Name}: {count} files installed.");
+                }
+                if (failedNames.Count > 0)
+                {
+                    SetScriptsLocation(ModsFolder);
+                    SaveManifest(manifest);
+                    throw new DownloadsBlockedException(failedNames, failedLinks);
                 }
                 SetScriptsLocation(ModsFolder);
                 LockConsole(true);
@@ -107,14 +124,133 @@ namespace GTAVArchipelagoSetup
             }
         }
 
-        private async Task<Tuple<string, string>> Resolve(Component component)
+        private static readonly Regex ReleaseLink = new Regex(@"^https://github\.com/([^/]+/[^/]+)/releases/download/([^/]+)/([^/?#]+)", RegexOptions.IgnoreCase);
+        private static bool _preferApi;
+
+        private async Task<Tuple<string, string>> Fetch(Component component, string temp, List<string> failedNames, List<string> failedLinks)
+        {
+            Tuple<string, string> asset = null;
+            string apiLink = null;
+            string error = null;
+            var routes = new List<Tuple<bool, bool>>
+            {
+                Tuple.Create(_preferDirect, _preferApi),
+                Tuple.Create(_preferDirect, !_preferApi),
+                Tuple.Create(!_preferDirect, _preferApi),
+                Tuple.Create(!_preferDirect, !_preferApi),
+            };
+            for (int attempt = 0; attempt < routes.Count; attempt++)
+            {
+                bool direct = routes[attempt].Item1;
+                bool api = routes[attempt].Item2;
+                HttpClient client = direct ? Direct : Http;
+                try
+                {
+                    if (asset == null)
+                    {
+                        _log($"{component.Name}: looking for the latest release...");
+                        Tuple<string, string, string> found = await Resolve(component, client);
+                        asset = Tuple.Create(found.Item1, found.Item2);
+                        apiLink = found.Item3;
+                    }
+                    if (api && apiLink == null) apiLink = await ApiLink(asset.Item1, asset.Item2, client);
+                    if (api && apiLink == null) continue;
+                    string how = (api ? "through the GitHub API" : string.Empty) + (direct ? (api ? ", " : string.Empty) + "direct connection" : string.Empty);
+                    _log($"{component.Name}: downloading {asset.Item1}{(how.Length > 0 ? $" ({how})" : string.Empty)}...");
+                    string file = Path.Combine(temp, asset.Item1);
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, api ? apiLink : asset.Item2))
+                    {
+                        if (api) request.Headers.Accept.ParseAdd("application/octet-stream");
+                        using (HttpResponseMessage response = await client.SendAsync(request))
+                        {
+                            response.EnsureSuccessStatusCode();
+                            using (FileStream output = File.Create(file))
+                                await response.Content.CopyToAsync(output);
+                        }
+                    }
+                    if (api != _preferApi || direct != _preferDirect)
+                    {
+                        _preferApi = api;
+                        _preferDirect = direct;
+                        _log($"This route works ({(how.Length > 0 ? how : "normal link")}): the setup keeps using it.");
+                    }
+                    return Tuple.Create(asset.Item1, file);
+                }
+                catch (Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException || ex is WebException || ex is IOException)
+                {
+                    error = ex.GetBaseException().Message;
+                    if (attempt < routes.Count - 1)
+                    {
+                        _log($"{component.Name}: GitHub did not answer ({error}), trying another way...");
+                        if (attempt >= 1) await Task.Delay(attempt * 3000);
+                    }
+                }
+            }
+            string local = FindInDownloads(component, asset?.Item1);
+            if (local != null)
+            {
+                _log($"{component.Name}: GitHub did not answer, using {Path.GetFileName(local)} from your Downloads folder.");
+                string copy = Path.Combine(temp, Path.GetFileName(local));
+                File.Copy(local, copy, true);
+                return Tuple.Create(Path.GetFileName(local), copy);
+            }
+            _log($"{component.Name}: GitHub did not answer ({error}).");
+            failedNames.Add(component.Name);
+            string link = asset?.Item2 ?? (!string.IsNullOrWhiteSpace(component.Url) ? component.Url : $"https://github.com/{component.Repo}/releases/latest");
+            if (!failedLinks.Contains(link)) failedLinks.Add(link);
+            return null;
+        }
+
+        private static async Task<string> ApiLink(string name, string browserLink, HttpClient client)
+        {
+            Match match = ReleaseLink.Match(browserLink ?? string.Empty);
+            if (!match.Success) return null;
+            string json = await client.GetStringAsync($"https://api.github.com/repos/{match.Groups[1].Value}/releases/tags/{match.Groups[2].Value}");
+            var release = new JavaScriptSerializer { MaxJsonLength = int.MaxValue }.Deserialize<Dictionary<string, object>>(json);
+            if (!(release.TryGetValue("assets", out object assets) && assets is System.Collections.IEnumerable list) || assets is string) return null;
+            foreach (object entry in list)
+                if (entry is Dictionary<string, object> asset && string.Equals(asset["name"] as string, name, StringComparison.OrdinalIgnoreCase))
+                    return asset["url"] as string;
+            return null;
+        }
+
+        private static string FindInDownloads(Component component, string exactName)
+        {
+            string downloads = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+            if (!Directory.Exists(downloads)) return null;
+            if (!string.IsNullOrEmpty(exactName))
+            {
+                string exact = Path.Combine(downloads, exactName);
+                if (File.Exists(exact)) return exact;
+            }
+            if (!string.IsNullOrWhiteSpace(component.Url))
+            {
+                string named = Path.Combine(downloads, Path.GetFileName(new Uri(component.Url).LocalPath));
+                if (File.Exists(named)) return named;
+            }
+            var pattern = new Regex(string.IsNullOrEmpty(component.Asset) ? "^" + Regex.Escape(component.Name) + ".*\\.zip$" : component.Asset, RegexOptions.IgnoreCase);
+            try
+            {
+                return new DirectoryInfo(downloads).GetFiles()
+                    .Where(f => pattern.IsMatch(f.Name))
+                    .OrderByDescending(f => f.LastWriteTimeUtc)
+                    .Select(f => f.FullName)
+                    .FirstOrDefault();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private async Task<Tuple<string, string, string>> Resolve(Component component, HttpClient client)
         {
             if (!string.IsNullOrWhiteSpace(component.Url))
             {
                 string name = Path.GetFileName(new Uri(component.Url).LocalPath);
-                return Tuple.Create(string.IsNullOrEmpty(name) ? component.Name + ".zip" : name, component.Url);
+                return Tuple.Create(string.IsNullOrEmpty(name) ? component.Name + ".zip" : name, component.Url, (string)null);
             }
-            string json = await Http.GetStringAsync($"https://api.github.com/repos/{component.Repo}/releases?per_page=20");
+            string json = await client.GetStringAsync($"https://api.github.com/repos/{component.Repo}/releases?per_page=20");
             var releases = new JavaScriptSerializer { MaxJsonLength = int.MaxValue }.Deserialize<List<Dictionary<string, object>>>(json);
             var pattern = new Regex(string.IsNullOrEmpty(component.Asset) ? "\\.zip$" : component.Asset, RegexOptions.IgnoreCase);
             foreach (Dictionary<string, object> release in releases)
@@ -126,7 +262,7 @@ namespace GTAVArchipelagoSetup
                 {
                     if (!(entry is Dictionary<string, object> asset)) continue;
                     string name = asset["name"] as string;
-                    if (name != null && pattern.IsMatch(name)) return Tuple.Create(name, (string)asset["browser_download_url"]);
+                    if (name != null && pattern.IsMatch(name)) return Tuple.Create(name, (string)asset["browser_download_url"], asset["url"] as string);
                 }
             }
             throw new InvalidOperationException($"No release file matching \"{component.Asset}\" in {component.Repo}.");

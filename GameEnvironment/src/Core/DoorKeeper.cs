@@ -15,6 +15,7 @@ namespace GameEnvironment.Core
         private readonly StoryGlobals _globals;
         private readonly List<Area> _areas = new List<Area>();
         private readonly Dictionary<int, int> _original = new Dictionary<int, int>();
+        private readonly HashSet<int> _missionDoors = new HashSet<int>();
         private int _next;
 
         public DoorKeeper(OpenDoorsConfig config, StoryGlobals globals)
@@ -34,7 +35,12 @@ namespace GameEnvironment.Core
                 };
                 if (group.Doors != null)
                     foreach (string door in group.Doors)
-                        if (!string.IsNullOrWhiteSpace(door)) area.Doors.Add(HashOf(door.Trim()));
+                        if (!string.IsNullOrWhiteSpace(door))
+                        {
+                            int hash = HashOf(door.Trim());
+                            area.Doors.Add(hash);
+                            if (group.InMissions) _missionDoors.Add(hash);
+                        }
                 if (group.Buildings != null)
                     foreach (KeyValuePair<string, int> building in group.Buildings)
                         if (int.TryParse(building.Key, out int index) && index >= 0) area.Buildings[index] = building.Value;
@@ -44,7 +50,15 @@ namespace GameEnvironment.Core
 
         public bool IsActive => _original.Count > 0;
 
-        public void Tick()
+        public void Tick() => Tick(false);
+
+        public void MissionTick(string reason = "mission")
+        {
+            Release(reason);
+            Tick(true);
+        }
+
+        private void Tick(bool mission)
         {
             if (!_config.Enabled || Game.GameTime < _next) return;
             _next = Game.GameTime + Interval;
@@ -52,25 +66,35 @@ namespace GameEnvironment.Core
             if (player == null || !player.Exists()) return;
             Vector3 position = player.Position;
             foreach (Area area in _areas)
-                if (position.DistanceToSquared(area.Center) <= area.RadiusSquared) Open(area);
+                if ((!mission || area.Group.InMissions) && position.DistanceToSquared(area.Center) <= area.RadiusSquared) Open(area);
         }
 
         public void Release(string reason)
         {
-            _next = 0;
-            foreach (Area area in _areas) area.Announced = false;
+            bool mission = reason == "mission" || reason == "replay";
+            if (!mission) _next = 0;
+            foreach (Area area in _areas)
+                if (!mission || !area.Group.InMissions) area.Announced = false;
             if (_original.Count == 0) return;
+            var kept = new Dictionary<int, int>();
             int relocked = 0;
             foreach (KeyValuePair<int, int> entry in _original)
             {
+                if (mission && _missionDoors.Contains(entry.Key))
+                {
+                    kept[entry.Key] = entry.Value;
+                    continue;
+                }
                 if (entry.Value == Unlocked) continue;
                 if (!Function.Call<bool>(Hash.IS_DOOR_REGISTERED_WITH_SYSTEM, entry.Key)) continue;
                 if (Function.Call<int>(Hash.DOOR_SYSTEM_GET_DOOR_STATE, entry.Key) == entry.Value) continue;
                 Function.Call(Hash.DOOR_SYSTEM_SET_DOOR_STATE, entry.Key, entry.Value, false, true);
                 relocked++;
             }
+            int released = _original.Count - kept.Count;
             _original.Clear();
-            Log.Info($"Doors handed back to the game ({reason}), {relocked} locked again.");
+            foreach (KeyValuePair<int, int> entry in kept) _original[entry.Key] = entry.Value;
+            if (released > 0) Log.Info($"Doors handed back to the game ({reason}), {relocked} locked again{(kept.Count > 0 ? $", {kept.Count} kept open for missions" : string.Empty)}.");
         }
 
         private void Open(Area area)

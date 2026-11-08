@@ -38,6 +38,9 @@ lights up when a step is ready, and running the setup again later is the way to 
 - **GTA Online mode** moves `dinput8.dll`, `ScriptHookV.dll` and `ScriptHookVDotNet.asi` aside; the same button
   then turns the mods back on for story mode.
 - Shows how to turn BattlEye off on your platform, and on Steam starts the game with `-nobattleye`.
+- **GitHub does not answer** (504, timeouts): every download is tried three times, then the setup takes the file from
+  your Downloads folder if it is there. The "Download them in my browser" button opens the missing files so your
+  browser can fetch them, then "Install the mods" again uses them.
 - **Collect logs for a bug report** (in the **More** menu) puts the ScriptHookV, ScriptHookVDotNet and mod logs, the
   settings, the Archipelago save and a summary (game version, files, story saves) in one zip on your desktop, without
   your Archipelago password.

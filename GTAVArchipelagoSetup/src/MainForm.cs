@@ -56,6 +56,8 @@ namespace GTAVArchipelagoSetup
         private readonly ProgressBar _progress = new ProgressBar();
         private readonly Label _progressText = Theme.Label(string.Empty, Theme.Muted, Theme.Mono(8.5f));
         private readonly StatusLine _modsStatus = new StatusLine();
+        private readonly FlatButton _openLinks = Theme.Secondary("Download them in my browser");
+        private IReadOnlyList<string> _blockedLinks = new List<string>();
         private readonly FlatButton _advancedToggle = Theme.Quiet("Choose what to install ▾");
         private readonly FlowLayoutPanel _advanced = Column();
         private readonly CheckedListBox _components = new CheckedListBox();
@@ -310,6 +312,14 @@ namespace GTAVArchipelagoSetup
             _progressText.Visible = false;
             page.Controls.Add(_progressText);
             page.Controls.Add(_modsStatus);
+            _openLinks.Visible = false;
+            _openLinks.Click += (s, e) =>
+            {
+                foreach (string link in _blockedLinks) Open(link);
+                _modsStatus.Set(StepState.Pending, "Let your browser save the files in your Downloads folder, then click \"Install the mods\" again: the setup takes them from there.");
+                Fit();
+            };
+            page.Controls.Add(_openLinks);
 
             _advancedToggle.Margin = new Padding(0, 2, 0, 2);
             _advancedToggle.Click += (s, e) =>
@@ -678,10 +688,17 @@ namespace GTAVArchipelagoSetup
             _modsStatus.Set(StepState.Pending, "Downloading and installing...");
             RefreshAll();
             bool failed = false;
+            DownloadsBlockedException blocked = null;
+            _openLinks.Visible = false;
             try
             {
                 await CreateInstaller().Install(selected, _keepSettings.Checked,
                     value => BeginInvoke(new Action(() => _progress.Value = Math.Max(0, Math.Min(100, value)))));
+            }
+            catch (DownloadsBlockedException ex)
+            {
+                blocked = ex;
+                Log("ERROR: " + ex.Message);
             }
             catch (Exception ex)
             {
@@ -692,7 +709,13 @@ namespace GTAVArchipelagoSetup
             _progress.Visible = false;
             _progressText.Visible = false;
             RefreshAll();
-            if (failed)
+            if (blocked != null)
+            {
+                _blockedLinks = blocked.Links;
+                _openLinks.Visible = true;
+                _modsStatus.Set(StepState.Error, $"GitHub did not answer for {string.Join(", ", blocked.Names)}. This is often GitHub itself, an antivirus that checks HTTPS, a VPN or a proxy. Click \"Download them in my browser\", let the files land in your Downloads folder, then click \"Install the mods\" again.");
+            }
+            else if (failed)
             {
                 _modsStatus.Set(StepState.Error, "The installation failed. Check your internet connection and try again. The details window tells what went wrong.");
                 ShowLog();

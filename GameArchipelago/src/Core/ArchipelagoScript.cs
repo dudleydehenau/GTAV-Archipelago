@@ -792,12 +792,18 @@ namespace GameArchipelago.Core
                 if (EnvironmentApi.ResetProgress(Save.Key, out string resetError))
                 {
                     History.Write("NEW_GAME", "previous", previous, "now", Save.Key);
+                    if (previous != null && TrapApi.IsReady && TrapApi.QueuedTraps.Count > 0)
+                    {
+                        Log.Info($"New game: {TrapApi.QueuedTraps.Count} trap(s) of the previous game removed from the queue.");
+                        TrapApi.ClearQueue();
+                    }
                     if (previous != null)
                         Notifier.Message(null, "New Archipelago game", "The money, weapons and vehicles of your previous game were cleared.", true);
                 }
                 else Log.Warn("Could not start a fresh game: " + resetError);
                 return;
             }
+            EnvironmentApi.ConfirmOwner(Save.Key);
             string gameId = EnvironmentApi.GameId;
             if (gameId != null && Save.GameId != gameId)
             {

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.2
+
+- When a download fails (error 504, timeouts), the setup fetches the same file through the GitHub API, which keeps
+  working when the normal release links do not, then tries both again with a direct connection that skips the Windows
+  proxy settings. The way that works is kept for the next files. If everything fails, the setup uses the same file
+  from your Downloads folder when it is there, and installs everything else anyway.
+- A "Download them in my browser" button opens the missing files in your browser. Once they are in Downloads, click
+  "Install the mods" again. This also gets around an antivirus, a VPN or a proxy that blocks the setup but not the
+  browser.
+
 ## 1.4.1
 
 - The welcome screen and the Play step say to keep Rockstar cloud saves off: with them on, story mode can stay stuck

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.2
+
+- Tells GameEnvironment when the Archipelago game is confirmed, so skills are only counted for the right game.
+- Fix: traps still waiting from the previous Archipelago game started in the new one. The trap queue is now emptied
+  when you connect to a new game.
+
 ## 1.8.1
 
 - Fix: a finished triathlon kept its icon on the map, because the game does not mark triathlon icons as done. Each

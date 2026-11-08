@@ -15,6 +15,8 @@ namespace GameEnvironment.Core
         private readonly GunShops _shops;
         private readonly SaveCleaner _saves;
         private readonly Activities _activities;
+        private readonly PhoneBook _phoneBook;
+        private readonly SkillKeeper _skills;
         private readonly GameShopWatcher _gameShops = new GameShopWatcher();
         private readonly InactiveNotice _notice = new InactiveNotice();
         private bool _disabled;
@@ -50,6 +52,8 @@ namespace GameEnvironment.Core
             _setup = new SterileSetup(Config, Globals, Store, Roster);
             _shops = new GunShops(Globals);
             _activities = new Activities(Globals);
+            _phoneBook = new PhoneBook(Globals);
+            _skills = new SkillKeeper(Store);
             _saves = Config.NoSaves ? new SaveCleaner() : null;
 
             Roster.Switched += character => Economy.ScheduleWeaponCheck(2000);
@@ -64,6 +68,14 @@ namespace GameEnvironment.Core
         internal EnvironmentConfig Config { get; }
         internal StoryGlobals Globals { get; }
         internal StateStore Store { get; }
+
+        internal bool SkillsReady => Mode == EnvironmentMode.Sterile && _skills.Stable && _ownerConfirmed;
+
+        internal int SkillProgress(PlayableCharacter character, string stat) => SkillsReady ? _skills.Progress(character, stat) : -1;
+
+        private bool _ownerConfirmed;
+
+        internal void ConfirmOwner() => _ownerConfirmed = true;
         internal CharacterService Roster { get; }
         internal Economy Economy { get; }
         internal Garage Garage { get; }
@@ -85,6 +97,7 @@ namespace GameEnvironment.Core
                 CharacterRecord record = state.For(character);
                 record.Money = 0;
                 record.Weapons.Clear();
+                record.SkillStart = null;
                 Economy.SetCash(character, 0);
             }
             Ped ped = Game.Player.Character;
@@ -94,6 +107,8 @@ namespace GameEnvironment.Core
             Store.Save();
             Economy.ScheduleWeaponCheck(1500);
             Log.Info($"Progress reset for a new Archipelago game ({owner}).");
+            _skills.Apply();
+            _ownerConfirmed = true;
         }
 
         internal bool IsBusy => Globals.Available && ReplayGuard.IsBusy(Globals);
@@ -119,7 +134,8 @@ namespace GameEnvironment.Core
                     {
                         if (Config.OpenGunShopsInMissions || Config.CustomGunShop) _shops.Tick(true);
                     }
-                    Doors.Release("replay");
+                    Doors.MissionTick("replay");
+                    if (Mode == EnvironmentMode.Sterile) _phoneBook.Tick();
                     if (Config.ReplayCharacterFix) ReplayCast.Tick(Globals);
                     if (!_wasBusy)
                     {
@@ -149,13 +165,15 @@ namespace GameEnvironment.Core
                 if (Config.CustomGunShop) _shops.Tick(true);
                 if (Config.OpenActivities) _activities.Tick(Game.GameTime);
                 else if (Config.OpenGunShopsInMissions) _shops.Tick(Function.Call<bool>(Hash.GET_MISSION_FLAG));
+                _phoneBook.Tick();
+                _skills.Tick();
                 if (!Function.Call<bool>(Hash.GET_MISSION_FLAG)) _gameShops.Tick();
                 _saves?.Tick(true);
                 WatchPrologue();
                 Roster.Tick();
                 Economy.Tick();
                 Garage.Tick();
-                if (Function.Call<bool>(Hash.GET_MISSION_FLAG)) Doors.Release("mission");
+                if (Function.Call<bool>(Hash.GET_MISSION_FLAG)) Doors.MissionTick();
                 else Doors.Tick();
                 if (!Config.NoSaves && _autoSaveAt < 0 && Config.AutoSaveMinutes > 0 && _lastSaveAt >= 0 && Game.GameTime - _lastSaveAt >= Config.AutoSaveMinutes * 60000)
                     _autoSaveAt = Game.GameTime;
@@ -255,6 +273,7 @@ namespace GameEnvironment.Core
             if (Mode == mode) return;
             if (Mode == EnvironmentMode.Sterile)
             {
+                _skills.Reset();
                 Garage.DespawnAll();
                 Doors.Release("mode change");
             }
@@ -288,6 +307,7 @@ namespace GameEnvironment.Core
             if (!Function.Call<bool>(Hash.GET_MISSION_FLAG) && Globals.EnableSelector())
                 Log.Info("Character wheel re-enabled.");
             Roster.Apply();
+            _skills.Apply();
             Economy.ApplyMoney();
             Economy.ScheduleWeaponCheck(1500);
             if (_firstApply)

@@ -56,6 +56,7 @@ namespace GameEnvironment.Core
                     CharacterRecord record = state.For(character);
                     record.Unlocked = !_config.CharacterLocking || character == start;
                     record.Money = _config.StartMoney;
+                    record.SkillStart = null;
                 }
                 _store.Save();
                 Log.Info($"Start character: {start}.");

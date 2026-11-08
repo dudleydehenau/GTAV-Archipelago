@@ -17,6 +17,11 @@ namespace GameEnvironment
 
         public static bool IsSterile => Mode == EnvironmentMode.Sterile;
 
+        public static bool SkillsReady => Core != null && Core.SkillsReady;
+
+        public static int SkillProgress(int character, string stat) =>
+            Core == null || character < 0 || character > 2 ? -1 : Core.SkillProgress((PlayableCharacter)character, stat);
+
         public static bool IsReplayActive => Core != null && Core.IsBusy;
 
         public static PlayableCharacter? CurrentCharacter => Characters.Current;
@@ -156,6 +161,11 @@ namespace GameEnvironment
                 Core.Store.State.Owner = value;
                 Core.Store.Save();
             }
+        }
+
+        public static void ConfirmOwner(string owner)
+        {
+            if (Core != null && string.Equals(Core.Store.State.Owner, owner, StringComparison.Ordinal)) Core.ConfirmOwner();
         }
 
         public static bool ResetProgress(string owner, out string error)

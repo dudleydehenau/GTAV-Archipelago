@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.9.3
+
+- Fix: skill checks were still sent at spawn. The game itself (its stats script) puts every skill back to the story
+  value of each character plus what was earned by playing, a few seconds after it is lowered, so a 0 % start could not
+  hold. GameEnvironment no longer changes the skills: it records each character's skills at the start of the
+  Archipelago game (at least the story values) and skill checks now count the progress made from there. "Stamina 10%"
+  means 10 % of the way from the starting value to 100 %, so every check can still be reached and none is sent at the
+  start. The stats screen keeps showing the game's own values.
+
+## 1.9.2
+
+- Skills start at 0 % in a new Archipelago game, for the three characters, instead of the story defaults (up to 80 %),
+  which sent dozens of skill checks at once. Every skill check is now earned by playing. Skill progress is kept in
+  state.json and comes back in the next session (no saves mode). This also happens when you connect to a new seed in the
+  same session.
+  Games started before this keep their current skills.
+- Fix: the phone had no contacts in the Archipelago world, so missions that send a photo or make a call could not go on
+  (for example "Scouting the Port", where Trevor sends pictures to Ron). The story contacts (Michael, Franklin, Trevor,
+  Lester, Ron, Wade, Lamar, Simeon, Jimmy, Tracy, Amanda, Steve Haines, Dave Norton, Devin Weston, Solomon, Floyd,
+  Stretch, Dr. Friedlander and Wei Cheng) are back in every character's phone, also while a mission replay runs (the replay sets the phone up again
+  when it starts). Contacts show with their name and picture, the way the story adds them.
+- Fix: Lester's garment factory (and Lester's house) could be locked during a mission, for example when coming back
+  in "BZ Gas Grenades" or "Gas Burglar". Their doors are no longer locked again when a mission or a mission replay
+  starts, and they stay open while it runs.
+
 ## 1.9.1
 
 - Darts: the Tequi-la-la icon is gone and its dartboard says to play at the Yellow Jack Inn. The game only starts
