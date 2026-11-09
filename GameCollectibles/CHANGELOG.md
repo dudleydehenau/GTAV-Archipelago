@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.4
+
+- A frame where the collectibles take more than 8 ms is written in the log, to find the cause of stutters on a given PC.
+
 ## 2.0.3
 
 - Skill checks count the progress made since the start of the Archipelago game, given by GameEnvironment 1.9.3: the

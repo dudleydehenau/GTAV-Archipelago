@@ -69,6 +69,8 @@ namespace GameEnvironment
             return Core.Roster.Lock(character, Core.IsLive, out error);
         }
 
+        public static void SetSpecialAbilities(bool[] allowed) => Abilities.SetAllowed(allowed != null && allowed.Length == 3 ? allowed : null);
+
         public static bool SetUnlockedCharacters(IEnumerable<PlayableCharacter> characters, out string error)
         {
             if (!CanEdit(out error)) return false;

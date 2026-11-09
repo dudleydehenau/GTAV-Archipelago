@@ -350,6 +350,8 @@ namespace GameArchipelago.Core
             if (item == VehicleGiftItem) return "Vehicle Gift";
             if (item == CollectibleRadarItem) return "Collectible Radar";
             if (item == DriveBySmgItem) return "Drive-By SMG";
+            int ability = Array.IndexOf(SpecialAbilityItems, item);
+            if (ability >= 0) return "Special Ability: " + CharacterNames[ability];
             VehicleItem vehicle = VehicleByItem(item);
             if (vehicle != null) return vehicle.Category;
             MissionInfo mission = MissionByItem(item);

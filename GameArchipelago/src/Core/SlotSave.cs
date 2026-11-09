@@ -63,6 +63,7 @@ namespace GameArchipelago.Core
         public int WeaponUpgrades { get; set; }
         public int WeaponPriceMultiplier { get; set; } = 100;
         public bool RadarFromStart { get; set; } = true;
+        public bool AbilitiesFromStart { get; set; } = true;
         public bool GuaranteedVehicles { get; set; }
         public bool MissionTraps { get; set; }
         public bool MissionWeapons { get; set; } = true;

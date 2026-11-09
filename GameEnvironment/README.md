@@ -82,7 +82,7 @@ money, completion `???`, characters (unlocked or locked) and vehicles (deliver, 
 | `StartMoney` | `0` | Money of each character on a new game. |
 | `StartHour` | `10` | Hour on a new game. |
 | `DisableRandomEvents` | `true` | No random events. |
-| `UnlockSpecialAbilities` | `true` | Michael's bullet time, Franklin's driving focus and Trevor's rage are unlocked and kept on, missions included (some gold objectives need them; during a replay they are unlocked but left to the mission). |
+| `UnlockSpecialAbilities` | `true` | Michael's bullet time, Franklin's driving focus and Trevor's rage are unlocked and kept on, missions included (some gold objectives need them; during a replay they are unlocked but left to the mission). When GameArchipelago puts them behind items, an ability stays locked until its item arrives. |
 | `BlockCommunications` | `true` | Drops pending story calls, texts and emails. |
 | `NoSaves` | `true` | The mod never saves the game, and any save the game writes by itself during a sterile session is deleted (saves that were already there are never touched). With no save in your profile, every start is a new game that keeps your money, weapons, vehicles and characters as you left them, with the last character you played. `AutoSaveAfterSetup` and `AutoSaveMinutes` are ignored. |
 | `OpenGunShopsInMissions` | `true` | Ammu-Nation opens during missions and replays (some missions need it) and closes again afterwards, so weapons cannot be bought outside missions. |

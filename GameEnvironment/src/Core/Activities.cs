@@ -33,6 +33,8 @@ namespace GameEnvironment.Core
         private static readonly int[] Unused = { 65, 69 };
         private static readonly int[] StreetRaces = { 86, 87, 88, 89, 90 };
         private readonly ActivityHints _hints;
+        private readonly HashSet<int> _doorsReported = new HashSet<int>();
+        private readonly CableCar _cableCar = new CableCar();
         private static readonly int[] Sprites = { 109, 122, 103, 197, 119, 110, 313, 314, 315, 316, 376, 127, 126, 94, 377, 141, 135, 36, 100, 71, 73, 75, 72, 52, 90 };
 
         public Activities(StoryGlobals globals)
@@ -56,7 +58,8 @@ namespace GameEnvironment.Core
             for (int i = 0; i < _globals.StaticBlipCountValue; i++)
             {
                 if (System.Array.IndexOf(Sprites, _globals.StaticBlipSprite(i)) < 0 || System.Array.IndexOf(Unused, i) >= 0) continue;
-                if ((_globals.StaticBlipFlags(i) & 1) != 0) continue;
+                int flags = _globals.StaticBlipFlags(i);
+                if ((flags & 1) != 0 || (flags & (1 << 15)) != 0) continue;
                 _globals.ActivateStaticBlip(i);
                 opened++;
             }
@@ -165,7 +168,7 @@ namespace GameEnvironment.Core
             {
                 if (_globals.GetDoorState(door) != 1) continue;
                 _globals.SetDoorState(door, 0);
-                opened.Add(door);
+                if (_doorsReported.Add(door)) opened.Add(door);
             }
             if (opened.Count > 0) Log.Info($"Doors unlocked for activities and shops: {string.Join(" ", opened)}.");
         }
@@ -198,6 +201,7 @@ namespace GameEnvironment.Core
         public void Tick(int now)
         {
             if (_globals.Available) _hints.Tick(now);
+            _cableCar.Tick(now);
             if (now >= _nextScan)
             {
                 _nextScan = now + 1000;
@@ -223,8 +227,8 @@ namespace GameEnvironment.Core
             {
                 _globals.MinigameBits = bits | mask;
                 if (!_logged) Log.Info($"Activities opened (flags {bits:X} -> {bits | mask:X}).");
-                _logged = true;
             }
+            _logged = true;
             if (!_rangeOpened) OpenRange();
             OpenDoors();
             if (_globals.RaiseFlowFlag(65) | _globals.RaiseFlowFlag(66)) Log.Info("Darts opened for the three characters.");

@@ -21,6 +21,13 @@ namespace GameArchipelago.Core
             7354003,
         };
 
+        public static readonly long[] SpecialAbilityItems =
+        {
+            7354070,
+            7354071,
+            7354072,
+        };
+
         public static readonly VehicleItem[] VehicleItems =
         {
             new VehicleItem(7354090, "Sports Car"),

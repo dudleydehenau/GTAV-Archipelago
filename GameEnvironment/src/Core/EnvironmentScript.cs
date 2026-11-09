@@ -161,20 +161,33 @@ namespace GameEnvironment.Core
                     return;
                 }
 
+                TickTimer.Begin();
                 if (_needsApply) Apply();
+                TickTimer.Lap("apply");
                 if (Config.CustomGunShop) _shops.Tick(true);
+                TickTimer.Lap("gun shops");
                 if (Config.OpenActivities) _activities.Tick(Game.GameTime);
                 else if (Config.OpenGunShopsInMissions) _shops.Tick(Function.Call<bool>(Hash.GET_MISSION_FLAG));
+                TickTimer.Lap("activities");
                 _phoneBook.Tick();
+                TickTimer.Lap("contacts");
                 _skills.Tick();
+                TickTimer.Lap("skills");
                 if (!Function.Call<bool>(Hash.GET_MISSION_FLAG)) _gameShops.Tick();
+                TickTimer.Lap("shops");
                 _saves?.Tick(true);
+                TickTimer.Lap("save cleaner");
                 WatchPrologue();
                 Roster.Tick();
+                TickTimer.Lap("characters");
                 Economy.Tick();
+                TickTimer.Lap("money and weapons");
                 Garage.Tick();
+                TickTimer.Lap("garage");
                 if (Function.Call<bool>(Hash.GET_MISSION_FLAG)) Doors.MissionTick();
                 else Doors.Tick();
+                TickTimer.Lap("doors");
+                TickTimer.End();
                 if (!Config.NoSaves && _autoSaveAt < 0 && Config.AutoSaveMinutes > 0 && _lastSaveAt >= 0 && Game.GameTime - _lastSaveAt >= Config.AutoSaveMinutes * 60000)
                     _autoSaveAt = Game.GameTime;
                 if (_autoSaveAt >= 0 && Game.GameTime >= _autoSaveAt)

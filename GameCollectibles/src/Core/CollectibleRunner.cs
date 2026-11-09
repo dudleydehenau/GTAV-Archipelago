@@ -24,6 +24,8 @@ namespace GameCollectibles.Core
 
     public sealed class CollectibleRunner : Script
     {
+        private static readonly System.Diagnostics.Stopwatch TickWatch = System.Diagnostics.Stopwatch.StartNew();
+        private int _nextSlowLog;
         private const int StreamInterval = 500;
         private const int HideInterval = 5000;
         private static readonly string[] GameScripts = { "spaceshipparts", "letterscraps", "ambient_sonar", "ambient_diving" };
@@ -52,7 +54,7 @@ namespace GameCollectibles.Core
             if (Config.EpsilonTracts) Add(CollectibleKind.EpsilonTract, "EpsilonTract", Locations.EpsilonTracts);
             Feats = new FeatTracker(this);
             Log.Info($"{_spots.Count} collectibles, {CollectedCount} already collected, {Feats.All.Count} feats.");
-            Tick += OnTick;
+            Tick += TimedTick;
             Aborted += OnAborted;
         }
 
@@ -134,6 +136,18 @@ namespace GameCollectibles.Core
                 _spots.Add(spot);
                 _byId[spot.Id] = spot;
             }
+        }
+
+        private void TimedTick(object sender, EventArgs e)
+        {
+            long start = TickWatch.ElapsedTicks;
+            int frame = Function.Call<int>(Hash.GET_FRAME_COUNT);
+            OnTick(sender, e);
+            double ms = (TickWatch.ElapsedTicks - start) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            if (ms < 8.0 || System.Environment.TickCount < _nextSlowLog) return;
+            if (Function.Call<int>(Hash.GET_FRAME_COUNT) != frame) return;
+            _nextSlowLog = System.Environment.TickCount + 2000;
+            Log.Warn($"Slow frame: the collectibles took {ms:0.0} ms.");
         }
 
         private void OnTick(object sender, EventArgs e)

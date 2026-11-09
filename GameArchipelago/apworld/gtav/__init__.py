@@ -7,7 +7,7 @@ from worlds.AutoWorld import WebWorld, World
 from Options import OptionError
 
 from .data import (
-    BASE_ID, CHARACTERS, COLLECTIBLE_RADAR, ESCAPE_MINUTES, FREE_ROAM_KEYS, GOAL_OVERHEAD, COLLECTIBLES, DRIVE_BY_SMG, FINALE_CODES, GAME,
+    BASE_ID, CHARACTERS, COLLECTIBLE_RADAR, SPECIAL_ABILITIES, ESCAPE_MINUTES, FREE_ROAM_KEYS, GOAL_OVERHEAD, COLLECTIBLES, DRIVE_BY_SMG, FINALE_CODES, GAME,
     GUARANTEED_VEHICLES, HELICOPTER, ITEM_NAME_TO_ID, LANDMARK_MINUTES, LANDMARKS, UNSTABLE_PREPS, LOCATION_NAME_TO_ID,
     MAX_ESCAPE_STARS, MISSION_BY_CODE, MISSIONS, MONEY, PICKUPS, SKILL_LEVELS, SKILL_MINUTES, SKILLS, TRAPS, UNDERWATER_VEHICLE,
     VEHICLE_GIFT, WEAPON_GIFT, Collectible, Mission, bonus_location, collectible_bonus_location, collectible_location,
@@ -18,7 +18,7 @@ from .data import (
 )
 
 MONEY_NAMES = {name for name, _ in MONEY}
-from .options import GOAL_MISSION_CODES, CollectibleRadar, GTAVOptions, Goal, WeaponShop, WeaponUpgrades, option_groups, option_presets
+from .options import GOAL_MISSION_CODES, CollectibleRadar, GTAVOptions, SpecialAbilities, Goal, WeaponShop, WeaponUpgrades, option_groups, option_presets
 
 
 class GTAVItem(Item):
@@ -68,6 +68,7 @@ class GTAVWorld(World):
         "Strangers and Freaks": {mission_item(m) for m in MISSIONS if m.strangers},
         "Traps": {trap_item(title) for _, title in TRAPS},
         "Gifts": {WEAPON_GIFT, VEHICLE_GIFT},
+        "Special Abilities": set(SPECIAL_ABILITIES),
         "Vehicles": set(GUARANTEED_VEHICLES) | {vehicle_item(v) for v in VEHICLES},
         "Money": {name for name, _ in MONEY},
         "Weapons": {weapon_item(w) for w in WEAPONS},
@@ -278,7 +279,7 @@ class GTAVWorld(World):
             classification = ItemClassification.progression_skip_balancing
         elif name.startswith("Trap: "):
             classification = ItemClassification.trap
-        elif name in (WEAPON_GIFT, VEHICLE_GIFT, COLLECTIBLE_RADAR, DRIVE_BY_SMG) or name in GUARANTEED_VEHICLES:
+        elif name in (WEAPON_GIFT, VEHICLE_GIFT, COLLECTIBLE_RADAR, DRIVE_BY_SMG) or name in GUARANTEED_VEHICLES or name in SPECIAL_ABILITIES:
             classification = ItemClassification.useful
         else:
             classification = ItemClassification.filler
@@ -298,6 +299,8 @@ class GTAVWorld(World):
             required += list(GUARANTEED_VEHICLES)
         if self.options.collectible_radar == CollectibleRadar.option_item:
             required.append(COLLECTIBLE_RADAR)
+        if self.options.special_abilities == SpecialAbilities.option_item:
+            required += list(SPECIAL_ABILITIES)
         required += missions
         if self.weapon_shop != WeaponShop.option_gifts:
             required += [weapon_item(w) for w in WEAPONS]
@@ -661,6 +664,7 @@ class GTAVWorld(World):
             "weapon_upgrades": self.weapon_upgrades,
             "weapon_price_multiplier": self.options.weapon_price_multiplier.value,
             "collectible_radar": "item" if self.options.collectible_radar == CollectibleRadar.option_item else "start",
+            "special_abilities": "item" if self.options.special_abilities == SpecialAbilities.option_item else "start",
             "guaranteed_vehicles": self.vehicles,
             "vehicle_unlocks": self.vehicle_unlocks,
             "mission_traps": bool(self.options.mission_traps),

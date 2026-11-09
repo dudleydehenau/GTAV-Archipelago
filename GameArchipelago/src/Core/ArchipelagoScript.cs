@@ -22,6 +22,9 @@ namespace GameArchipelago.Core
         private const int ReconnectDelay = 15000;
         private const int TrapLogSize = 30;
         private const int ChaosShuffleInterval = 600000;
+        private const double SlowStepMs = 8.0;
+        private static readonly System.Diagnostics.Stopwatch StepWatch = System.Diagnostics.Stopwatch.StartNew();
+        private int _nextSlowLog;
         private const int StarterRevision = 3;
         private const int ChaosCooldown = 45000;
 
@@ -201,6 +204,7 @@ namespace GameArchipelago.Core
                         Step("server sync", SyncServer);
                         Step("collectibles", SyncCollectibles);
                         Step("roster", SyncRoster);
+                        Step("abilities", SyncAbilities);
                         Step("markers", SyncMarkers);
                         Step("goal", CheckGoal);
                         Step("chaos", ShuffleChaos);
@@ -224,6 +228,8 @@ namespace GameArchipelago.Core
 
         private void Step(string name, Action action)
         {
+            long start = StepWatch.ElapsedTicks;
+            int frame = Function.Call<int>(Hash.GET_FRAME_COUNT);
             try
             {
                 action();
@@ -232,6 +238,11 @@ namespace GameArchipelago.Core
             {
                 Report(name, ex);
             }
+            double ms = (StepWatch.ElapsedTicks - start) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            if (ms < SlowStepMs || System.Environment.TickCount < _nextSlowLog) return;
+            if (Function.Call<int>(Hash.GET_FRAME_COUNT) != frame) return;
+            _nextSlowLog = System.Environment.TickCount + 2000;
+            Log.Warn($"Slow frame: {name} took {ms:0.0} ms.");
         }
 
         private void Report(string step, Exception ex)
@@ -553,6 +564,7 @@ namespace GameArchipelago.Core
             if (data.TryGetValue("activities", out object activities) && activities is JArray activityList)
                 save.Activities = activityList.Select(t => t.ToString()).ToList();
             save.RadarFromStart = ReadString(data, "collectible_radar", save.RadarFromStart ? "start" : "item") != "item";
+            save.AbilitiesFromStart = ReadString(data, "special_abilities", save.AbilitiesFromStart ? "start" : "item") != "item";
             save.GuaranteedVehicles = ReadInt(data, "guaranteed_vehicles", save.GuaranteedVehicles ? 1 : 0) != 0;
             save.MissionTraps = ReadInt(data, "mission_traps", save.MissionTraps ? 1 : 0) != 0;
             save.MissionWeapons = ReadInt(data, "mission_weapons", save.MissionWeapons ? 1 : 0) != 0;
@@ -710,6 +722,8 @@ namespace GameArchipelago.Core
             if (character >= 0) return $"~g~{ApData.CharacterNames[character]}~s~ is now playable.";
             if (record.Item == ApData.CollectibleRadarItem) return "~g~Collectible Radar:~s~ F6 > Collectibles > Route to the nearest one.";
             if (record.Item == ApData.DriveBySmgItem) return "~g~Drive-By SMG:~s~ a Micro SMG with 600 rounds for every character.";
+            int ability = Array.IndexOf(ApData.SpecialAbilityItems, record.Item);
+            if (ability >= 0) return $"~g~{ApData.CharacterNames[ability]}'s special ability~s~ is unlocked.";
             ShopWeapon shopWeapon = ApData.ShopWeaponByItem(record.Item);
             if (shopWeapon != null) return $"~g~{Notifier.Escape(shopWeapon.Name)}~s~ can now be bought at Ammu-Nation.";
             shopWeapon = ApData.ShopUpgradesByItem(record.Item);
@@ -1342,6 +1356,18 @@ namespace GameArchipelago.Core
                 yield return m;
             }
             if (last != set.Total) yield return set.Total;
+        }
+
+        private void SyncAbilities()
+        {
+            if (Save == null || Save.AbilitiesFromStart)
+            {
+                EnvironmentApi.SetSpecialAbilities(null);
+                return;
+            }
+            var allowed = new bool[3];
+            for (int c = 0; c < 3; c++) allowed[c] = Owns(ApData.SpecialAbilityItems[c]);
+            EnvironmentApi.SetSpecialAbilities(allowed);
         }
 
         private void SyncRoster()

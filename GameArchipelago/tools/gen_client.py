@@ -42,6 +42,12 @@ for c in data.CHARACTERS:
     w(f"            {data.ITEM_NAME_TO_ID[c]},")
 w("        };")
 w("")
+w("        public static readonly long[] SpecialAbilityItems =")
+w("        {")
+for name in data.SPECIAL_ABILITIES:
+    w(f"            {data.ITEM_NAME_TO_ID[name]},")
+w("        };")
+w("")
 w("        public static readonly VehicleItem[] VehicleItems =")
 w("        {")
 for name in data.GUARANTEED_VEHICLES:

@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.9.0
+
+- New option "Special Abilities" (default: item). Michael's bullet time, Franklin's driving focus and Trevor's rage
+  are three items ("Special Ability: Michael", "Special Ability: Franklin", "Special Ability: Trevor") and stay locked
+  until you get them. With "start", they work from the start like before. Older seeds keep them from the start.
+- Fix: a finished race kept its icon on the map, like the triathlons before 1.8.1. Each off-road race, sea race and
+  street race icon now follows its own check, so it goes away (or gets a tick) as soon as that race is done.
+- A step that takes more than 8 ms in one frame is written in the log, to find the cause of stutters on a given PC.
+
 ## 1.8.2
 
 - Tells GameEnvironment when the Archipelago game is confirmed, so skills are only counted for the right game.

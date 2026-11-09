@@ -32,6 +32,21 @@ namespace GameArchipelago.Core
             new KeyValuePair<string, GTA.Math.Vector3>("Activity_141", new GTA.Math.Vector3(-1230.6f, -2050f, 12.9f)),
             new KeyValuePair<string, GTA.Math.Vector3>("Activity_142", new GTA.Math.Vector3(2434.4f, 4284.3f, 35.5f)),
             new KeyValuePair<string, GTA.Math.Vector3>("Activity_143", new GTA.Math.Vector3(1591.7f, 3813.4f, 33.3f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_112", new GTA.Math.Vector3(-1939.5f, 4444.0f, 37.3f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_113", new GTA.Math.Vector3(-516.9f, 2008.0f, 204.1f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_114", new GTA.Math.Vector3(2996.8f, 2774.1f, 43.3f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_115", new GTA.Math.Vector3(-223.7f, 4224.6f, 43.7f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_116", new GTA.Math.Vector3(1606.6f, 3841.2f, 33.3f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_117", new GTA.Math.Vector3(2037.7f, 2137.4f, 92.7f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_132", new GTA.Math.Vector3(3063.1f, 639.9f, 0.0f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_133", new GTA.Math.Vector3(3447.7f, 5193.0f, 0.0f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_134", new GTA.Math.Vector3(198.1f, 3620.4f, 27.3f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_135", new GTA.Math.Vector3(621.7f, -2136.8f, 0.0f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_136", new GTA.Math.Vector3(369.3f, 312.4f, 103.2f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_137", new GTA.Math.Vector3(-813.1f, -2546.7f, 12.8f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_138", new GTA.Math.Vector3(791.6f, -1160.9f, 27.9f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_139", new GTA.Math.Vector3(-1063.0f, -1153.4f, 1.1f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_140", new GTA.Math.Vector3(-155.8f, -1567.0f, 34.0f)),
         };
 
         public static readonly MapGroup[] Groups =
@@ -107,13 +122,14 @@ namespace GameArchipelago.Core
             return inWorld > 0;
         }
 
-        private static List<GTA.Math.Vector3> DoneSpots()
+        private static List<GTA.Math.Vector3> DoneSpots(MapGroup group)
         {
             var spots = new List<GTA.Math.Vector3>();
             SlotSave save = ArchipelagoScript.Instance?.Save;
             if (save == null) return spots;
             foreach (KeyValuePair<string, GTA.Math.Vector3> spot in Spots)
             {
+                if (System.Array.IndexOf(group.Activities, spot.Key) < 0) continue;
                 FeatLocation feat = ApData.FeatById(spot.Key);
                 if (feat != null && save.IsDone(feat.Location)) spots.Add(spot.Value);
             }
@@ -135,9 +151,9 @@ namespace GameArchipelago.Core
             _next = Game.GameTime + Interval;
             var hiddenNow = new HashSet<int>();
             HashSet<int> finished = EnvironmentApi.FinishedActivityIcons();
-            List<GTA.Math.Vector3> doneSpots = DoneSpots();
             foreach (MapGroup group in Groups)
             {
+                List<GTA.Math.Vector3> doneSpots = DoneSpots(group);
                 bool groupDone = IsDone(group);
                 bool off = IsHidden(group);
                 foreach (BlipSprite sprite in group.Sprites)

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2
+
+- A frame where the traps take more than 8 ms is written in the log, to find the cause of stutters on a given PC.
+
 ## 1.4.1
 
 - Last round (Drunk): the drunk state is lifted while you fly a plane or a helicopter and comes back when you land.

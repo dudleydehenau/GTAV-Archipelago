@@ -8,13 +8,36 @@ namespace GameEnvironment.Core
 {
     internal sealed class SaveCleaner
     {
-        private const int Interval = 3000;
+        private const int Delay = 3000;
+        private const int Fallback = 60000;
         private readonly Dictionary<string, DateTime> _baseline;
+        private readonly FileSystemWatcher _watcher;
+        private volatile bool _changed;
         private int _next;
 
         public SaveCleaner()
         {
             _baseline = Snapshot();
+            try
+            {
+                if (Directory.Exists(ProfilesFolder))
+                {
+                    _watcher = new FileSystemWatcher(ProfilesFolder, "SGTA5*")
+                    {
+                        IncludeSubdirectories = true,
+                        NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
+                    };
+                    _watcher.Created += (s, e) => _changed = true;
+                    _watcher.Changed += (s, e) => _changed = true;
+                    _watcher.Renamed += (s, e) => _changed = true;
+                    _watcher.EnableRaisingEvents = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _watcher = null;
+                Log.Warn("Could not watch the save folder, it is checked every minute instead: " + ex.Message);
+            }
         }
 
         public static string ProfilesFolder =>
@@ -23,8 +46,18 @@ namespace GameEnvironment.Core
         public void Tick(bool active)
         {
             if (!active || Game.GameTime < _next) return;
-            _next = Game.GameTime + Interval;
-            if (Function.Call<bool>(Hash.IS_AUTO_SAVE_IN_PROGRESS)) return;
+            if (_watcher != null && !_changed)
+            {
+                _next = Game.GameTime + Delay;
+                return;
+            }
+            if (Function.Call<bool>(Hash.IS_AUTO_SAVE_IN_PROGRESS))
+            {
+                _next = Game.GameTime + Delay;
+                return;
+            }
+            _changed = false;
+            _next = Game.GameTime + (_watcher != null ? Delay : Fallback);
             Remove("written during this session");
         }
 

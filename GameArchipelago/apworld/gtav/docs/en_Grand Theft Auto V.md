@@ -18,7 +18,8 @@ bridges, knife flights, 44 landmarks to visit (purple markers on the map), skill
 
 Items: the three characters (one is given at the start), one unlock per mission, money, Weapon Gifts (a random weapon,
 online weapons included), Vehicle Gifts (a random vehicle from a list: Deluxo, Oppressor Mk II, Stromberg, helicopters,
-a submarine...), the Collectible Radar (the route to the nearest collectible), six guaranteed vehicles (a sports car, a
+a submarine...), the Collectible Radar (the route to the nearest collectible), the three special abilities (an option
+can give them from the start), six guaranteed vehicles (a sports car, a
 motorcycle, a helicopter, an underwater vehicle, a boat and the Scramjet) and 53 traps. The helicopter and the
 underwater vehicle are placed early; the underwater collectibles need the underwater vehicle in logic.
 

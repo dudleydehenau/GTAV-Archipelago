@@ -254,6 +254,7 @@ WEAPON_GIFT = "Weapon Gift"
 VEHICLE_GIFT = "Vehicle Gift"
 COLLECTIBLE_RADAR = "Collectible Radar"
 DRIVE_BY_SMG = "Drive-By SMG"
+SPECIAL_ABILITIES = ("Special Ability: Michael", "Special Ability: Franklin", "Special Ability: Trevor")
 SPORTS_CAR = "Sports Car"
 MOTORCYCLE = "Motorcycle"
 HELICOPTER = "Helicopter"
@@ -647,6 +648,8 @@ def build_item_table() -> dict:
     table[WEAPON_GIFT] = BASE_ID + 50
     table[DRIVE_BY_SMG] = BASE_ID + 52
     table[COLLECTIBLE_RADAR] = BASE_ID + 60
+    for i, name in enumerate(SPECIAL_ABILITIES):
+        table[name] = BASE_ID + 70 + i
     table[VEHICLE_GIFT] = BASE_ID + 80
     for i, name in enumerate(GUARANTEED_VEHICLES):
         table[name] = BASE_ID + 90 + i

@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.9.4
+
+- Special abilities can be locked per character by GameArchipelago, until their Archipelago item arrives. A locked
+  ability cannot be used, missions included.
+- Fix: micro stutters every few seconds, mostly on foot. The game hides some map icons depending on the situation
+  (on foot or in a vehicle, character, time), and GameEnvironment turned them back on every 5 seconds, which made the
+  game rebuild all its map icons each time. Each icon is now turned on once and the game is left to show or hide it.
+- The save folder is no longer read from the disk every 3 seconds: GameEnvironment is told by Windows when the game
+  writes a save. On some PCs (Documents in OneDrive, antivirus) reading the folder could cause a small hitch.
+- A door that the game locks again is still opened every 5 seconds, but only written once in the log.
+- A frame where GameEnvironment takes more than 8 ms is written in the log with the part that took the time, to find
+  the cause of stutters on a given PC.
+- Fix: the cable car on Mount Chiliad did nothing, there was no prompt to board. The game only starts it from a point
+  of the story that the Archipelago world never reaches. GameEnvironment now starts it when you get close.
+
 ## 1.9.3
 
 - Fix: skill checks were still sent at spawn. The game itself (its stats script) puts every skill back to the story

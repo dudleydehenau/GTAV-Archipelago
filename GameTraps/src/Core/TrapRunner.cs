@@ -10,6 +10,8 @@ namespace GameTraps.Core
 {
     public sealed class TrapRunner : Script
     {
+        private static readonly System.Diagnostics.Stopwatch TickWatch = System.Diagnostics.Stopwatch.StartNew();
+        private int _nextSlowLog;
         private readonly List<Trap> _traps = new List<Trap>();
         private readonly List<Queued> _queue = new List<Queued>();
         private readonly Announcer _announcer = new Announcer();
@@ -104,7 +106,7 @@ namespace GameTraps.Core
                 }
             }
 
-            Tick += OnTick;
+            Tick += TimedTick;
             Aborted += OnAborted;
         }
 
@@ -155,6 +157,18 @@ namespace GameTraps.Core
             _queue.Clear();
             SaveQueue();
             Log.Info("Trap queue cleared.");
+        }
+
+        private void TimedTick(object sender, EventArgs e)
+        {
+            long start = TickWatch.ElapsedTicks;
+            int frame = GTA.Native.Function.Call<int>(GTA.Native.Hash.GET_FRAME_COUNT);
+            OnTick(sender, e);
+            double ms = (TickWatch.ElapsedTicks - start) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            if (ms < 8.0 || System.Environment.TickCount < _nextSlowLog) return;
+            if (GTA.Native.Function.Call<int>(GTA.Native.Hash.GET_FRAME_COUNT) != frame) return;
+            _nextSlowLog = System.Environment.TickCount + 2000;
+            Log.Warn($"Slow frame: the traps took {ms:0.0} ms.");
         }
 
         private void OnTick(object sender, EventArgs e)

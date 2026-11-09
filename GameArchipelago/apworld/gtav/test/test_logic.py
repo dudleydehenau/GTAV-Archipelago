@@ -267,3 +267,30 @@ class TestTennisNeedsMichaelOrTrevor(GTAVTestBase):
         self.assertFalse(self.can_reach_location("Activity: Tennis"))
         self.collect_by_name("Trevor")
         self.assertTrue(self.can_reach_location("Activity: Tennis"))
+
+
+class TestSpecialAbilityItems(GTAVTestBase):
+    options = {
+        "special_abilities": "item",
+    }
+
+    def test_abilities_are_items(self) -> None:
+        from ..data import SPECIAL_ABILITIES
+        items = [item.name for item in self.multiworld.itempool if item.player == self.player]
+        items += [item.name for item in self.multiworld.precollected_items[self.player]]
+        for name in SPECIAL_ABILITIES:
+            self.assertIn(name, items)
+        self.assertEqual(self.world.fill_slot_data()["special_abilities"], "item")
+
+
+class TestSpecialAbilitiesAtStart(GTAVTestBase):
+    options = {
+        "special_abilities": "start",
+    }
+
+    def test_no_ability_items(self) -> None:
+        from ..data import SPECIAL_ABILITIES
+        items = {item.name for item in self.multiworld.itempool if item.player == self.player}
+        for name in SPECIAL_ABILITIES:
+            self.assertNotIn(name, items)
+        self.assertEqual(self.world.fill_slot_data()["special_abilities"], "start")

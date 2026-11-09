@@ -419,6 +419,19 @@ class CollectibleRadar(Choice):
     default = 1
 
 
+class SpecialAbilities(Choice):
+    """
+    Michael's bullet time, Franklin's driving focus and Trevor's rage.
+    start: the three special abilities work from the start.
+    item: each one is an item ("Special Ability: Michael", "Special Ability: Franklin", "Special Ability: Trevor")
+    somewhere in the multiworld, and stays locked until you get it.
+    """
+    display_name = "Special Abilities"
+    option_start = 0
+    option_item = 1
+    default = 1
+
+
 class GuaranteedVehicles(DefaultOnToggle):
     """
     Adds six vehicle items to the pool: a sports car, a motorcycle, a helicopter, an underwater vehicle, a boat and
@@ -579,6 +592,7 @@ class GTAVOptions(PerGameCommonOptions):
     game_shops: GameShops
     checks_per_collectible: ChecksPerCollectible
     collectible_radar: CollectibleRadar
+    special_abilities: SpecialAbilities
     guaranteed_vehicles: GuaranteedVehicles
     vehicle_unlocks: VehicleUnlocks
     early_vehicles: EarlyVehicles
@@ -605,7 +619,7 @@ option_groups = [
     OptionGroup("Free Roam", [StuntJumpsPerCheck, BridgesPerCheck, KnifeFlightsPerCheck, Landmarks, SkillChecks,
                               PoliceEscapes, Activities, TrevorJobs]),
     OptionGroup("Shops", [WeaponShop, WeaponUpgrades, WeaponPriceMultiplier, GameShops]),
-    OptionGroup("Items", [CollectibleRadar, VehicleUnlocks, EarlyVehicles, GuaranteedVehicles, TrapPercentage, EnabledTraps, MoneyWeight,
+    OptionGroup("Items", [CollectibleRadar, SpecialAbilities, VehicleUnlocks, EarlyVehicles, GuaranteedVehicles, TrapPercentage, EnabledTraps, MoneyWeight,
                           WeaponWeight, VehicleWeight, MoneyMultiplier]),
     OptionGroup("Gameplay", [StartingDriveByWeapon, MissionWeapons, MissionTraps, PostGoalChaos]),
 ]
