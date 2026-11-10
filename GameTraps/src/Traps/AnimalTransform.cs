@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Script.Serialization;
 using GameTraps.Core;
 using GTA;
+using GTA.Math;
 using GTA.Native;
 
 namespace GameTraps.Traps
@@ -40,6 +41,7 @@ namespace GameTraps.Traps
         private int _until;
         private int _nextSubtitle;
         private bool _diedWhileAnimal;
+        private int _diedAt;
         private bool _loadChecked;
 
         public AnimalTransform(TrapsConfig config, string directory) : base(config)
@@ -102,12 +104,14 @@ namespace GameTraps.Traps
             foreach (int control in WheelControls) Function.Call(Hash.DISABLE_CONTROL_ACTION, 0, control, true);
             Ped player = Player;
             bool playing = Function.Call<bool>(Hash.IS_PLAYER_PLAYING, Game.Player) && !player.IsDead;
-            if (!playing)
+            if (!playing && !_diedWhileAnimal)
             {
                 _diedWhileAnimal = true;
-                return true;
+                _diedAt = Game.GameTime;
+                Log.Warn("The player died as an animal: giving the character back now so the game can respawn it.");
+                Restore(_state, true);
             }
-            if (_diedWhileAnimal) return !Function.Call<bool>(Hash.IS_SCREEN_FADED_IN);
+            if (_diedWhileAnimal) return WaitForRespawn();
             if (player.IsInVehicle() || Function.Call<int>(Hash.GET_VEHICLE_PED_IS_TRYING_TO_ENTER, player) != 0)
             {
                 Function.Call(Hash.CLEAR_PED_TASKS_IMMEDIATELY, player);
@@ -126,8 +130,33 @@ namespace GameTraps.Traps
         public override void Stop(bool interrupted)
         {
             if (_state == null) return;
-            Restore(_state);
+            if (!_diedWhileAnimal || Player.Model.Hash == _state.AnimalModel) Restore(_state);
+            else if (!Player.IsDead)
+            {
+                _state.Apply(Player);
+                Log.Info("Respawned after dying as an animal: clothes and weapons given back.");
+            }
             _state = null;
+        }
+
+        private bool WaitForRespawn()
+        {
+            if (Function.Call<bool>(Hash.IS_SCREEN_FADED_IN) && Function.Call<bool>(Hash.IS_PLAYER_PLAYING, Game.Player) && !Player.IsDead) return false;
+            if (Game.GameTime - _diedAt < 15000) return true;
+            if (Function.Call<bool>(Hash.GET_IS_LOADING_SCREEN_ACTIVE)) return true;
+            Log.Warn("The respawn did not finish after dying as an animal, bringing the screen and the controls back.");
+            Ped player = Player;
+            if (player.IsDead)
+            {
+                Vector3 at = player.Position;
+                Function.Call(Hash.RESURRECT_PED, player);
+                Function.Call(Hash.CLEAR_PED_TASKS_IMMEDIATELY, player);
+                player.Health = player.MaxHealth;
+                Function.Call(Hash.SET_ENTITY_COORDS, player, at.X, at.Y, at.Z + 0.5f, false, false, false, true);
+            }
+            Function.Call(Hash.DO_SCREEN_FADE_IN, 1500);
+            Function.Call(Hash.SET_PLAYER_CONTROL, Game.Player, true, 0);
+            return false;
         }
 
         public override void Abort()
@@ -155,7 +184,7 @@ namespace GameTraps.Traps
             Restore(saved);
         }
 
-        private void Restore(LoadoutState state)
+        private void Restore(LoadoutState state, bool dead = false)
         {
             Ped player = Player;
             if (player.Model.Hash != state.AnimalModel)
@@ -180,7 +209,7 @@ namespace GameTraps.Traps
             model.MarkAsNoLongerNeeded();
             Script.Wait(0);
             Protect(Player, false);
-            state.Apply(Player);
+            if (!dead) state.Apply(Player);
             _restoredAt = Game.GameTime;
             DeleteState();
             Log.Info("Character model, clothes and weapons given back.");

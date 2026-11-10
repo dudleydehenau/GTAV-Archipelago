@@ -8,7 +8,7 @@ from Options import OptionError
 
 from .data import (
     BASE_ID, CHARACTERS, COLLECTIBLE_RADAR, SPECIAL_ABILITIES, ESCAPE_MINUTES, FREE_ROAM_KEYS, GOAL_OVERHEAD, COLLECTIBLES, DRIVE_BY_SMG, FINALE_CODES, GAME,
-    GUARANTEED_VEHICLES, HELICOPTER, ITEM_NAME_TO_ID, LANDMARK_MINUTES, LANDMARKS, UNSTABLE_PREPS, LOCATION_NAME_TO_ID,
+    GUARANTEED_VEHICLES, HELICOPTER, ITEM_NAME_TO_ID, LANDMARK_MINUTES, LANDMARKS, UNSTABLE_PREPS, ALTERNATE_APPROACHES, LOCATION_NAME_TO_ID,
     MAX_ESCAPE_STARS, MISSION_BY_CODE, MISSIONS, MONEY, PICKUPS, SKILL_LEVELS, SKILL_MINUTES, SKILLS, TRAPS, UNDERWATER_VEHICLE,
     VEHICLE_GIFT, WEAPON_GIFT, Collectible, Mission, bonus_location, collectible_bonus_location, collectible_location,
     escape_location, gold_location, landmark_id, landmark_location, mission_item, objective_location, skill_location, trap_item,
@@ -63,8 +63,8 @@ class GTAVWorld(World):
     location_name_to_id = LOCATION_NAME_TO_ID
     item_name_groups = {
         "Characters": set(CHARACTERS),
-        "Missions": {mission_item(m) for m in MISSIONS if m.code not in UNSTABLE_PREPS},
-        "Story Missions": {mission_item(m) for m in MISSIONS if not m.strangers and m.code not in UNSTABLE_PREPS},
+        "Missions": {mission_item(m) for m in MISSIONS if m.code not in UNSTABLE_PREPS and m.code not in ALTERNATE_APPROACHES},
+        "Story Missions": {mission_item(m) for m in MISSIONS if not m.strangers and m.code not in UNSTABLE_PREPS and m.code not in ALTERNATE_APPROACHES},
         "Strangers and Freaks": {mission_item(m) for m in MISSIONS if m.strangers},
         "Traps": {trap_item(title) for _, title in TRAPS},
         "Gifts": {WEAPON_GIFT, VEHICLE_GIFT},
@@ -76,7 +76,7 @@ class GTAVWorld(World):
         "Shops": {game_shop_item(shop) for shop in GAME_SHOPS},
     }
     location_name_groups = {
-        "Story Missions": {m.name for m in MISSIONS if not m.strangers and m.code not in UNSTABLE_PREPS},
+        "Story Missions": {m.name for m in MISSIONS if not m.strangers and m.code not in UNSTABLE_PREPS and m.code not in ALTERNATE_APPROACHES},
         "Strangers and Freaks": {m.name for m in MISSIONS if m.strangers},
         "Collectibles": {name for name in LOCATION_NAME_TO_ID if any(name.startswith(c.name + ":") for c in PICKUPS)},
         "Free Roam": {name for name in LOCATION_NAME_TO_ID
@@ -92,7 +92,7 @@ class GTAVWorld(World):
     def generate_early(self) -> None:
         self.start_character = CHARACTERS[self.options.starting_character.value]
         pool: List[Mission] = [m for m in MISSIONS if (self.options.strangers_and_freaks or not m.strangers)
-                               and m.code not in UNSTABLE_PREPS]
+                               and m.code not in UNSTABLE_PREPS and m.code not in ALTERNATE_APPROACHES]
         goal = self.options.goal.value
         self.goal_mission: Optional[Mission] = None
         if goal == Goal.option_finale:

@@ -10,6 +10,7 @@ namespace GameEnvironment.Core
         private readonly StoryGlobals _globals;
         private readonly HashSet<int> _opened = new HashSet<int>();
         private bool _warned;
+        private bool _missionOpened;
 
         public GunShops(StoryGlobals globals)
         {
@@ -28,8 +29,24 @@ namespace GameEnvironment.Core
                 }
                 return;
             }
-            if (mission) Open();
-            else Close();
+            if (mission)
+            {
+                if (_missionOpened) return;
+                _missionOpened = true;
+                Open();
+            }
+            else
+            {
+                _missionOpened = false;
+                Close();
+            }
+        }
+
+        public void KeepOpen()
+        {
+            if (!_globals.Available || !_globals.ShopsSupported) return;
+            _missionOpened = false;
+            Open();
         }
 
         public void Close()

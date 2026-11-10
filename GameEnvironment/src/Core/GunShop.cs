@@ -69,7 +69,7 @@ namespace GameEnvironment.Core
         private void OnTick(object sender, EventArgs e)
         {
             EnvironmentScript core = Core;
-            if (core == null || !core.Config.CustomGunShop || core.Mode != EnvironmentMode.Sterile)
+            if (core == null || !core.Config.CustomGunShop || core.Mode != EnvironmentMode.Sterile || Function.Call<bool>(Hash.GET_MISSION_FLAG))
             {
                 if (IsOpen) Close();
                 return;

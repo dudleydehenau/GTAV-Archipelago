@@ -247,7 +247,8 @@ namespace GameCollectibles.Core
                 spot.Prop.Heading = heading;
                 EntityScale.Apply(spot.Prop, heading, Config.Size);
                 if (Config.Glow) Function.Call(Hash.DRAW_LIGHT_WITH_RANGE, position.X, position.Y, position.Z + 0.3f, 255, 200, 40, 3f, 2f);
-                if (spot.Position.DistanceTo(here) <= radius) Collect(spot);
+                float reach = spot.Kind == CollectibleKind.MonkeyMosaic ? Math.Max(radius, Config.MosaicPickupRadius) : radius;
+                if (spot.Position.DistanceTo(here) <= reach) Collect(spot);
             }
         }
 

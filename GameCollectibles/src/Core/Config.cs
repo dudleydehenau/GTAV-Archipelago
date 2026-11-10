@@ -30,6 +30,7 @@ namespace GameCollectibles.Core
         public float PickupRadius { get; set; } = 1.6f;
         public float VehiclePickupRadius { get; set; } = 3f;
         public float UnderwaterPickupRadius { get; set; } = 4.5f;
+        public float MosaicPickupRadius { get; set; } = 4f;
         public string Blips { get; set; } = "Nearby";
         public float BlipDistance { get; set; } = 250f;
         public bool HideGameCollectibles { get; set; } = true;

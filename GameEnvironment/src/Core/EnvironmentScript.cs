@@ -17,6 +17,7 @@ namespace GameEnvironment.Core
         private readonly Activities _activities;
         private readonly PhoneBook _phoneBook;
         private readonly SkillKeeper _skills;
+        private readonly MissionArmory _armory;
         private readonly GameShopWatcher _gameShops = new GameShopWatcher();
         private readonly InactiveNotice _notice = new InactiveNotice();
         private bool _disabled;
@@ -54,6 +55,7 @@ namespace GameEnvironment.Core
             _activities = new Activities(Globals);
             _phoneBook = new PhoneBook(Globals);
             _skills = new SkillKeeper(Store);
+            _armory = new MissionArmory(Store);
             _saves = Config.NoSaves ? new SaveCleaner() : null;
 
             Roster.Switched += character => Economy.ScheduleWeaponCheck(2000);
@@ -126,13 +128,15 @@ namespace GameEnvironment.Core
                 if (!Globals.Available && !TryValidate()) return;
                 bool busy = ReplayGuard.IsBusy(Globals);
                 Abilities.Tick(Config, busy);
+                if (Mode == EnvironmentMode.Sterile && Config.CustomGunShop) _armory.Tick(Function.Call<bool>(Hash.GET_MISSION_FLAG));
+                else _armory.Release();
                 if (!busy) WheelFix.Tick();
 
                 if (busy)
                 {
                     if (Mode == EnvironmentMode.Sterile)
                     {
-                        if (Config.OpenGunShopsInMissions || Config.CustomGunShop) _shops.Tick(true);
+                        if (Config.OpenGunShopsInMissions) _shops.Tick(true);
                     }
                     Doors.MissionTick("replay");
                     if (Mode == EnvironmentMode.Sterile) _phoneBook.Tick();
@@ -164,7 +168,8 @@ namespace GameEnvironment.Core
                 TickTimer.Begin();
                 if (_needsApply) Apply();
                 TickTimer.Lap("apply");
-                if (Config.CustomGunShop) _shops.Tick(true);
+                if (Config.CustomGunShop && !Function.Call<bool>(Hash.GET_MISSION_FLAG)) _shops.KeepOpen();
+                else if (Config.CustomGunShop && Config.OpenGunShopsInMissions) _shops.Tick(true);
                 TickTimer.Lap("gun shops");
                 if (Config.OpenActivities) _activities.Tick(Game.GameTime);
                 else if (Config.OpenGunShopsInMissions) _shops.Tick(Function.Call<bool>(Hash.GET_MISSION_FLAG));

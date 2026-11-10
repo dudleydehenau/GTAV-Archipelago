@@ -15,6 +15,7 @@ namespace GameEnvironment.Core
         private int _weaponCheckAt = -1;
         private bool _ammoTracking;
         private bool _ammoDirty;
+        private readonly Dictionary<int, int> _ammoRetries = new Dictionary<int, int>();
         private int _nextAmmoSave;
         private int _ammoTrackFrom;
         private int _firedAt = -100000;
@@ -94,8 +95,14 @@ namespace GameEnvironment.Core
                             _ammoDirty = true;
                         }
                     }
-                    if (ammo < 0 || ammo == weapon.Ammo) continue;
+                    if (ammo < 0 || ammo == weapon.Ammo)
+                    {
+                        _ammoRetries.Remove(weapon.Hash);
+                        continue;
+                    }
                     if (ammo == 0 && weapon.Ammo <= 1) continue;
+                    _ammoRetries.TryGetValue(weapon.Hash, out int retries);
+                    if (retries >= 3) continue;
                     if (ammo > weapon.Ammo)
                     {
                         weapon.Ammo = ammo;
@@ -112,7 +119,9 @@ namespace GameEnvironment.Core
                         continue;
                     }
                     Function.Call(Hash.SET_PED_AMMO, ped, hash, weapon.Ammo, false);
-                    Log.Info($"Ammo of {(WeaponHash)hash} dropped to {ammo} without firing, set back to {weapon.Ammo}.");
+                    _ammoRetries[weapon.Hash] = retries + 1;
+                    if (retries + 1 >= 3) Log.Info($"Ammo of {(WeaponHash)hash} does not stay at {weapon.Ammo} (the game keeps {ammo}): left as the game sets it.");
+                    else Log.Info($"Ammo of {(WeaponHash)hash} dropped to {ammo} without firing, set back to {weapon.Ammo}.");
                 }
             }
             if (_ammoDirty && Game.GameTime >= _nextAmmoSave)

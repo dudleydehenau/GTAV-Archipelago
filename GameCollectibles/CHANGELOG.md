@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.5
+
+- Monkey mosaics can be picked up from 4 m (`MosaicPickupRadius`). Some sit on walls behind rubble you cannot walk
+  through, like the one under the freeway in Strawberry, since in the story they are only photographed.
+
 ## 2.0.4
 
 - A frame where the collectibles take more than 8 ms is written in the log, to find the cause of stutters on a given PC.

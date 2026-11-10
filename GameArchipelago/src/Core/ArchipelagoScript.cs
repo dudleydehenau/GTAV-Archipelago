@@ -108,6 +108,8 @@ namespace GameArchipelago.Core
 
         internal bool Owns(long item) => _owned.Contains(item);
 
+        private static readonly Dictionary<string, string> AlternateApproaches = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "FH2B", "FH2A" }, { "DH2B", "DH2A" }, { "AH3b", "AH3a" } };
+
         internal bool InWorld(MissionInfo mission) => mission != null && _slotMissions.Contains(mission.Code);
 
         internal bool IsPassed(MissionInfo mission) =>
@@ -1180,6 +1182,11 @@ namespace GameArchipelago.Core
                 "fail", args.FailReasonText);
             if (args.Outcome != ReplayOutcome.Passed) return;
             MissionInfo info = ApData.MissionByCode(args.Mission.Code);
+            if (!InWorld(info) && info != null && AlternateApproaches.TryGetValue(info.Code, out string primary))
+            {
+                Log.Info($"{info.Code} is the other approach of {primary}: it counts for {primary}.");
+                info = ApData.MissionByCode(primary);
+            }
             if (!InWorld(info)) return;
             if (!Save.Passed.Contains(info.Code, StringComparer.OrdinalIgnoreCase)) Save.Passed.Add(info.Code);
             if (args.Gold && !Save.Gold.Contains(info.Code, StringComparer.OrdinalIgnoreCase)) Save.Gold.Add(info.Code);

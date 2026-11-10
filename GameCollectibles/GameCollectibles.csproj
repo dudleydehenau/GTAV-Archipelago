@@ -6,7 +6,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <AssemblyName>GameCollectibles</AssemblyName>
     <RootNamespace>GameCollectibles</RootNamespace>
-    <Version>2.0.4</Version>
+    <Version>2.0.5</Version>
     <Product>GameCollectibles</Product>
     <Description>Every GTA V story collectible replaced by one 3D object that can be picked up from the start, plus free-roam feats (stunt jumps, bridges, landmarks, skills, police escapes), each reported through a public API.</Description>
   </PropertyGroup>

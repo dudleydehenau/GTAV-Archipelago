@@ -31,6 +31,7 @@ namespace GameEnvironment.Core
         };
         private static readonly string[] RangeWeapons = { "microsmg", "asltrifle", "pump", "mg" };
         private static readonly int[] Unused = { 65, 69 };
+        private static readonly int[] Trafficking = { 105, 106 };
         private static readonly int[] StreetRaces = { 86, 87, 88, 89, 90 };
         private readonly ActivityHints _hints;
         private readonly HashSet<int> _doorsReported = new HashSet<int>();
@@ -53,6 +54,15 @@ namespace GameEnvironment.Core
                     Log.Warn("Static map blips not found for this game build: activity icons stay as the game sets them.");
                 }
                 return;
+            }
+            foreach (int i in Trafficking)
+            {
+                int handle = _globals.StaticBlipHandle(i);
+                if (handle != 0 && Function.Call<bool>(Hash.DOES_BLIP_EXIST, handle) && Function.Call<int>(Hash.GET_BLIP_ALPHA, handle) != 0)
+                {
+                    Function.Call(Hash.SET_BLIP_ALPHA, handle, 0);
+                    Function.Call(Hash.SET_BLIP_DISPLAY, handle, 0);
+                }
             }
             int opened = 0;
             for (int i = 0; i < _globals.StaticBlipCountValue; i++)

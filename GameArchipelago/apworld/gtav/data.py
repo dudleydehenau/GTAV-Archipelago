@@ -52,7 +52,7 @@ STORY = (
     ("DH1", "Scouting the Port", (T,)),
     ("DHP1", "Minisub", (M, F, T)),
     ("DHP2B", "Cargobob", (T,)),
-    ("DH2A", "The Merryweather Heist (Offshore)", (M, F, T)),
+    ("DH2A", "The Merryweather Heist", (M, F, T)),
     ("DH2B", "The Merryweather Heist (Freighter)", (M, F, T)),
     ("FB4P1", "Blitz Play Prep: Garbage Truck", (M, F, T)),
     ("FB4P2", "Blitz Play Prep: Tow Truck", (M, F, T)),
@@ -83,7 +83,7 @@ STORY = (
     ("FAM6", "Reuniting the Family", (M,)),
     ("AH2", "Architect's Plans", (F,)),
     ("AHP1", "The Bureau Raid Prep: Fire Truck", (M, F, T)),
-    ("AH3a", "The Bureau Raid (Fire Crew)", (M,)),
+    ("AH3a", "The Bureau Raid", (M,)),
     ("AH3b", "The Bureau Raid (Roof Entry)", (M,)),
     ("MIC3", "The Wrap Up", (M,)),
     ("FRA2", "Lamar Down", (M, F, T)),
@@ -95,7 +95,7 @@ STORY = (
     ("FHPC2", "The Big Score Prep: Gauntlet (Rockford Hills)", (M,)),
     ("FHPC3", "The Big Score Prep: Gauntlet (Mission Row)", (M,)),
     ("FHPD", "The Big Score Prep: Train", (M,)),
-    ("FH2A", "The Big Score (Subtle)", (M,)),
+    ("FH2A", "The Big Score", (M,)),
     ("FH2B", "The Big Score (Obvious)", (M,)),
     ("FINA", "Something Sensible", (M, F, T)),
     ("FINB", "The Time's Come", (M, F, T)),
@@ -163,6 +163,7 @@ PLAYERS = {
     "MIC3": ALL3, "FRA2": ALL3, "SOL3": (M, T), "FHPD": ALL3, "FH2A": ALL3, "FH2B": ALL3, "FINA": (F,), "FINB": (F,),
     "FINC1": ALL3,
 }
+ALTERNATE_APPROACHES = {"FH2B": "FH2A", "DH2B": "DH2A", "AH3b": "AH3a"}
 UNSTABLE_PREPS = {"DHP1", "FB4P1", "FB4P2", "FB4P4", "FB4P5", "AHP1", "FHPRA", "FHPRB", "FHPC1", "FHPC2", "FHPC3"}
 FREE_CHOICE = {"DHP1", "FB4P1", "FB4P2", "FB4P4", "FB4P5", "AHP1"}
 LONG_MISSIONS = {"FIB4", "DH2A", "DH2B", "RH2", "AH3a", "AH3b", "FH2A", "FH2B", "FINC1", "MIC3", "FRA2", "EXL3", "FIB2"}

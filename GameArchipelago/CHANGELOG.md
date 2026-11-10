@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.1
+
+- The heists with two approaches are one mission each: "The Big Score", "The Merryweather Heist" and "The Bureau
+  Raid" (one item, one check, one marker). The game lets you pick the approach when the heist starts, and both count.
+  Seeds made before keep the two missions.
+
 ## 1.9.0
 
 - New option "Special Abilities" (default: item). Michael's bullet time, Franklin's driving focus and Trevor's rage

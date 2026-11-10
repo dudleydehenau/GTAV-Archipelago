@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from Options import Choice, DeathLink, DefaultOnToggle, Toggle, OptionGroup, OptionSet, PerGameCommonOptions, Range
 
-from .data import MISSION_BY_CODE, MISSIONS, TRAPS, UNSTABLE_PREPS
+from .data import ALTERNATE_APPROACHES, MISSION_BY_CODE, MISSIONS, TRAPS, UNSTABLE_PREPS
 
 
 class Goal(Choice):
@@ -43,7 +43,7 @@ def _slug(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
 
 
-GOAL_MISSION_CODES = [m.code for m in MISSIONS if m.code not in UNSTABLE_PREPS]
+GOAL_MISSION_CODES = [m.code for m in MISSIONS if m.code not in UNSTABLE_PREPS and m.code not in ALTERNATE_APPROACHES]
 _goal_mission_attributes = {
     "__doc__": """
     With the one_mission goal: the mission you need to pass. "surprise" picks one that needs a character you do not
@@ -58,6 +58,10 @@ _goal_mission_attributes = {
 }
 for _index, _code in enumerate(GOAL_MISSION_CODES):
     _goal_mission_attributes["option_" + _slug(MISSION_BY_CODE[_code].name)] = _index + 1
+for _alias, _code in (("the_big_score_subtle", "FH2A"), ("the_big_score_obvious", "FH2A"),
+                      ("the_merryweather_heist_offshore", "DH2A"), ("the_merryweather_heist_freighter", "DH2A"),
+                      ("the_bureau_raid_fire_crew", "AH3a"), ("the_bureau_raid_roof_entry", "AH3a")):
+    _goal_mission_attributes["alias_" + _alias] = GOAL_MISSION_CODES.index(_code) + 1
 GoalMission = type("GoalMission", (Choice,), _goal_mission_attributes)
 
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.3
+
+- Fix: dying as an animal (Wild side) left an endless black screen. The character is given back the moment the
+  animal dies so the game can respawn it normally, then the clothes and weapons come back. If the respawn still does
+  not finish after 15 seconds, the screen and the controls are brought back.
+
 ## 1.4.2
 
 - A frame where the traps take more than 8 ms is written in the log, to find the cause of stutters on a given PC.

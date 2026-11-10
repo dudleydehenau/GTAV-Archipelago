@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.9.5
+
+- The Arms Trafficking icons at Trevor's airfield are hidden: those missions cannot start in the Archipelago world
+  (the game waits for story steps that never happen) and they are not checks.
+- Fix: soft lock in The Long Stretch when Franklin walks into Ammu-Nation. The Archipelago gun shop replaced the
+  game's shop even during missions, and the mission waits for the game's shop. During a mission the game's own
+  Ammu-Nation is used again, and GameEnvironment no longer reopens every Ammu-Nation each frame while the mission
+  closes the ones it does not use (it fought the mission thousands of times per minute and filled the log).
+- Shops are opened once at the start of a mission, then left to the mission.
+- During a mission every Ammu-Nation weapon and attachment (flashlight, suppressor...) is in stock (in the Archipelago world the game showed them all out of
+  stock, so The Long Stretch could not go on). When the mission ends the stock is set back, and weapons bought or
+  picked up during the mission that you do not own through Archipelago are taken away.
+- A weapon whose ammo the game keeps resetting (a melee weapon, an Online-only weapon) is no longer set back every
+  second: after 3 tries it is left as the game sets it.
+
 ## 1.9.4
 
 - Special abilities can be locked per character by GameArchipelago, until their Archipelago item arrives. A locked

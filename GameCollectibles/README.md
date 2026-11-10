@@ -79,6 +79,7 @@ kind, map markers (`None`, `Nearby`, `All`) and a route to the nearest collectib
 | `StreamDistance` | `150` | Distance at which objects appear. |
 | `PickupRadius` | `1.6` | Pickup distance on foot. |
 | `VehiclePickupRadius` | `3` | Pickup distance in a vehicle. |
+| `MosaicPickupRadius` | `4` | Pickup distance for monkey mosaics: they sit on walls, sometimes behind rubble you cannot walk through (in the story they are only photographed). |
 | `UnderwaterPickupRadius` | `4.5` | Pickup distance in the water or in a submarine. |
 | `Blips` | `"Nearby"` | Map markers: `None`, `Nearby` or `All`. Also in the menu. |
 | `BlipDistance` | `250` | Range of the `Nearby` markers. |
