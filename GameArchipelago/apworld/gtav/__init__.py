@@ -7,7 +7,7 @@ from worlds.AutoWorld import WebWorld, World
 from Options import OptionError
 
 from .data import (
-    BASE_ID, CHARACTERS, COLLECTIBLE_RADAR, SPECIAL_ABILITIES, ESCAPE_MINUTES, FREE_ROAM_KEYS, GOAL_OVERHEAD, COLLECTIBLES, DRIVE_BY_SMG, FINALE_CODES, GAME,
+    BASE_ID, CHARACTERS, COLLECTIBLE_RADAR, SPECIAL_ABILITIES, ESCAPE_MINUTES, FREE_ROAM_KEYS, GOAL_OVERHEAD, COLLECTIBLES, DRIVE_BY_SMG, FINALE_CODES, GAME, HEIST_CODES,
     GUARANTEED_VEHICLES, HELICOPTER, ITEM_NAME_TO_ID, LANDMARK_MINUTES, LANDMARKS, UNSTABLE_PREPS, ALTERNATE_APPROACHES, LOCATION_NAME_TO_ID,
     MAX_ESCAPE_STARS, MISSION_BY_CODE, MISSIONS, MONEY, PICKUPS, SKILL_LEVELS, SKILL_MINUTES, SKILLS, TRAPS, UNDERWATER_VEHICLE,
     VEHICLE_GIFT, WEAPON_GIFT, Collectible, Mission, bonus_location, collectible_bonus_location, collectible_location,
@@ -110,6 +110,8 @@ class GTAVWorld(World):
             forced = [self.goal_mission]
         else:
             forced = []
+        if any(m.code in FINALE_CODES for m in forced):
+            forced += [MISSION_BY_CODE[code] for code in HEIST_CODES if MISSION_BY_CODE[code] not in forced]
         own = [m for m in pool if self.solo_mission(m) and m not in forced]
         self.random.shuffle(own)
         self.starting_missions: List[Mission] = own[:self.options.starting_missions.value]
@@ -118,6 +120,13 @@ class GTAVWorld(World):
         self.random.shuffle(others)
         kept |= set(others[:max(0, self.options.mission_count.value - len(kept))])
         self.missions: List[Mission] = [m for m in pool if m in kept]
+        world_codes = {m.code for m in self.missions}
+        self.heist_codes: List[str] = [code for code in HEIST_CODES if code in world_codes]
+        self.gated: Dict[str, bool] = {code: True for code in FINALE_CODES if code in world_codes}
+        if self.goal_mission is not None and self.goal_mission.code not in self.gated:
+            self.gated[self.goal_mission.code] = False
+        others = len(self.missions) - len(self.gated)
+        self.finale_gate = math.ceil(others * self.options.finale_unlock_percentage.value / 100) if self.gated else 0
         self.gold_checks = min(self.options.gold_medal_checks.value, len(self.missions) * 3 // 4)
         self.objective_checks = min(self.options.objective_checks.value, len(self.missions) * 3 // 2)
         self.collectible_steps: Dict[str, int] = {
@@ -142,7 +151,10 @@ class GTAVWorld(World):
         self.money_needs: Dict[str, int] = {}
         self.money_pool = 0
         self.money_rules = any(cost > FREE_MONEY for cost in self.purchase_costs().values())
-        self.mission_keys = [(mission_item(m), m.players, m.triggers) for m in self.missions]
+        self.mission_keys = [(mission_item(m), m.players, m.triggers) for m in self.missions if m.code not in self.gated]
+        self.heist_keys = [(mission_item(m), m.players, m.triggers) for m in self.missions if m.code in self.heist_codes]
+        self.gated_keys = [(mission_item(m), m.players, m.triggers, self.gated[m.code]) for m in self.missions
+                           if m.code in self.gated]
         self.vehicle_unlocks = bool(self.options.vehicle_unlocks)
         self.vehicles = bool(self.options.guaranteed_vehicles) and not self.vehicle_unlocks
         if self.vehicle_unlocks:
@@ -406,20 +418,72 @@ class GTAVWorld(World):
         return lambda state: state.has(item, player) and state.has_all(players, player) and \
             state.has_any(triggers, player)
 
+    @staticmethod
+    def key_playable(state: CollectionState, player: int, item: str, players: tuple, triggers: tuple) -> bool:
+        return state.has(item, player) and state.has_all(players, player) and state.has_any(triggers, player)
+
+    def heists_open(self, state: CollectionState) -> bool:
+        player = self.player
+        return all(self.key_playable(state, player, item, players, triggers) for item, players, triggers in self.heist_keys)
+
     def playable_missions(self, state: CollectionState) -> int:
         player = self.player
-        return sum(1 for item, players, triggers in self.mission_keys
-                   if state.has(item, player) and state.has_all(players, player) and state.has_any(triggers, player))
+        count = sum(1 for item, players, triggers in self.mission_keys
+                    if self.key_playable(state, player, item, players, triggers))
+        if not self.gated_keys or count < self.finale_gate:
+            return count
+        heists = None
+        for item, players, triggers, needs_heists in self.gated_keys:
+            if not self.key_playable(state, player, item, players, triggers):
+                continue
+            if needs_heists:
+                if heists is None:
+                    heists = self.heists_open(state)
+                if not heists:
+                    continue
+            count += 1
+        return count
+
+    def gated_rule(self, mission: Mission):
+        base = self.mission_rule(mission)
+        gate = self.finale_gate
+        needs_heists = self.gated[mission.code]
+        player = self.player
+        keys = self.mission_keys
+
+        def rule(state: CollectionState) -> bool:
+            if not base(state):
+                return False
+            if needs_heists and not self.heists_open(state):
+                return False
+            if gate <= 0:
+                return True
+            count = 0
+            for item, players, triggers in keys:
+                if self.key_playable(state, player, item, players, triggers):
+                    count += 1
+                    if count >= gate:
+                        return True
+            return False
+        return rule
+
+    def mission_access(self, mission: Mission):
+        return self.gated_rule(mission) if mission.code in self.gated else self.mission_rule(mission)
 
     def set_rules(self) -> None:
         self.needs: Dict[str, Tuple[int, Optional[str], tuple, tuple]] = {}
+        self.gated_locations: Dict[str, Any] = {}
         for mission in self.missions:
-            rule = self.mission_rule(mission)
+            rule = self.mission_access(mission)
+            if mission.code in self.gated:
+                self.gated_locations[mission.name] = rule
             self.get_location(mission.name).access_rule = rule
             self.needs[mission.name] = (0, mission_item(mission), mission.players, mission.triggers)
             for b in range(1, self.options.checks_per_mission.value):
                 self.get_location(bonus_location(mission, b)).access_rule = rule
                 self.needs[bonus_location(mission, b)] = self.needs[mission.name]
+                if mission.code in self.gated:
+                    self.gated_locations[bonus_location(mission, b)] = rule
         total = len(self.missions)
         for n in range(1, self.gold_checks + 1):
             needed = min(total, n * 2)
@@ -505,12 +569,12 @@ class GTAVWorld(World):
                     self.needs[activity_location(activity)] = (0, None, (), characters)
         goal = self.options.goal.value
         if goal == Goal.option_the_third_way:
-            self.multiworld.completion_condition[self.player] = self.mission_rule(MISSION_BY_CODE["FINC1"])
+            self.multiworld.completion_condition[self.player] = self.mission_access(MISSION_BY_CODE["FINC1"])
         elif goal == Goal.option_finale:
-            rules = [self.mission_rule(MISSION_BY_CODE[code]) for code in FINALE_CODES]
+            rules = [self.mission_access(MISSION_BY_CODE[code]) for code in FINALE_CODES]
             self.multiworld.completion_condition[self.player] = lambda state: any(r(state) for r in rules)
         elif goal == Goal.option_one_mission:
-            self.multiworld.completion_condition[self.player] = self.mission_rule(self.goal_mission)
+            self.multiworld.completion_condition[self.player] = self.mission_access(self.goal_mission)
         elif goal == Goal.option_one_collectible:
             self.multiworld.completion_condition[self.player] = self.collectible_rule(
                 max(1, pace // 2), self.underwater_logic and self.goal_collectible[0].underwater)
@@ -554,6 +618,9 @@ class GTAVWorld(World):
                 continue
             if triggers and not any(has(t) for t in triggers):
                 continue
+            gated = self.gated_locations.get(name)
+            if gated is not None and not gated(state):
+                continue
             count += 1
         return count
 
@@ -589,9 +656,9 @@ class GTAVWorld(World):
         if goal == Goal.option_mission_percentage:
             needed = self.goal_mission_count()
         elif goal == Goal.option_finale or goal == Goal.option_the_third_way:
-            needed = max(3, len(self.missions) * 3 // 5)
+            needed = max(3, self.finale_gate + 1, len(self.heist_codes) + 1)
         elif goal == Goal.option_one_mission:
-            needed = max(2, len(self.missions) * 2 // 5)
+            needed = max(2, self.finale_gate + 1)
         elif goal == Goal.option_one_collectible:
             needed = 2
         elif goal in (Goal.option_check_percentage, Goal.option_free_roam):
@@ -631,6 +698,8 @@ class GTAVWorld(World):
             spoiler_handle.write(f"Goal collectible:                {kind.name} #{number}\n")
         if self.goal_location is not None:
             spoiler_handle.write(f"Goal location:                   {self.goal_location}\n")
+        if self.gated:
+            spoiler_handle.write(f"Missions before the finale:      {self.finale_gate}\n")
         spoiler_handle.write(f"Estimated time to the goal:      {self.format_minutes(estimate['goal'])}\n")
         spoiler_handle.write(f"Estimated time, missions:        {self.format_minutes(estimate['missions'])}\n")
         spoiler_handle.write(f"Estimated time, collectibles:    {self.format_minutes(estimate['collectibles'])}\n")
@@ -644,6 +713,9 @@ class GTAVWorld(World):
             "goal": self.options.goal.value,
             "goal_missions": self.goal_mission_count(),
             "goal_mission": self.goal_mission.code if self.goal_mission is not None else "",
+            "finale_gate": self.finale_gate,
+            "gated_missions": sorted(self.gated),
+            "heist_lock": list(self.heist_codes) if any(self.gated.values()) else [],
             "goal_collectible": f"{self.goal_collectible[0].key}_{self.goal_collectible[1]:02d}" if self.goal_collectible else "",
             "goal_location": LOCATION_NAME_TO_ID[self.goal_location] if self.goal_location else 0,
             "starting_character": self.start_character,

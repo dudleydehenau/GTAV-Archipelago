@@ -187,6 +187,7 @@ MISSIONS = tuple(Mission(c, n, t, False, players_of(c, t, False), minutes_of(c, 
     tuple(Mission(c, n, t, True, players_of(c, t, True), minutes_of(c, True)) for c, n, t in STRANGERS)
 MISSION_BY_CODE = {m.code: m for m in MISSIONS}
 FINALE_CODES = ("FINA", "FINB", "FINC1")
+HEIST_CODES = ("JH2", "DH2A", "FIB4", "RH2", "AH3a", "FH2A")
 
 TRAPS = (
     ("ScooterBrother", "Scooter Brothers"),
@@ -415,6 +416,25 @@ ACTIVITIES = (
     Activity(161, "Ground Trafficking 4", "trevor", "Trevor"),
     Activity(162, "Ground Trafficking 5", "trevor", "Trevor"),
     Activity(180, "Hunting", "trevor", "Trevor"),
+    Activity(1000, "Hold Up Little Seoul LTD", "holdups", ""),
+    Activity(1001, "Hold Up Davis LTD", "holdups", ""),
+    Activity(1002, "Hold Up Mirror Park LTD", "holdups", ""),
+    Activity(1003, "Hold Up Grapeseed LTD", "holdups", ""),
+    Activity(1004, "Hold Up Richman Glen LTD", "holdups", ""),
+    Activity(1005, "Hold Up Route 68 Liquor Store", "holdups", ""),
+    Activity(1006, "Hold Up Great Ocean Highway Rob's Liquor", "holdups", ""),
+    Activity(1007, "Hold Up Vespucci Canals Rob's Liquor", "holdups", ""),
+    Activity(1008, "Hold Up El Rancho Rob's Liquor", "holdups", ""),
+    Activity(1009, "Hold Up Morningwood Rob's Liquor", "holdups", ""),
+    Activity(1010, "Hold Up Chumash 24/7", "holdups", ""),
+    Activity(1011, "Hold Up Banham Canyon 24/7", "holdups", ""),
+    Activity(1012, "Hold Up Harmony 24/7", "holdups", ""),
+    Activity(1013, "Hold Up Palomino Freeway 24/7", "holdups", ""),
+    Activity(1014, "Hold Up Senora Freeway 24/7", "holdups", ""),
+    Activity(1015, "Hold Up Mount Chiliad 24/7", "holdups", ""),
+    Activity(1016, "Hold Up Sandy Shores 24/7", "holdups", ""),
+    Activity(1017, "Hold Up Strawberry 24/7", "holdups", ""),
+    Activity(1018, "Hold Up Downtown Vinewood 24/7", "holdups", ""),
 )
 
 

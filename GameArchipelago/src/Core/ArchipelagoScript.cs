@@ -116,7 +116,52 @@ namespace GameArchipelago.Core
             Save != null && mission != null && (Save.Passed.Contains(mission.Code, StringComparer.OrdinalIgnoreCase) || Save.IsDone(mission.Location));
 
         internal bool IsPlayable(MissionInfo mission) =>
-            InWorld(mission) && Owns(mission.Item) && mission.PlayableWith(UnlockedMask);
+            InWorld(mission) && Owns(mission.Item) && mission.PlayableWith(UnlockedMask) && GateReason(mission) == null;
+
+        private static readonly string[] FinaleCodes = { "FINA", "FINB", "FINC1" };
+
+        internal static bool IsFinale(MissionInfo mission) =>
+            mission != null && FinaleCodes.Contains(mission.Code, StringComparer.OrdinalIgnoreCase);
+
+        internal IEnumerable<MissionInfo> HeistMissions() =>
+            (Save?.HeistLock ?? new List<string>()).Select(ApData.MissionByCode).Where(m => m != null && InWorld(m));
+
+        internal IEnumerable<MissionInfo> GoalTargets()
+        {
+            if (Save == null) yield break;
+            if (Save.Goal == 3)
+            {
+                if (GoalMissionInfo != null) yield return GoalMissionInfo;
+                yield break;
+            }
+            foreach (string code in Save.Goal == 1 ? new[] { "FINC1" } : FinaleCodes)
+            {
+                MissionInfo mission = ApData.MissionByCode(code);
+                if (mission != null && InWorld(mission)) yield return mission;
+            }
+        }
+
+        internal bool IsGated(MissionInfo mission) =>
+            Save != null && mission != null && Save.GatedMissions != null && Save.GatedMissions.Contains(mission.Code, StringComparer.OrdinalIgnoreCase);
+
+        internal int GatePassed => Save == null ? 0 : WorldMissions.Count(m => !IsGated(m) && IsPassed(m));
+
+        private bool HeistsDone => Save.HeistLock == null || Save.HeistLock.All(code =>
+        {
+            MissionInfo heist = ApData.MissionByCode(code);
+            return heist == null || !InWorld(heist) || IsPassed(heist);
+        });
+
+        internal string GateReason(MissionInfo mission)
+        {
+            if (!IsGated(mission) || IsPassed(mission)) return null;
+            int passed = GatePassed;
+            if (passed < Save.FinaleGate)
+                return $"pass {Save.FinaleGate - passed} more missions first ({passed}/{Save.FinaleGate}).";
+            if (IsFinale(mission) && !HeistsDone)
+                return "pass every heist first (F6 > Progress > Goal).";
+            return null;
+        }
 
         internal bool HasRadar => Save != null && (Save.RadarFromStart || Owns(ApData.CollectibleRadarItem));
 
@@ -356,6 +401,12 @@ namespace GameArchipelago.Core
                     if (weapon == null || Save.WeaponShop != 2) return null;
                     return Save.IsDone(weapon.Location) ? null : "~g~Buying it is a check.";
                 };
+                EnvironmentApi.WeaponPurchasePending = id =>
+                {
+                    if (Save == null || Save.WeaponShop != 2) return false;
+                    ShopWeapon weapon = ApData.ShopWeaponById(id);
+                    return weapon != null && !Save.IsDone(weapon.Location);
+                };
                 EnvironmentApi.UpgradeNote = (id, component) =>
                 {
                     if (Save == null) return "~y~Connect to Archipelago first.";
@@ -551,6 +602,11 @@ namespace GameArchipelago.Core
             save.MoneyMultiplier = ReadInt(data, "money_multiplier", save.MoneyMultiplier);
             save.DeathLink = ReadInt(data, "death_link", save.DeathLink ? 1 : 0) != 0;
             save.GoalMission = ReadString(data, "goal_mission", save.GoalMission);
+            save.FinaleGate = ReadInt(data, "finale_gate", save.FinaleGate);
+            if (data.TryGetValue("gated_missions", out object gated) && gated is JArray gatedList)
+                save.GatedMissions = gatedList.Select(t => t.ToString()).ToList();
+            if (data.TryGetValue("heist_lock", out object heists) && heists is JArray heistList)
+                save.HeistLock = heistList.Select(t => t.ToString()).ToList();
             save.GoalCollectible = ReadString(data, "goal_collectible", save.GoalCollectible);
             save.GoalLocation = ReadLong(data, "goal_location", save.GoalLocation);
             save.ChecksPerCollectible = ReadInt(data, "checks_per_collectible", save.ChecksPerCollectible);
@@ -1143,6 +1199,8 @@ namespace GameArchipelago.Core
             if (!Owns(info.Item)) return $"Locked: you need \"Mission: {info.Name}\".";
             string missing = MissingCharacters(info);
             if (missing != null) return "Locked: " + missing;
+            string gate = GateReason(info);
+            if (gate != null) return "Locked: " + gate;
             return null;
         }
 
@@ -1625,6 +1683,10 @@ namespace GameArchipelago.Core
             if (Save == null) return string.Empty;
             if (Save.GoalDone) return "Done";
             if (Save.Goal == 2) return $"{PassedCount}/{Save.GoalMissions}";
+            if ((Save.Goal == 0 || Save.Goal == 1 || Save.Goal == 3) && Save.FinaleGate > 0 && GatePassed < Save.FinaleGate)
+                return $"{GatePassed}/{Save.FinaleGate} missions";
+            if ((Save.Goal == 0 || Save.Goal == 1) && !HeistsDone)
+                return $"Heists {HeistMissions().Count(IsPassed)}/{HeistMissions().Count()}";
             if (Save.Goal == 6) return $"{DoneCount}/{Save.GoalCount}";
             if (Save.Goal == 7) return $"{FreeRoamDoneCount}/{Save.GoalCount}";
             return "In progress";

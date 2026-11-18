@@ -193,6 +193,7 @@ the Archipelago menu is shown. Each can be turned back on with `"EnableMenu": tr
 | `goal` | `finale` | `finale`, `the_third_way`, `mission_percentage`, `one_mission`, `one_collectible`, `one_check`, `check_percentage`, `free_roam` | Pass a final mission; pass The Third Way; pass a share of your missions; pass the mission chosen in `goal_mission`; pick up one random collectible; check one random location of your world; check a share of all your locations; check a number of free-roam locations. |
 | `goal_mission` | `surprise` | `surprise` or a mission name (`the_paleto_score`, `rampage_3`...) | The mission of the `one_mission` goal. `surprise` picks one that needs a character you do not start with. |
 | `mission_goal_percentage` | `70` | 10 to 100 | Percentage of missions for the `missions` goal. |
+| `finale_unlock_percentage` | `60` | 0 to 100 | Percentage of the other missions to pass before the final missions (and the `one_mission` goal mission) open. The final missions also need the 6 heists (not their preparations). |
 | `goal_check_percentage` | `60` | 10 to 100 | Percentage of all your locations for the `check_percentage` goal. |
 | `goal_free_roam_checks` | `50` | 5 to 500 | Free-roam locations for the `free_roam` goal (capped at the ones in your world). |
 | `mission_count` | `30` | 10 to 111 | Missions in your world, picked at random (the goal missions are always kept). |

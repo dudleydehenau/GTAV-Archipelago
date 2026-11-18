@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0
+
+- Each store hold-up is a feat ("Hold Up Strawberry 24/7"...), read from the game's robbery count of each store.
+
 ## 2.0.5
 
 - Monkey mosaics can be picked up from 4 m (`MosaicPickupRadius`). Some sit on walls behind rubble you cannot walk

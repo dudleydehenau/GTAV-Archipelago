@@ -11,19 +11,24 @@ class Goal(Choice):
     What you need to do to finish your game. When it is done, the server can release your remaining items to the
     others (depending on the room's release setting).
 
-    - **finale**: pass one of the three final missions (Something Sensible, The Time's Come or The Third Way).
-    - **the_third_way**: pass The Third Way, the ending where the three of them survive.
-    - **mission_percentage**: pass a share of all the missions of your world (set the share with Mission Goal
-      Percentage, for example 70 % of 30 missions = 21 missions, any of them).
-    - **one_mission**: pass a single mission, the one you pick in Goal Mission (or a random one).
-    - **one_collectible**: pick up one random collectible (a spaceship part, a letter scrap, a nuclear waste barrel
-      or a submarine part). The client tells you which one and can route you to it. It can be very short!
-    - **one_check**: one random location of your world (a mission, a medal counter, a collectible milestone...).
-      The client tells you which one. Silly and random on purpose.
-    - **check_percentage**: check a share of all the locations of your world, whatever they are (set the share with
-      Goal Check Percentage).
-    - **free_roam**: check a number of free-roam locations (landmarks, stunt jumps, bridges, knife flights, skills,
+    - finale: pass one of the three final missions (Something Sensible, The Time's Come or The Third Way). The
+      longest goal: the final missions are locked, see Finale Unlock Percentage.
+    - the_third_way: pass The Third Way, the ending where the three of them survive. Same lock as finale, and you
+      need the three characters.
+    - mission_percentage: pass a share of all the missions of your world, any of them (set with Mission Goal
+      Percentage, for example 70 % of 30 missions = 21 missions).
+    - one_mission: pass a single mission, the one you pick in Goal Mission (or a random one). It opens after a share
+      of your other missions, see Finale Unlock Percentage.
+    - one_collectible: pick up one random collectible (a spaceship part, a letter scrap, a nuclear waste barrel or a
+      submarine part). The client tells you which one and can route you to it. It can be very short!
+    - one_check: one random location of your world (a mission, a medal counter, a collectible milestone...). The
+      client tells you which one. Silly and random on purpose.
+    - check_percentage: check a share of all the locations of your world, whatever they are (set with Goal Check
+      Percentage).
+    - free_roam: check a number of free-roam locations (landmarks, stunt jumps, bridges, knife flights, skills,
       police escapes, mosaics, peyote plants, Epsilon tracts), set with Goal Free-Roam Checks.
+
+    In game, F6 > Progress > Goal lists what is left to do.
     """
     display_name = "Goal"
     option_finale = 0
@@ -48,7 +53,8 @@ _goal_mission_attributes = {
     "__doc__": """
     With the one_mission goal: the mission you need to pass. "surprise" picks one that needs a character you do not
     start with. The mission you pick is always in your world, even if it is a Strangers and Freaks mission and they
-    are off.
+    are off. It opens once you passed the share of your other missions set in Finale Unlock Percentage (and every
+    heist, if you pick a final mission).
     """,
     "__module__": __name__,
     "display_name": "Goal Mission",
@@ -68,10 +74,12 @@ GoalMission = type("GoalMission", (Choice,), _goal_mission_attributes)
 class MissionCount(Range):
     """
     How many missions are in your world (67 story missions, plus 44 Strangers and Freaks if they are on; the
-    free-roam preparations that steal a vehicle or an item are never used, they do not work as replays). The missions are
-    picked at random, the ones your goal needs are always kept. A story mission takes about 10 minutes (20 for a
-    heist), a Strangers and Freaks mission about 6. The spoiler log and the client show the estimated time to your
-    goal and for every location.
+    free-roam preparations that steal a vehicle or an item are never used, they do not work as replays). The missions
+    are picked at random, but the ones your goal needs are always kept: with the finale and the_third_way goals, that
+    is the 3 final missions plus the 6 heists, so 9 missions before the random ones.
+
+    A story mission takes about 10 minutes (20 for a heist), a Strangers and Freaks mission about 6. The spoiler log
+    and the client show the estimated time to your goal and for every location.
     """
     display_name = "Mission Count"
     range_start = 10
@@ -87,6 +95,30 @@ class MissionGoalPercentage(Range):
     range_start = 10
     range_end = 100
     default = 70
+
+
+class FinaleUnlockPercentage(Range):
+    """
+    Keeps the end of the game for the end, like in the story. The three final missions (Something Sensible,
+    The Time's Come, The Third Way) stay locked until both are true:
+
+    - you passed this share of the other missions of your world (for example 60 % of 37 missions = 23 missions,
+      any of them);
+    - you passed the 6 heists: The Jewel Store Job, The Merryweather Heist, Blitz Play, The Paleto Score,
+      The Bureau Raid and The Big Score. Their setups and preparations are not needed, they are normal missions.
+
+    With the finale and the_third_way goals, the 6 heists are always in your world, the other missions are picked
+    at random (see Mission Count). With the one_mission goal, only the share applies to your Goal Mission (no
+    heists, unless you pick a final mission). The generator follows the same rule, so the items you need
+    for the end can be anywhere, but you cannot finish early by luck.
+
+    0 = only the heists. 100 = every other mission first. In game, F6 > Progress > Goal shows what is left, mission
+    by mission.
+    """
+    display_name = "Finale Unlock Percentage"
+    range_start = 0
+    range_end = 100
+    default = 60
 
 
 class GoalCheckPercentage(Range):
@@ -565,6 +597,7 @@ class GTAVOptions(PerGameCommonOptions):
     goal: Goal
     goal_mission: GoalMission
     mission_goal_percentage: MissionGoalPercentage
+    finale_unlock_percentage: FinaleUnlockPercentage
     goal_check_percentage: GoalCheckPercentage
     goal_free_roam_checks: GoalFreeRoamChecks
     mission_count: MissionCount
@@ -614,8 +647,8 @@ class GTAVOptions(PerGameCommonOptions):
 
 
 option_groups = [
-    OptionGroup("Goal and Start", [Goal, GoalMission, MissionGoalPercentage, GoalCheckPercentage, GoalFreeRoamChecks,
-                                   MissionCount, StartingCharacter, StartPosition, StartingMissions]),
+    OptionGroup("Goal and Start", [Goal, GoalMission, MissionGoalPercentage, FinaleUnlockPercentage, GoalCheckPercentage,
+                                   GoalFreeRoamChecks, MissionCount, StartingCharacter, StartPosition, StartingMissions]),
     OptionGroup("Locations", [StrangersAndFreaks, ChecksPerMission, GoldMedalChecks, ObjectiveChecks,
                               SpaceshipPartsPerCheck, LetterScrapsPerCheck, NuclearWastePerCheck,
                               SubmarinePartsPerCheck, MonkeyMosaicsPerCheck, PeyotePlantsPerCheck,

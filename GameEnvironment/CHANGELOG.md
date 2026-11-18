@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.9.6
+
+- Fix: "Hold Up a Store" could not be done, there was no clerk in the stores. The game's store robbery script is
+  started by a "random event" point, and random events are turned off in the Archipelago world. Random events are now
+  allowed only within 300 m of one of the 19 stores you can hold up (outside missions), so the game starts its own
+  robbery there. The story flag that allows store robberies (raised by the story in a normal game) is raised too. Those stores have a red store icon on the map (hidden once the check is done).
+- A weapon you already have but whose "Buy" check is not done yet shows its price in Ammu-Nation: buying it again
+  sends the check (asked by GameArchipelago through `EnvironmentApi.WeaponPurchasePending`).
+- Fix: Ammu-Nation could not be entered during some missions (Nervous Ron: Trevor buys a sniper rifle). The game
+  closes the gun shops again during missions in the Archipelago world, and since 1.9.5 they were only opened once at
+  the start of the mission. They are kept open for the whole mission again, without writing it in the log each frame.
+
 ## 1.9.5
 
 - The Arms Trafficking icons at Trevor's airfield are hidden: those missions cannot start in the Archipelago world

@@ -265,6 +265,8 @@ namespace GameEnvironment
 
         public static Func<string, string> WeaponNote { get; set; }
 
+        public static Func<string, bool> WeaponPurchasePending { get; set; }
+
         public static Func<string, string, string> UpgradeNote { get; set; }
 
         public static int ShopPriceMultiplier { get; set; } = 100;

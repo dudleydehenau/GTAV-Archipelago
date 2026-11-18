@@ -20,6 +20,7 @@ namespace GameArchipelago.Core
         private NativeMenu _main;
         private NativeMenu _connection;
         private NativeMenu _progress;
+        private NativeMenu _goal;
         private NativeMenu _missions;
         private NativeMenu _traps;
         private NativeMenu _log;
@@ -70,6 +71,7 @@ namespace GameArchipelago.Core
                 _main = Create("Multiworld");
                 _connection = Create("Connection");
                 _progress = Create("Progress");
+                _goal = Create("Goal");
                 _missions = Create("Missions");
                 _traps = Create("Recent traps");
                 _log = Create("Notifications");
@@ -88,6 +90,7 @@ namespace GameArchipelago.Core
                 _map = Create("Map");
                 _connection.Opening += (s, a) => FillConnection();
                 _progress.Opening += (s, a) => FillProgress();
+                _goal.Opening += (s, a) => FillGoal();
                 _missions.Opening += (s, a) => FillMissions();
                 _traps.Opening += (s, a) => FillTraps();
                 _log.Opening += (s, a) => FillLog();
@@ -269,7 +272,8 @@ namespace GameArchipelago.Core
                 _progress.Add(new NativeItem("Connect once to load your game.") { Enabled = false });
                 return;
             }
-            Info(_progress, "Goal", Core.GoalText(), Core.GoalProgress());
+            _goal.Description = Core.GoalText() + ". Select to see what is left to do, step by step.";
+            _progress.AddSubMenu(_goal, Core.GoalProgress());
             if (save.EstimatedGoalMinutes > 0)
                 Info(_progress, "Time to the goal", "Rough estimate to reach your goal, unlocks included (about 10 minutes per mission, 20 for a heist).",
                     $"~{save.EstimatedGoalMinutes / 60}h{save.EstimatedGoalMinutes % 60:00}");
@@ -329,18 +333,85 @@ namespace GameArchipelago.Core
             foreach (MissionInfo mission in ordered)
             {
                 MissionInfo m = mission;
-                bool playable = Core.IsPlayable(m);
-                bool passed = Core.IsPassed(m);
-                string state = playable ? (passed ? "~c~Passed" : "~g~Available") : passed ? "~c~Passed (locked)" : "~r~Locked";
-                string need;
-                string with = m.Players != 0 ? " Played with " + ArchipelagoScript.PlayerNames(m) + "." : string.Empty;
-                if (!Core.Owns(m.Item)) need = $"Needs the item \"Mission: {m.Name}\".{with}";
-                else if (!playable) need = "Locked: " + Core.MissingCharacters(m);
-                else need = "Started by " + ArchipelagoScript.TriggerNames(m) + "." + with + " Select to set a waypoint.";
+                string state = MissionState(m, out string need);
                 if (Core.GoalMissionInfo == m && Core.Save.Goal == 3) need = "~y~Your goal.~s~ " + need;
                 var item = new NativeItem(m.Name, need, state);
                 item.Activated += (s, a) => Waypoint(m);
                 _missions.Add(item);
+            }
+        }
+
+        private string MissionState(MissionInfo m, out string need)
+        {
+            bool playable = Core.IsPlayable(m);
+            bool passed = Core.IsPassed(m);
+            string with = m.Players != 0 ? " Played with " + ArchipelagoScript.PlayerNames(m) + "." : string.Empty;
+            if (!Core.Owns(m.Item)) need = $"Needs the item \"Mission: {m.Name}\".{with}";
+            else if (!playable) need = "Locked: " + (Core.MissingCharacters(m) ?? Core.GateReason(m));
+            else need = "Started by " + ArchipelagoScript.TriggerNames(m) + "." + with + " Select to set a waypoint.";
+            return playable ? (passed ? "~c~Passed" : "~g~Available") : passed ? "~c~Passed (locked)" : "~r~Locked";
+        }
+
+        private void AddGoalMission(MissionInfo mission)
+        {
+            MissionInfo m = mission;
+            bool passed = Core.IsPassed(m);
+            MissionState(m, out string need);
+            string state = passed ? "~g~Done" : Core.IsPlayable(m) ? "~y~To do (available)" : "~r~To do";
+            var item = new NativeItem(m.Name, passed ? "Passed." : need, state);
+            item.Activated += (s, a) => Waypoint(m);
+            _goal.Add(item);
+        }
+
+        private void Section(string title)
+        {
+            _goal.Add(new NativeItem("~b~" + title) { Enabled = false });
+        }
+
+        private void FillGoal()
+        {
+            _goal.Clear();
+            SlotSave save = Core.Save;
+            if (save == null)
+            {
+                _goal.Add(new NativeItem("Connect once to load your game.") { Enabled = false });
+                return;
+            }
+            Info(_goal, Core.GoalText(), save.GoalDone ? "Your goal is done." : "What you need to do to finish your game.",
+                save.GoalDone ? "~g~Done" : Core.GoalProgress());
+            List<MissionInfo> world = Core.WorldMissions.ToList();
+            switch (save.Goal)
+            {
+                case 0:
+                case 1:
+                case 3:
+                    List<MissionInfo> targets = Core.GoalTargets().ToList();
+                    bool finale = targets.Any(ArchipelagoScript.IsFinale);
+                    int step = 1;
+                    if (save.FinaleGate > 0)
+                    {
+                        int passed = Core.GatePassed;
+                        Section($"Step {step++}: pass {save.FinaleGate} other missions");
+                        Info(_goal, "Missions passed", "Any mission of your world counts, except the final missions" +
+                            (save.Goal == 3 ? " and your goal mission." : "."),
+                            passed >= save.FinaleGate ? $"~g~{save.FinaleGate}/{save.FinaleGate} Done" : $"~r~{passed}/{save.FinaleGate}");
+                    }
+                    List<MissionInfo> heists = finale ? Core.HeistMissions().ToList() : new List<MissionInfo>();
+                    if (heists.Count > 0)
+                    {
+                        Section($"Step {step++}: pass the heists ({heists.Count(Core.IsPassed)}/{heists.Count})");
+                        foreach (MissionInfo heist in heists.OrderBy(Core.IsPassed))
+                            AddGoalMission(heist);
+                    }
+                    Section(save.Goal == 0 ? $"Step {step}: pass one of the final missions" : $"Step {step}: pass your goal mission");
+                    foreach (MissionInfo target in targets)
+                        AddGoalMission(target);
+                    break;
+                case 2:
+                    Section($"Pass {save.GoalMissions} missions, any of them ({Core.PassedCount}/{save.GoalMissions})");
+                    foreach (MissionInfo mission in world.OrderBy(Core.IsPassed).ThenBy(x => !Core.IsPlayable(x)))
+                        AddGoalMission(mission);
+                    break;
             }
         }
 
@@ -443,7 +514,7 @@ namespace GameArchipelago.Core
                 if (!Core.InWorld(mission)) return " Not in your world.";
                 if (Core.IsPassed(mission)) return " ~c~Passed.";
                 if (Core.IsPlayable(mission)) return " ~g~Playable now.";
-                return " ~r~Locked:~s~ " + (Core.MissingCharacters(mission) ?? "not available yet.");
+                return " ~r~Locked:~s~ " + (Core.MissingCharacters(mission) ?? Core.GateReason(mission) ?? "not available yet.");
             }
             if (ApData.CharacterByItem(record.Item) >= 0) return " ~g~Playable.";
             if (!string.IsNullOrEmpty(record.GiftName)) return " " + record.GiftName + ".";

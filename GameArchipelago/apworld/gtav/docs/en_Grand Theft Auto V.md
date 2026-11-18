@@ -65,6 +65,11 @@ Depending on the options:
 - **check_percentage**: check a share of all the locations of your world.
 - **free_roam**: check a number of free-roam locations (landmarks, stunt jumps, bridges, skills...).
 
+The final missions do not open right away: you need to pass a share of the other missions of your world first (Finale
+Unlock Percentage, 60 % by default), plus the 6 heists (not their preparations), like in the story. With the
+finale and the_third_way goals, the heists are always in your world. The same share applies to the Goal Mission of the
+one_mission goal. F6 > Progress > Goal lists every step, mission by mission, with Done / To do.
+
 When the goal is done, the room's release setting decides whether your remaining items are sent to the others.
 
 With Post-Goal Chaos on, the game goes on after the goal: passed missions come back on the map at random and the

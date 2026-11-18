@@ -31,9 +31,8 @@ namespace GameEnvironment.Core
             }
             if (mission)
             {
-                if (_missionOpened) return;
+                Open(_missionOpened);
                 _missionOpened = true;
-                Open();
             }
             else
             {
@@ -61,7 +60,7 @@ namespace GameEnvironment.Core
             Log.Info("Ammu-Nation closed again (mission over).");
         }
 
-        private void Open()
+        private void Open(bool quiet = false)
         {
             int count = 0;
             for (int shop = First; shop <= Last; shop++)
@@ -72,7 +71,7 @@ namespace GameEnvironment.Core
                 _opened.Add(shop);
                 count++;
             }
-            if (count > 0) Log.Info($"Ammu-Nation opened ({count} shops).");
+            if (count > 0 && !quiet) Log.Info($"Ammu-Nation opened ({count} shops).");
         }
     }
 }

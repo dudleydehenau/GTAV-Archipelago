@@ -52,7 +52,7 @@ namespace GameEnvironment.Core
             Doors = new DoorKeeper(Config.OpenDoors, Globals);
             _setup = new SterileSetup(Config, Globals, Store, Roster);
             _shops = new GunShops(Globals);
-            _activities = new Activities(Globals);
+            _activities = new Activities(Globals, Config.DisableRandomEvents);
             _phoneBook = new PhoneBook(Globals);
             _skills = new SkillKeeper(Store);
             _armory = new MissionArmory(Store);
@@ -274,7 +274,7 @@ namespace GameEnvironment.Core
                         _needsApply = true;
                         if (!Config.NoSaves && Config.AutoSaveMinutes > 0 && _autoSaveAt < 0) _autoSaveAt = Game.GameTime + LoadSaveDelay;
                     }
-                    if (Config.DisableRandomEvents) Function.Call(Hash.SET_RANDOM_EVENT_FLAG, false);
+                    if (Config.DisableRandomEvents && !HoldUps.NearStore) Function.Call(Hash.SET_RANDOM_EVENT_FLAG, false);
                     if (!_needsApply) ClearCommunications();
                     break;
                 case SaveKind.Story:
@@ -333,7 +333,7 @@ namespace GameEnvironment.Core
                 _firstApply = false;
                 Garage.ResetDeployments();
             }
-            if (Config.DisableRandomEvents) Function.Call(Hash.SET_RANDOM_EVENT_FLAG, false);
+            if (Config.DisableRandomEvents && !HoldUps.NearStore) Function.Call(Hash.SET_RANDOM_EVENT_FLAG, false);
             ClearCommunications();
             Log.Info("State applied. " + Globals.Describe());
             Log.Info(Globals.DescribeWheel());

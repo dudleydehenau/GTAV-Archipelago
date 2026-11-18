@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.10.0
+
+- New option "Finale Unlock Percentage" (default 60). The three final missions (and the Goal Mission of the
+  one_mission goal) open once you pass that share of the other missions of your world. The final missions also need
+  the 6 heists (not their preparations), like in the story: with the finale and the_third_way goals, the heists are
+  always in your world. Seeds made before keep the final missions open.
+- F6 > Progress > Goal opens a step-by-step list: the share of missions to pass, every heist with
+  Done / To do, then the final missions (or your goal mission). With the mission_percentage goal, it lists every
+  mission of your world. Select a mission to set a waypoint.
+- Clearer option descriptions for Goal, Goal Mission, Mission Count and Finale Unlock Percentage.
+- 19 new checks with the Activities option: "Hold Up <store>" for each LTD, Rob's Liquor and 24/7 you can rob. Each
+  store's icon goes away once its check is done. "Hold Up a Store" (the first robbery) stays.
+- Fix: "Buy <weapon>" could not be checked for a weapon you already had (the Micro SMG from the Drive-By SMG start).
+  Ammu-Nation now shows the price for it, and buying it again sends the check.
+
 ## 1.9.1
 
 - The heists with two approaches are one mission each: "The Big Score", "The Merryweather Heist" and "The Bureau

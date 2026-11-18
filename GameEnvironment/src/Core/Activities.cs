@@ -36,11 +36,13 @@ namespace GameEnvironment.Core
         private readonly ActivityHints _hints;
         private readonly HashSet<int> _doorsReported = new HashSet<int>();
         private readonly CableCar _cableCar = new CableCar();
+        private readonly HoldUps _holdUps;
         private static readonly int[] Sprites = { 109, 122, 103, 197, 119, 110, 313, 314, 315, 316, 376, 127, 126, 94, 377, 141, 135, 36, 100, 71, 73, 75, 72, 52, 90 };
 
-        public Activities(StoryGlobals globals)
+        public Activities(StoryGlobals globals, bool randomEventsOff)
         {
             _globals = globals;
+            _holdUps = new HoldUps(globals, randomEventsOff);
             _hints = new ActivityHints(globals);
         }
 
@@ -212,6 +214,7 @@ namespace GameEnvironment.Core
         {
             if (_globals.Available) _hints.Tick(now);
             _cableCar.Tick(now);
+            _holdUps.Tick(now);
             if (now >= _nextScan)
             {
                 _nextScan = now + 1000;

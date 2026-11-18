@@ -258,6 +258,36 @@ namespace GameEnvironment.Core
             }
         }
 
+        private static bool Pending(ShopEntry entry)
+        {
+            try
+            {
+                return EnvironmentApi.WeaponPurchasePending?.Invoke(entry.Id) == true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void BuyForCheck(ShopEntry entry)
+        {
+            if (!Core.Economy.TrySpend(Price(entry.Price), out string error))
+            {
+                Tell("~r~" + error);
+                return;
+            }
+            Ped ped = Game.Player.Character;
+            uint hash = unchecked((uint)entry.Hash);
+            int ammo = MaxAmmo(ped, entry);
+            Function.Call(Hash.SET_PED_AMMO, ped, hash, ammo, false);
+            Function.Call(Hash.PLAY_SOUND_FRONTEND, -1, "WEAPON_PURCHASE", "HUD_AMMO_SHOP_SOUNDSET", true);
+            Tell($"~g~Bought:~s~ {entry.Name}");
+            Log.Info($"Bought {entry.Id} again for its check (already owned).");
+            EnvironmentApi.RaiseWeaponBought(entry.Id);
+            FillMain();
+        }
+
         private static string Note(ShopEntry entry)
         {
             try
@@ -301,6 +331,13 @@ namespace GameEnvironment.Core
                 bool owned = Owned(entry);
                 bool allowed = Allowed(entry);
                 string note = Note(entry);
+                if (owned && Pending(entry))
+                {
+                    var check = new NativeItem(entry.Name, "You already have it, but buying it is still a check. Enter: buy it." + (Price(entry.Price) > money ? " ~r~Not enough money." : string.Empty), GameText.Money(Price(entry.Price))) { Tag = entry };
+                    check.Activated += (s, a) => BuyForCheck(entry);
+                    _main.Add(check);
+                    continue;
+                }
                 string status = owned ? (entry.Parts.Length > 0 ? "Upgrades >" : "Ammo " + GameText.Money(AmmoPrice(entry)))
                     : !allowed ? "~r~Locked"
                     : GameText.Money(Price(entry.Price));

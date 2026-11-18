@@ -47,6 +47,25 @@ namespace GameArchipelago.Core
             new KeyValuePair<string, GTA.Math.Vector3>("Activity_138", new GTA.Math.Vector3(791.6f, -1160.9f, 27.9f)),
             new KeyValuePair<string, GTA.Math.Vector3>("Activity_139", new GTA.Math.Vector3(-1063.0f, -1153.4f, 1.1f)),
             new KeyValuePair<string, GTA.Math.Vector3>("Activity_140", new GTA.Math.Vector3(-155.8f, -1567.0f, 34.0f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1000", new GTA.Math.Vector3(-711.8f, -915.9f, 18.2f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1001", new GTA.Math.Vector3(-52.7f, -1756.2f, 28.4f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1002", new GTA.Math.Vector3(1159.4f, -325.7f, 68.2f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1003", new GTA.Math.Vector3(1699.4f, 4928.6f, 41.1f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1004", new GTA.Math.Vector3(-1822.9f, 789.0f, 137.2f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1005", new GTA.Math.Vector3(1166.4f, 2703.5f, 37.2f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1006", new GTA.Math.Vector3(-2973.4f, 390.7f, 14.0f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1007", new GTA.Math.Vector3(-1225.9f, -903.6f, 11.3f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1008", new GTA.Math.Vector3(1140.7f, -981.1f, 45.4f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1009", new GTA.Math.Vector3(-1490.3f, -382.9f, 39.2f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1010", new GTA.Math.Vector3(-3240.7f, 1004.5f, 11.8f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1011", new GTA.Math.Vector3(-3039.2f, 589.4f, 6.9f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1012", new GTA.Math.Vector3(544.4f, 2672.1f, 41.2f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1013", new GTA.Math.Vector3(2558.8f, 385.6f, 107.6f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1014", new GTA.Math.Vector3(2681.5f, 3282.8f, 54.3f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1015", new GTA.Math.Vector3(1731.2f, 6411.6f, 34.0f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1016", new GTA.Math.Vector3(1964.9f, 3741.2f, 31.4f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1017", new GTA.Math.Vector3(29.1f, -1348.8f, 28.5f)),
+            new KeyValuePair<string, GTA.Math.Vector3>("Activity_1018", new GTA.Math.Vector3(376.9f, 324.0f, 102.6f)),
         };
 
         public static readonly MapGroup[] Groups =
@@ -69,7 +88,7 @@ namespace GameArchipelago.Core
             new MapGroup("Clothes", "Clothes shops", new[] { "Activity_304" }, BlipSprite.Clothes),
             new MapGroup("Tattoo", "Tattoo parlors", new[] { "Activity_307" }, BlipSprite.TattooParlor),
             new MapGroup("Customs", "Los Santos Customs", new[] { "Activity_305" }, BlipSprite.LosSantosCustoms),
-            new MapGroup("Stores", "Stores", new[] { "Activity_297" }, BlipSprite.Store),
+            new MapGroup("Stores", "Stores", new[] { "Activity_297", "Activity_1000", "Activity_1001", "Activity_1002", "Activity_1003", "Activity_1004", "Activity_1005", "Activity_1006", "Activity_1007", "Activity_1008", "Activity_1009", "Activity_1010", "Activity_1011", "Activity_1012", "Activity_1013", "Activity_1014", "Activity_1015", "Activity_1016", "Activity_1017", "Activity_1018" }, BlipSprite.Store),
             new MapGroup("AmmuNation", "Ammu-Nation", new string[0], BlipSprite.AmmuNation),
         };
 

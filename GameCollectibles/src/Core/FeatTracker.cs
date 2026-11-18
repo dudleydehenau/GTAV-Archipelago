@@ -236,9 +236,11 @@ namespace GameCollectibles.Core
             if (!_globals.EnsureValid()) return;
             int jumps = _globals.JumpBits();
             foreach (KeyValuePair<int, string> activity in FeatData.Activities)
-                if (_globals.IsCompleted(activity.Key) || JumpDone(activity.Key, jumps))
+                if (_globals.IsCompleted(activity.Key) || JumpDone(activity.Key, jumps) || activity.Key >= HoldUpEntry && _globals.RobberyCount(activity.Key - HoldUpEntry) > 0)
                     Complete($"Activity_{activity.Key}", FeatKind.Activity, activity.Value);
         }
+
+        private const int HoldUpEntry = 1000;
 
         private static bool JumpDone(int entry, int jumps)
         {

@@ -43,6 +43,9 @@ namespace GameArchipelago.Core
         public int Goal { get; set; }
         public int GoalMissions { get; set; }
         public string GoalMission { get; set; }
+        public int FinaleGate { get; set; }
+        public List<string> GatedMissions { get; set; } = new List<string>();
+        public List<string> HeistLock { get; set; } = new List<string>();
         public string GoalCollectible { get; set; }
         public long GoalLocation { get; set; }
         public string StartCharacter { get; set; }

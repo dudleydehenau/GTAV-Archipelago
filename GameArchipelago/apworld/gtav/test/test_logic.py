@@ -1,4 +1,4 @@
-from ..data import CHARACTERS, MISSION_BY_CODE, MISSIONS, UNDERWATER_VEHICLE, mission_item
+from ..data import CHARACTERS, FINALE_CODES, HEIST_CODES, MISSION_BY_CODE, MISSIONS, UNDERWATER_VEHICLE, mission_item
 from . import GTAVTestBase
 
 
@@ -92,9 +92,42 @@ class TestMissionCount(GTAVTestBase):
     def test_goal_and_starting_missions_are_kept(self) -> None:
         codes = {m.code for m in self.world.missions}
         self.assertTrue({"FINA", "FINB", "FINC1"} <= codes)
-        self.assertEqual(len(codes), 10)
+        self.assertTrue(set(HEIST_CODES) <= codes)
+        self.assertEqual(len(codes), len(set(HEIST_CODES) | set(FINALE_CODES) | {m.code for m in self.world.starting_missions}))
         for mission in self.world.starting_missions:
             self.assertIn(mission.code, codes)
+
+
+class TestFinaleLock(GTAVTestBase):
+    options = {
+        "goal": "finale",
+        "mission_count": 40,
+        "finale_unlock_percentage": 60,
+        "starting_character": "franklin",
+    }
+
+    def test_finale_needs_heists_and_share(self) -> None:
+        world = self.world
+        finale = MISSION_BY_CODE["FINB"]
+        self.collect_by_name([mission_item(finale), "Michael", "Trevor"])
+        self.assertFalse(self.can_reach_location(finale.name))
+        self.collect_by_name([mission_item(MISSION_BY_CODE[code]) for code in HEIST_CODES])
+        others = [m for m in world.missions if m.code not in world.gated and m.code not in HEIST_CODES]
+        for mission in others:
+            playable = sum(1 for m in world.missions if m.code not in world.gated
+                           and self.multiworld.state.has(mission_item(m), self.player))
+            self.assertEqual(self.can_reach_location(finale.name), playable >= world.finale_gate)
+            self.collect_by_name([mission_item(mission)])
+        self.assertTrue(self.can_reach_location(finale.name))
+        self.assertGreater(world.finale_gate, len(HEIST_CODES))
+
+    def test_every_heist_is_needed(self) -> None:
+        finale = MISSION_BY_CODE["FINA"]
+        everything = [m for m in self.world.missions if m.code != "RH2"]
+        self.collect_by_name([mission_item(m) for m in everything] + ["Michael", "Trevor"])
+        self.assertFalse(self.can_reach_location(finale.name))
+        self.collect_by_name([mission_item(MISSION_BY_CODE["RH2"])])
+        self.assertTrue(self.can_reach_location(finale.name))
 
 
 class TestMinimal(GTAVTestBase):

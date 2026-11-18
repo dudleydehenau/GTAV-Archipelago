@@ -10,6 +10,7 @@ namespace GameCollectibles.Core
         public int Bridges { get; set; }
         public int Completion { get; set; }
         public int Jumps { get; set; }
+        public int Robberies { get; set; }
     }
 
     internal sealed class SavedGlobals
@@ -20,8 +21,8 @@ namespace GameCollectibles.Core
 
         private static readonly SavedGlobalsProfile[] Profiles =
         {
-            new SavedGlobalsProfile { Build = 3889, Bridges = 125117, Completion = 125166, Jumps = 133940 },
-            new SavedGlobalsProfile { Build = 3725, Bridges = 125056, Completion = 125105, Jumps = 133879 },
+            new SavedGlobalsProfile { Build = 3889, Bridges = 125117, Completion = 125166, Jumps = 133940, Robberies = 135007 },
+            new SavedGlobalsProfile { Build = 3725, Bridges = 125056, Completion = 125105, Jumps = 133879, Robberies = 134946 },
         };
 
         private SavedGlobalsProfile _profile;
@@ -60,6 +61,13 @@ namespace GameCollectibles.Core
         public int BridgeBits(int word) => Read(_profile.Bridges + word);
 
         public int JumpBits() => Read(_profile.Jumps);
+
+        public int RobberyCount(int store)
+        {
+            int size = Read(_profile.Robberies);
+            if (size < 19 || size > 32 || store < 0 || store >= size) return 0;
+            return Read(_profile.Robberies + 1 + store);
+        }
 
         public bool IsCompleted(int entry) => entry >= 0 && entry < CompletionCount && Read(_profile.Completion + 1 + entry * CompletionStride + 5) != 0;
 
