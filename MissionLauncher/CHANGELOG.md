@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.1
+
+- The Third Way is followed through its second part: when the first part ends, the attempt stays open as long as the
+  game's replay runs, and the end of the second part gives the result. Before, it was counted as abandoned.
+
 ## 1.5.0
 
 - Works with GTA V Legacy 1.0.3889 (latest) and still with 1.0.3725. The game version is detected at startup and the

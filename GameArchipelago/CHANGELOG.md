@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.1
+
+- A mission whose location was checked by another player's !collect, but not its Bonus locations, is playable again
+  (its marker comes back), so you can still get its Bonus checks.
+
 ## 1.10.0
 
 - New option "Finale Unlock Percentage" (default 60). The three final missions (and the Goal Mission of the

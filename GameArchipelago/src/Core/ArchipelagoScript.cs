@@ -113,7 +113,15 @@ namespace GameArchipelago.Core
         internal bool InWorld(MissionInfo mission) => mission != null && _slotMissions.Contains(mission.Code);
 
         internal bool IsPassed(MissionInfo mission) =>
-            Save != null && mission != null && (Save.Passed.Contains(mission.Code, StringComparer.OrdinalIgnoreCase) || Save.IsDone(mission.Location));
+            Save != null && mission != null && (Save.Passed.Contains(mission.Code, StringComparer.OrdinalIgnoreCase) || AllMissionChecksDone(mission));
+
+        private bool AllMissionChecksDone(MissionInfo mission)
+        {
+            if (!Save.IsDone(mission.Location)) return false;
+            for (int b = 0; b < Math.Min(Save.ChecksPerMission - 1, mission.Bonus.Length); b++)
+                if (!Save.IsDone(mission.Bonus[b])) return false;
+            return true;
+        }
 
         internal bool IsPlayable(MissionInfo mission) =>
             InWorld(mission) && Owns(mission.Item) && mission.PlayableWith(UnlockedMask) && GateReason(mission) == null;

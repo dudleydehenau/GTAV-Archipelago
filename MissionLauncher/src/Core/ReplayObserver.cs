@@ -26,6 +26,11 @@ namespace MissionLauncher.Core
         private bool _passFlagBefore;
         private int _endedAt = -1;
         private const int EndGrace = 6000;
+        private static readonly Dictionary<string, string[]> Continuations = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "FINC1", new[] { "FINC2" } },
+        };
+        private int[] _continuationHashes = Array.Empty<int>();
         private const int SessionTimeout = 15000;
         private int _idleSince = -1;
         private const int MinimumPassTime = 15000;
@@ -81,6 +86,12 @@ namespace MissionLauncher.Core
                 bool running = thread != 0;
                 if (!running && _attempts == 0 && !_threadsLogged && Game.GameTime - _sessionStartedAt > 30000) LogThreads();
 
+                if (_attemptRunning && running && thread != _attemptThread && !_reported && _endedAt >= 0 && _continuationHashes.Length > 0)
+                {
+                    Log.Info($"[REPLAY] {_mission.Code} goes on in its next part, same attempt.");
+                    _attemptThread = thread;
+                    _endedAt = -1;
+                }
                 if (_attemptRunning && running && thread != _attemptThread)
                 {
                     if (!_reported) Report(ReplayOutcome.Abandoned, null, null);
@@ -124,7 +135,15 @@ namespace MissionLauncher.Core
             _globals.ReadReplayRequest(out int type, out int index);
             ReplayCategory? category = type == 1 ? ReplayCategory.Story : type == 7 ? ReplayCategory.StrangersAndFreaks : (ReplayCategory?)null;
             _mission = category.HasValue ? _catalog.Find(category.Value, index) : null;
+            _continuationHashes = ContinuationHashesFor(_mission);
             _scriptHashes = ScriptHashesFor(_mission);
+            if (_continuationHashes.Length > 0)
+            {
+                var all = new List<int>(_scriptHashes);
+                foreach (int hash in _continuationHashes)
+                    if (!all.Contains(hash)) all.Add(hash);
+                _scriptHashes = all.ToArray();
+            }
             _threadsLogged = false;
 
             if (_mission == null) Log.Warn($"[REPLAY] Replay started for an unknown mission (type {type}, index {index}): results are not tracked.");
@@ -223,6 +242,7 @@ namespace MissionLauncher.Core
                 int[] records = IsRampage ? _globals.RampageRecords() : null;
                 Log.Info($"[REPLAY] Mission script ended without a result yet (pass flag {_globals.MissionPassedFlag()}{(records != null ? ", rampage records " + string.Join(",", records) : string.Empty)}).");
             }
+            if (_continuationHashes.Length > 0 && _globals.IsReplayControllerRunning()) return false;
             if (Game.GameTime - _endedAt < EndGrace) return false;
             Report(ReplayOutcome.Abandoned, null, null);
             return true;
@@ -364,6 +384,20 @@ namespace MissionLauncher.Core
                     char otherLast = char.ToUpperInvariant(otherCode[otherCode.Length - 1]);
                     if ((otherLast == 'A' || otherLast == 'B') && !hashes.Contains(other.ScriptHash)) hashes.Add(other.ScriptHash);
                 }
+            }
+            return hashes.ToArray();
+        }
+
+        private int[] ContinuationHashesFor(ReplayMission mission)
+        {
+            if (mission == null || !Continuations.TryGetValue(mission.Code ?? string.Empty, out string[] codes)) return Array.Empty<int>();
+            var hashes = new List<int>();
+            foreach (ReplayMission other in _catalog.All)
+                if (other.ScriptHash != 0 && Array.IndexOf(codes, other.Code) >= 0 && !hashes.Contains(other.ScriptHash)) hashes.Add(other.ScriptHash);
+            foreach (string name in new[] { "finalec2", "finale_c2" })
+            {
+                int hash = Function.Call<int>(Hash.GET_HASH_KEY, name);
+                if (!hashes.Contains(hash)) hashes.Add(hash);
             }
             return hashes.ToArray();
         }
